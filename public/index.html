@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Neeter</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div id="username-popup">
+    <h2>Enter your username and select a Circle:</h2>
+    <form id="username-form">
+      <input id="username-input" type="text" placeholder="Username"></input>
+      <select id="room-select"></select>
+      <input id="create-room-name" type="text" placeholder="Circle Name"></input>
+      <button>Submit</button>
+    </form>
+  </div>
+  <div id="chat-window" style="display: none;">
+    <button id="back-button">Back</button>
+    <button id="room-settings">Room Settings</button>
+    <h2>Circle: <span id="current-room"></span></h2>
+    <ul id="messages"></ul>
+    <form id="message-form">
+      <input id="message" type="text" placeholder="Type a message..." maxlength="2000">
+      <span id="char-count"></span>
+      <span id="ratelimitalert">Whoa! You're going too fast! Slow down a bit and try again.</span>
+      <button>Send</button>
+    </form>
+    <audio id="notification" src="/notification.mp3"></audio>
+  </div>
+  <script src="index.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
+    }
+
+    .warning {
+      color: red;
+    }
+
+    .word-count-warning {
+      font-weight: bold;
+      color: orange;
+    }
+
+    #deletebtn {
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+  </style>
+</body>
+
+</html>
