@@ -28,6 +28,7 @@
     <h2>Circle: <span id="current-room"></span></h2>
     <ul id="messages"></ul>
     <form id="message-form">
+      <span id="replyingtotext">Replying</span>
       <input id="message" type="text" placeholder="Type a message..." maxlength="2000">
       <span id="char-count"></span>
       <span id="ratelimitalert">Whoa! You're going too fast! Slow down a bit and try again.</span>
@@ -56,8 +57,23 @@
       cursor: pointer;
     }
 
+    a {
+      color: blueviolet;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
     strong {
       font-weight: 600;
+    }
+
+    .highlight {
+      background-color: yellow;
+      transition: all 0.2s ease-out;
+    }
+
+    .highlight.remove {
+      background-color: transparent;
     }
   </style>
 </body>

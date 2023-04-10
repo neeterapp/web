@@ -1,6 +1,7 @@
 $('#ratelimitalert').hide();
 $('#room-settings').hide();
 $('#create-room-name').hide();
+$('#replyingtotext').hide();
 const socket = io();
 const notificationSound = document.getElementById('notification');
 let username = '';
@@ -48,7 +49,6 @@ $('#username-form').submit(() => {
     return false;
 });
 $('#message-form').submit(() => {
-    console.log(isaresponse, responsetomsg, msgresponsetousername);
     const message = $('#message').val();
     socket.emit('chat message', message, username, currentRoom, isaresponse, responsetomsg, msgresponsetousername);
     $('#message').val('');
@@ -56,6 +56,7 @@ $('#message-form').submit(() => {
     isaresponse = false;
     responsetomsg = '';
     msgresponsetousername = '';
+    $('#replyingtotext').hide();
     return false;
 });
 
@@ -126,6 +127,8 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
                     console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    $('#replyingtotext').show();
+                    $('#replyingtotext').text(`Replying to ${msg.username}`);
                 });
                 li.append(replyButton);
                 $('#messages').append(li);
@@ -138,6 +141,8 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
                     console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    $('#replyingtotext').show();
+                    $('#replyingtotext').text(`Replying to ${msg.username}`);
                 });
                 li.append(replyButton);
                 $('#messages').append(li);
@@ -158,6 +163,8 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
                     console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    $('#replyingtotext').show();
+                    $('#replyingtotext').text(`Replying to ${msg.username}`);
                 });
                 li.append(replyButton);
                 $('#messages').append(li);
@@ -176,6 +183,8 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
                     console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    $('#replyingtotext').show();
+                    $('#replyingtotext').text(`Replying to ${msg.username}`);
                 });
                 li.append(replyButton);
                 $('#messages').append(li);
@@ -188,6 +197,13 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
 goToMsg = (msgID) => {
     const msg = document.getElementById(`msg-${msgID}`);
     msg.scrollIntoView({ behavior: 'smooth' });
+    msg.classList.add('highlight');
+    setTimeout(() => {
+        msg.classList.add('remove');
+        setTimeout(() => {
+            msg.classList.remove('highlight', 'remove');
+        }, 250);
+    }, 1000);
 }
 
 socket.on('load messages', (messages) => {
@@ -210,6 +226,8 @@ socket.on('load messages', (messages) => {
                             responsetomsg = `${msg._id}`;
                             msgresponsetousername = msg.username;
                             console.log(isaresponse, responsetomsg, msgresponsetousername);
+                            $('#replyingtotext').show();
+                            $('#replyingtotext').text(`Replying to ${msg.username}`);
                         });
                         li.append(replyButton);
                     }
@@ -229,6 +247,8 @@ socket.on('load messages', (messages) => {
                             responsetomsg = `${msg._id}`;
                             msgresponsetousername = msg.username;
                             console.log(isaresponse, responsetomsg, msgresponsetousername);
+                            $('#replyingtotext').show();
+                            $('#replyingtotext').text(`Replying to ${msg.username}`);
                         });
                         li.append(replyButton);
                     }
@@ -248,6 +268,8 @@ socket.on('load messages', (messages) => {
                         responsetomsg = `${msg._id}`;
                         msgresponsetousername = msg.username;
                         console.log(isaresponse, responsetomsg, msgresponsetousername);
+                        $('#replyingtotext').show();
+                        $('#replyingtotext').text(`Replying to ${msg.username}`);
                     });
                     li.append(replyButton);
                     $('#messages').append(li);
@@ -265,6 +287,8 @@ socket.on('load messages', (messages) => {
                         responsetomsg = `${msg._id}`;
                         msgresponsetousername = msg.username;
                         console.log(isaresponse, responsetomsg, msgresponsetousername);
+                        $('#replyingtotext').show();
+                        $('#replyingtotext').text(`Replying to ${msg.username}`);
                     });
                     li.append(replyButton);
                     $('#messages').append(li);
