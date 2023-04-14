@@ -1,0 +1,45 @@
+ul {
+    list-style-type: none;
+    max-width: 1020px;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+.warning {
+    color: red;
+}
+
+.word-count-warning {
+    font-weight: bold;
+    color: orange;
+}
+
+#deletebtn {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+a {
+    color: blueviolet;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+strong {
+    font-weight: 600;
+}
+
+.highlight {
+    background-color: yellow;
+    transition: all 0.2s ease-out;
+}
+
+.highlight.remove {
+    background-color: transparent;
+}

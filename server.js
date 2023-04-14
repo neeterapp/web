@@ -3,9 +3,11 @@ const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoose = require('mongoose');
+const DOMPurify = require('isomorphic-dompurify');
+require('dotenv').config();
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://justkoru:pYTRO1xWGWO14CLE@cluster0.4bgopsl.mongodb.net/chat?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
@@ -43,6 +45,10 @@ const messageSchema = new mongoose.Schema({
     responsetousername: {
         type: String,
         required: false
+    },
+    edited: {
+        type: Boolean,
+        required: true
     }
 }, { timestamps: true });
 
@@ -61,7 +67,6 @@ const roomSchema = new mongoose.Schema({
     }
 }, { timestamps: false });
 
-// Define message model
 const Message = mongoose.model('Message', messageSchema);
 const RoomData = mongoose.model('Room', roomSchema);
 
@@ -84,18 +89,20 @@ io.on('connection', (socket) => {
         });
     // Join room and load messages
     socket.on('join room', (room, usrname) => {
-        console.log(`${usrname} joined room ${room}`);
-        socket.join(room);
-        RoomData.findOne({ room: room }).then((existingRoom) => {
+        const sanitizedroom = DOMPurify.sanitize(room);
+        console.log(`${usrname} joined room ${sanitizedroom}`);
+        socket.join(sanitizedroom);
+        io.in(sanitizedroom).emit('joined');
+        RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
             if (!existingRoom) {
                 // If room doesn't exist, create it and make the user the owner
                 const newRoom = new RoomData({
-                    room: room,
+                    room: sanitizedroom,
                     owner: usrname,
                     settings: { "test": "test" }
                 });
                 newRoom.save().then(() => {
-                    console.log(`Created room ${room} with owner ${usrname}`);
+                    console.log(`Created room ${sanitizedroom} with owner ${usrname}`);
                     isowner = true;
                     socket.emit('user connected', usrname, isowner);
                 }).catch((err) => {
@@ -104,11 +111,11 @@ io.on('connection', (socket) => {
             } else if (existingRoom) {
                 // If room exists, check if the user is the owner
                 if (existingRoom.owner === usrname) {
-                    console.log(`${usrname} is the owner of room ${room}`);
+                    console.log(`${usrname} is the owner of room ${sanitizedroom}`);
                     isowner = true;
                     socket.emit('user connected', usrname, isowner);
                 } else {
-                    console.log(`${usrname} is not the owner of room ${room}`);
+                    console.log(`${usrname} is not the owner of room ${sanitizedroom}`);
                     isowner = false;
                     socket.emit('user connected', usrname, isowner);
                 }
@@ -118,7 +125,7 @@ io.on('connection', (socket) => {
         });
 
         // Load messages for the room
-        Message.find({ room: room }).sort({ createdAt: 1 }).then((messages) => {
+        Message.find({ room: sanitizedroom }).then((messages) => {
             socket.emit('load messages', messages);
         }).catch((err) => {
             console.error(err);
@@ -127,26 +134,31 @@ io.on('connection', (socket) => {
 
     // Handle chat message
     socket.on('chat message', (msg, username, room, isaresponse, msgresponseto, msgresponsetousername) => {
+        const sanitizedmsg = DOMPurify.sanitize(msg);
+        const sanitizedusername = DOMPurify.sanitize(username);
+        const sanitizedroom = DOMPurify.sanitize(room);
+        const sanitizedresponseto = DOMPurify.sanitize(msgresponseto);
+        const sanitizedresponsetousername = DOMPurify.sanitize(msgresponsetousername);
         const currentTime = new Date().getTime();
-        if (messageCount[username] && (currentTime - messageCount[username].timestamp) < 1000 && messageCount[username].count >= 10) {
-            socket.emit('msgratelimit', msg, username, room);
+        if (messageCount[sanitizedusername] && (currentTime - messageCount[sanitizedusername].timestamp) < 1000 && messageCount[sanitizedusername].count >= 10) {
+            socket.emit('msgratelimit', sanitizedmsg, sanitizedusername, sanitizedroom);
         } else {
-            if (!messageCount[username]) {
-                messageCount[username] = { count: 1, timestamp: currentTime };
+            if (!messageCount[sanitizedusername]) {
+                messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
             } else {
-                if (messageCount[username].count === 10) {
-                    messageCount[username] = { count: 1, timestamp: currentTime };
+                if (messageCount[sanitizedusername].count === 10) {
+                    messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
                 } else {
-                    messageCount[username].count++;
-                    messageCount[username].timestamp = currentTime;
+                    messageCount[sanitizedusername].count++;
+                    messageCount[sanitizedusername].timestamp = currentTime;
                 }
             }
-            console.log(`message: ${msg}, username: ${username}, room: ${room}, isresponse: ${isaresponse}, responsetomessage: ${msgresponseto}, responsetousername: ${msgresponsetousername}`);
-            RoomData.findOne({ room: room }).then((existingRoom) => {
-                const message = new Message({ message: msg, username: username, room: room, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: msgresponseto, responsetousername: msgresponsetousername });
+            console.log(`message: ${sanitizedmsg}, username: ${sanitizedusername}, room: ${sanitizedroom}, isresponse: ${isaresponse}, responsetomessage: ${sanitizedresponseto}, responsetousername: ${sanitizedresponsetousername}`);
+            RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+                const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
                 message.save().then(() => {
-                    RoomData.findOne({ room: room }).then((existingRoom) => {
-                        io.to(room).emit('chat message', message, room, existingRoom.owner, isaresponse, msgresponseto, msgresponsetousername);
+                    RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+                        io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
                     });
                 }).catch((err) => {
                     console.error(err);
@@ -154,21 +166,34 @@ io.on('connection', (socket) => {
             });
         }
     });
+
+    socket.on('edit message', (editingmessageid, editingmsg, sanitizedroom) => {
+        const sanitizededitingmsg = DOMPurify.sanitize(editingmsg);
+        console.log(`editing message ${editingmessageid} to ${sanitizededitingmsg}`);
+        Message.findByIdAndUpdate(editingmessageid, { message: sanitizededitingmsg, edited: true }).then(() => {
+            console.log("message edited");
+            Message.findById(editingmessageid).then((message) => {
+            io.to(message.room).emit('message edited', editingmessageid, message);
+            });
+        });
+    });
+
     // Handle delete message
     socket.on('delete message', (msg, deleterusername) => {
-        if (deleterusername == msg.username) {
+        const sanitizeddeleterusername = DOMPurify.sanitize(deleterusername);
+        if (sanitizeddeleterusername == msg.username) {
             console.log(`deleting message ${msg._id}`);
             Message.findByIdAndDelete(msg._id).then(() => {
                 console.log("message deleted");
-                io.emit('message deleted', msg._id);
+                io.to(msg.room).emit('message deleted', msg._id);
             }).catch((err) => {
                 console.error(err);
             });
-        } else if (deleterusername == msg.roomowner) {
+        } else if (sanitizeddeleterusername == msg.roomowner) {
             console.log(`deleting message ${msg._id}`);
             Message.findByIdAndDelete(msg._id).then(() => {
                 console.log("message deleted");
-                io.emit('message deleted', msg._id);
+                io.to(msg.room).emit('message deleted', msg._id);
             }).catch((err) => {
                 console.error(err);
             });

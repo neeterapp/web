@@ -10,6 +10,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 
 <body>
@@ -29,53 +31,15 @@
     <ul id="messages"></ul>
     <form id="message-form">
       <span id="replyingtotext">Replying</span>
+      <span id="editingmsgtext">Editing a message </span>
       <input id="message" type="text" placeholder="Type a message..." maxlength="2000">
       <span id="char-count"></span>
       <span id="ratelimitalert">Whoa! You're going too fast! Slow down a bit and try again.</span>
-      <button>Send</button>
+      <button id="sendbtn">Send</button>
     </form>
     <audio id="notification" src="/notification.mp3"></audio>
   </div>
   <script src="index.js"></script>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 400;
-    }
-
-    .warning {
-      color: red;
-    }
-
-    .word-count-warning {
-      font-weight: bold;
-      color: orange;
-    }
-
-    #deletebtn {
-      margin-left: 5px;
-      cursor: pointer;
-    }
-
-    a {
-      color: blueviolet;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    strong {
-      font-weight: 600;
-    }
-
-    .highlight {
-      background-color: yellow;
-      transition: all 0.2s ease-out;
-    }
-
-    .highlight.remove {
-      background-color: transparent;
-    }
-  </style>
 </body>
 
 </html>
