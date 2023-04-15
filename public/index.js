@@ -3,15 +3,20 @@ $('#room-settings').hide();
 $('#create-room-name').hide();
 $('#replyingtotext').hide();
 $('#editingmsgtext').hide();
+$('#cancelreplyoredit').hide();
 const socket = io();
 const notificationSound = document.getElementById('notification');
 let username = '';
 let currentRoom = '';
 let allroomsList = [];
 
+// grab the room name and username from the URL
 const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
 const urlusername = urlParams.get('username');
+
+// create a new unique ID for each user
+const uniqueID = Math.floor(Math.random() * 1000000);
 
 if (urlroom && urlusername) {
     username = urlusername;
@@ -33,6 +38,34 @@ let msgresponsetousername = '';
 let editingmsg = false;
 let editingmessageid = '';
 let editedtext = '';
+
+const replyeditcancelbtn = document.getElementById('cancelreplyoredit');
+const sendoreditbutton = document.getElementById('sendbtn');
+const messageinput = document.getElementById('message');
+replyeditcancelbtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    if (editingmsg === true) {
+        editingmsg = false;
+        editingmessageid = '';
+        editedtext = '';
+        $('#editingmsgtext').hide();
+    }
+    if (isaresponse === true) {
+        responsetomsg = '';
+        msgresponsetousername = '';
+        isaresponse = false
+        $('#replyingtotext').hide();
+    }
+    $('#cancelreplyoredit').hide();
+    $('#sendbtn').text('Send');
+});
+
+messageinput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      sendoreditbutton.click();
+    }
+  });
 
 $('#username-form').submit(() => {
     username = $('#username-input').val();
@@ -56,7 +89,6 @@ $('#message-form').submit(() => {
     const message = $('#message').val();
     if (editingmsg === true) {
         socket.emit('edit message', editingmessageid, message);
-        console.log('message', editingmessageid, 'edited. The new message is', message);
     } else {
         socket.emit('chat message', message, username, currentRoom, isaresponse, responsetomsg, msgresponsetousername);
     }
@@ -69,6 +101,7 @@ $('#message-form').submit(() => {
     editingmessageid = '';
     editedtext = '';
     $('#replyingtotext').hide();
+    $('#cancelreplyoredit').hide();
     window.scrollTo({
         top: document.body.scrollHeight,
         left: 0,
@@ -92,7 +125,6 @@ $('#message').on('input', () => {
 });
 
 socket.on('joined', () => {
-    console.log('joined');
 });
 
 socket.on('msgratelimit', (msg, senderusername, room) => {
@@ -153,9 +185,10 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
+                    $('#cancelreplyoredit').show();
                 });
                 li.append(replyButton);
                 if (msg.roomowner === username) {
@@ -175,9 +208,10 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
+                    $('#cancelreplyoredit').show();
                 });
                 li.append(replyButton);
                 if (msg.roomowner === username) {
@@ -205,9 +239,10 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
+                    $('#cancelreplyoredit').show();
                 });
                 li.append(replyButton);
                 if (msg.username === username) {
@@ -218,6 +253,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                             $('#messageinput').val(msg.message);
                             $('#sendbtn').text('Save');
                             $('#editingmsgtext').show();
+                            $('#cancelreplyoredit').show();
                         });
                         li.append(editButton);
                 }
@@ -236,9 +272,10 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    console.log(isaresponse, responsetomsg, msgresponsetousername);
+                    
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
+                    $('#cancelreplyoredit').show();
                 });
                 li.append(replyButton);
                 if (msg.username === username) {
@@ -249,6 +286,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                             $('#messageinput').val(msg.message);
                             $('#sendbtn').text('Save');
                             $('#editingmsgtext').show();
+                            $('#cancelreplyoredit').show();
                         });
                         li.append(editButton);
                 }
@@ -296,9 +334,10 @@ socket.on('load messages', (messages) => {
                             isaresponse = true;
                             responsetomsg = `${msg._id}`;
                             msgresponsetousername = msg.username;
-                            console.log(isaresponse, responsetomsg, msgresponsetousername);
+                            
                             $('#replyingtotext').show();
                             $('#replyingtotext').text(`Replying to ${msg.username}`);
+                            $('#cancelreplyoredit').show();
                         });
                         li.append(replyButton);
                 } else if (msg.isresponse === false) {
@@ -317,9 +356,10 @@ socket.on('load messages', (messages) => {
                             isaresponse = true;
                             responsetomsg = `${msg._id}`;
                             msgresponsetousername = msg.username;
-                            console.log(isaresponse, responsetomsg, msgresponsetousername);
+                            
                             $('#replyingtotext').show();
                             $('#replyingtotext').text(`Replying to ${msg.username}`);
+                            $('#cancelreplyoredit').show();
                         });
                         li.append(replyButton);
                 }
@@ -337,9 +377,10 @@ socket.on('load messages', (messages) => {
                         isaresponse = true;
                         responsetomsg = `${msg._id}`;
                         msgresponsetousername = msg.username;
-                        console.log(isaresponse, responsetomsg, msgresponsetousername);
+                        
                         $('#replyingtotext').show();
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
+                        $('#cancelreplyoredit').show();
                     });
                     li.append(replyButton);
                     const editButton = $('<button>').attr('id', `editbtn`).text('Edit');
@@ -349,6 +390,7 @@ socket.on('load messages', (messages) => {
                         $('#messageinput').val(msg.message);
                         $('#sendbtn').text('Save');
                         $('#editingmsgtext').show();
+                        $('#cancelreplyoredit').show();
                     });
                     li.append(editButton);
                     $('#messages').append(li);
@@ -365,9 +407,10 @@ socket.on('load messages', (messages) => {
                         isaresponse = true;
                         responsetomsg = `${msg._id}`;
                         msgresponsetousername = msg.username;
-                        console.log(isaresponse, responsetomsg, msgresponsetousername);
+                        
                         $('#replyingtotext').show();
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
+                        $('#cancelreplyoredit').show();
                     });
                     li.append(replyButton);
                     const editButton = $('<button>').attr('id', `editbtn`).text('Edit');
@@ -377,6 +420,7 @@ socket.on('load messages', (messages) => {
                         $('#messageinput').val(msg.message);
                         $('#sendbtn').text('Save');
                         $('#editingmsgtext').show();
+                        $('#cancelreplyoredit').show();
                     });
                     li.append(editButton);
                     $('#messages').append(li);
@@ -411,9 +455,10 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             isaresponse = true;
             responsetomsg = `${newMessage._id}`;
             msgresponsetousername = newMessage.username;
-            console.log(isaresponse, responsetomsg, msgresponsetousername);
+            
             $('#replyingtotext').show();
             $('#replyingtotext').text(`Replying to ${newMessage.username}`);
+            $('#cancelreplyoredit').show();
         });
         li.append(replyButton);
         if (newMessage.username === username) {
@@ -424,6 +469,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
                     $('#messageinput').val(newMessage.message);
                     $('#sendbtn').text('Save');
                     $('#editingmsgtext').show();
+                    $('#cancelreplyoredit').show();
                 });
                 li.append(editButton);
         }
@@ -442,9 +488,10 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             isaresponse = true;
             responsetomsg = `${newMessage._id}`;
             msgresponsetousername = newMessage.username;
-            console.log(isaresponse, responsetomsg, msgresponsetousername);
+            
             $('#replyingtotext').show();
             $('#replyingtotext').text(`Replying to ${newMessage.username}`);
+            $('#cancelreplyoredit').show();
         });
         li.append(replyButton);
         if (newMessage.username === username) {
@@ -455,6 +502,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
                     $('#messageinput').val(newMessage.message);
                     $('#sendbtn').text('Save');
                     $('#editingmsgtext').show();
+                    $('#cancelreplyoredit').show();
                 });
                 li.append(editButton);
         }
