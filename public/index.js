@@ -93,6 +93,8 @@ messageinput.addEventListener('keydown', function(event) {
   });
 
 $('#username-form').submit(() => {
+    if ($('#username-input').val() === '') {
+    } else {
     username = $('#username-input').val();
     currentRoom = $('#room-select').val();
     $('#username-popup').hide();
@@ -110,6 +112,7 @@ $('#username-form').submit(() => {
     socket.emit('join room', currentRoom, username);
     document.title = `Neeter - ${currentRoom}`
     return false;
+    }
 });
 
 $('#message-form').submit(() => {
