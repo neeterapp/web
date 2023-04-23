@@ -107,10 +107,19 @@ io.on('connection', (socket) => {
         });
     // Join room and load messages
 
-    socket.on('room renamed', (newroom) => {
+    socket.on('room renamed', (newroom, oldroom) => {
         const sanitizednewroom = DOMPurify.sanitize(newroom);
+        const sanitizedoldroom = DOMPurify.sanitize(oldroom);
+        socket.leave(sanitizedoldroom);
         socket.join(sanitizednewroom);
+        io.in(sanitizedoldroom).emit('room name changed', sanitizednewroom);
     });
+
+    socket.on('change room name from socket', (newroomname) => {
+        socket.leave(socket.room);
+        socket.join(newroomname);
+    });
+
     socket.on('join room', (room, usrname) => {
         const sanitizedroom = DOMPurify.sanitize(room);
         console.log(`${usrname} joined room ${sanitizedroom}`);

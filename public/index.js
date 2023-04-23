@@ -48,6 +48,7 @@ circlesettingsbackbutton.addEventListener('click', function(event) {
 const circleSettingsSaveButton = document.getElementById('circlesettings-save-button');
 circleSettingsSaveButton.addEventListener('click', function(event) {
     event.preventDefault();
+    oldroomname = currentRoom;
     socket.emit('update room settings', currentRoom, $('#circle-description').val(), $('#circle-emoji').val(), $('#circle-name').val());
     currentRoom = $('#circle-name').val();
     $('#current-room').text(currentRoom);
@@ -55,8 +56,9 @@ circleSettingsSaveButton.addEventListener('click', function(event) {
     urlParams.set('room', currentRoom);
     urlParams.set('username', username);
     history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+    document.title = `Neeter - ${currentRoom}`
     if ($('#circle-name').val() !== '') {
-        socket.emit('room renamed', $('#circle-name').val());
+        socket.emit('room renamed', $('#circle-name').val(), oldroomname);
     }
 });
 
@@ -207,6 +209,17 @@ socket.on('rooms list', (roomslist) => {
     });
 });
 
+socket.on('room name changed', (newchangedroomname) => {
+    currentRoom = newchangedroomname;
+    $('#current-room').text(currentRoom);
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('room', currentRoom);
+    urlParams.set('username', username);
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.pushState({}, '', newUrl);
+    document.title = `Neeter - ${currentRoom}`
+    socket.emit('change room name from socket', currentRoom);
+});
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
         editedtext = '';
