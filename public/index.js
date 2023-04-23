@@ -53,6 +53,9 @@ circleSettingsSaveButton.addEventListener('click', function(event) {
     $('#current-room').text(currentRoom);
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
+    if ($('#circle-name').val() !== '') {
+        socket.emit('room renamed', $('#circle-name').val());
+    }
 });
 
 let responsetomsg = '';
@@ -94,6 +97,7 @@ messageinput.addEventListener('keydown', function(event) {
 
 $('#username-form').submit(() => {
     if ($('#username-input').val() === '') {
+        $('#username-input').placeholder = 'Username (Required)'; 
     } else {
     username = $('#username-input').val();
     currentRoom = $('#room-select').val();

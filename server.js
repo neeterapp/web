@@ -59,7 +59,8 @@ const messageSchema = new mongoose.Schema({
 const roomSchema = new mongoose.Schema({
     room: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     owner: {
         type: String,
@@ -105,6 +106,11 @@ io.on('connection', (socket) => {
             console.log(err);
         });
     // Join room and load messages
+
+    socket.on('room renamed', (newroom) => {
+        const sanitizednewroom = DOMPurify.sanitize(newroom);
+        socket.join(sanitizednewroom);
+    });
     socket.on('join room', (room, usrname) => {
         const sanitizedroom = DOMPurify.sanitize(room);
         console.log(`${usrname} joined room ${sanitizedroom}`);
@@ -174,6 +180,16 @@ io.on('connection', (socket) => {
             description: sanitizednewdescription,
             emoji: sanitizednewemoji
         };
+        if (!sanitizednewname) {
+            sanitizednewname = sanitizedroom;
+        } else {
+            //replace all messages from the old room name to the new room name
+            Message.updateMany({ room: sanitizedroom }, { room: sanitizednewname }).then((messages) => {
+                console.log('Messages updated.');
+            }).catch((err) => {
+                console.error(err);
+            });
+        }
         RoomData.findOneAndUpdate({ room: sanitizedroom }, { room: sanitizednewname, settings: newroomsettings }, { new: true }).then((existingRoom) => {
             if (existingRoom) {
                 console.log('Room settings updated.');
