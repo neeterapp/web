@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const DOMPurify = require('isomorphic-dompurify');
 require('dotenv').config();
 const { Configuration, OpenAIApi } = require("openai");
+const emojiRegex = require('emoji-regex');
+const emjregex = emojiRegex();
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -15,13 +17,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 const messageCount = {};
 let isowner = false;
 let roomsList = [];
-let resulthate;
-let resultsexual;
-let resultviolence;
-let resultselfharm;
-let resultsexualminors;
-let resulthatethreatening;
-let resultviolencegraphic;
+let roomSettings;
 
 // Define message schema
 const messageSchema = new mongoose.Schema({
@@ -148,6 +144,35 @@ io.on('connection', (socket) => {
         // Load messages for the room
         Message.find({ room: sanitizedroom }).then((messages) => {
             socket.emit('load messages', messages);
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+
+    socket.on('get room settings', (room) => {
+        const sanitizedroom = DOMPurify.sanitize(room);
+        RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+            if (existingRoom) {
+                roomSettings = existingRoom.settings;
+                socket.emit('room settings', roomSettings);
+                console.log('Room settings sent.');
+                console.log(roomSettings);
+            } else {
+                console.log('Room not found.');
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+
+    socket.on('update room settings', (room, settings) => {
+        const sanitizedroom = DOMPurify.sanitize(room);
+        const sanitizedsettings = DOMPurify.sanitize(settings);
+        RoomData.findOneAndUpdate({ room: sanitizedroom }, { settings: sanitizedsettings }, { new: true }).then((existingRoom) => {
+            if (existingRoom) {
+                console.log('Room settings updated.');
+                console.log(existingRoom.settings);
+            }
         }).catch((err) => {
             console.error(err);
         });

@@ -4,6 +4,7 @@ $('#create-room-name').hide();
 $('#replyingtotext').hide();
 $('#editingmsgtext').hide();
 $('#cancelreplyoredit').hide();
+$('#username-popup').show();
 const socket = io();
 const notificationSound = document.getElementById('notification');
 let username = '';
@@ -15,9 +16,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
 const urlusername = urlParams.get('username');
 
-// create a new unique ID for each user
-const uniqueID = Math.floor(Math.random() * 1000000);
-
 if (urlroom && urlusername) {
     username = urlusername;
     currentRoom = urlroom;
@@ -25,11 +23,24 @@ if (urlroom && urlusername) {
     $('#chat-window').show();
     socket.emit('join room', urlroom, urlusername);
     $('#current-room').text(urlroom);
+    document.title = `Neeter - ${currentRoom}`
 }
 
 const backbutton = document.getElementById('back-button');
 backbutton.addEventListener('click', () => {
     window.location.href = '/';
+});
+
+const circlesettingsbutton = document.getElementById('room-settings');
+circlesettingsbutton.addEventListener('click', () => {
+    $('#chat-window').hide();
+    $('#circlesettings-window').show();
+});
+
+const circlesettingsbackbutton = document.getElementById('circlesettings-back-button');
+circlesettingsbackbutton.addEventListener('click', () => {
+    $('#circlesettings-window').hide();
+    $('#chat-window').show();
 });
 
 let responsetomsg = '';
@@ -49,12 +60,14 @@ replyeditcancelbtn.addEventListener('click', function(event) {
         editingmessageid = '';
         editedtext = '';
         $('#editingmsgtext').hide();
+        $('#message').val('');
     }
     if (isaresponse === true) {
         responsetomsg = '';
         msgresponsetousername = '';
         isaresponse = false
         $('#replyingtotext').hide();
+        $('#message').val('');
     }
     $('#cancelreplyoredit').hide();
     $('#sendbtn').text('Send');
@@ -83,6 +96,7 @@ $('#username-form').submit(() => {
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({}, '', newUrl);
     socket.emit('join room', currentRoom, username);
+    document.title = `Neeter - ${currentRoom}`
     return false;
 });
 $('#message-form').submit(() => {
@@ -254,6 +268,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                             $('#sendbtn').text('Save');
                             $('#editingmsgtext').show();
                             $('#cancelreplyoredit').show();
+                            $('#message').val(msg.message);
                         });
                         li.append(editButton);
                 }
@@ -287,6 +302,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                             $('#sendbtn').text('Save');
                             $('#editingmsgtext').show();
                             $('#cancelreplyoredit').show();
+                            $('#message').val(msg.message);
                         });
                         li.append(editButton);
                 }
@@ -391,6 +407,7 @@ socket.on('load messages', (messages) => {
                         $('#sendbtn').text('Save');
                         $('#editingmsgtext').show();
                         $('#cancelreplyoredit').show();
+                        $('#message').val(msg.message);
                     });
                     li.append(editButton);
                     $('#messages').append(li);
@@ -421,6 +438,7 @@ socket.on('load messages', (messages) => {
                         $('#sendbtn').text('Save');
                         $('#editingmsgtext').show();
                         $('#cancelreplyoredit').show();
+                        $('#message').val(msg.message);
                     });
                     li.append(editButton);
                     $('#messages').append(li);
@@ -470,6 +488,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
                     $('#sendbtn').text('Save');
                     $('#editingmsgtext').show();
                     $('#cancelreplyoredit').show();
+                    $('#message').val(msg.message);
                 });
                 li.append(editButton);
         }
@@ -503,6 +522,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
                     $('#sendbtn').text('Save');
                     $('#editingmsgtext').show();
                     $('#cancelreplyoredit').show();
+                    $('#message').val(msg.message);
                 });
                 li.append(editButton);
         }

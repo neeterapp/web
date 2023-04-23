@@ -15,7 +15,7 @@
 </head>
 
 <body>
-  <div id="username-popup">
+  <div id="username-popup" style="display: none;">
     <h2>Enter your username and select a Circle:</h2>
     <form id="username-form">
       <input id="username-input" type="text" placeholder="Username"></input>
@@ -40,6 +40,15 @@
     </form>
     <audio id="notification" src="/notification.mp3"></audio>
   </div>
+  <div id="circlesettings-window" style="display: none;">
+    <button id="circlesettings-back-button">Close Settings</button>
+    <h2>Circle Settings</h2>
+    <form id="circle-settings-form">
+      <input id="circle-name" type="text" placeholder="Circle Name"></input>
+      <input id="circle-description" type="text" placeholder="Circle Description"></input>
+      <input id="circle-icon" type="text" placeholder="Circle Icon (Emoji)"></input>
+      <button>Save</button>
+    </form>
   <script src="index.js"></script>
 </body>
 
