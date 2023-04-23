@@ -49,6 +49,10 @@ const circleSettingsSaveButton = document.getElementById('circlesettings-save-bu
 circleSettingsSaveButton.addEventListener('click', function(event) {
     event.preventDefault();
     socket.emit('update room settings', currentRoom, $('#circle-description').val(), $('#circle-emoji').val(), $('#circle-name').val());
+    currentRoom = $('#circle-name').val();
+    $('#current-room').text(currentRoom);
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('room', currentRoom);
 });
 
 let responsetomsg = '';
