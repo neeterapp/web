@@ -165,10 +165,16 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('update room settings', (room, settings) => {
+    socket.on('update room settings', (room, newRoomDescription, newRoomEmoji, newRoomName) => {
+        const sanitizednewdescription = DOMPurify.sanitize(newRoomDescription);
+        const sanitizednewemoji = DOMPurify.sanitize(newRoomEmoji);
+        const sanitizednewname = DOMPurify.sanitize(newRoomName);
         const sanitizedroom = DOMPurify.sanitize(room);
-        const sanitizedsettings = DOMPurify.sanitize(settings);
-        RoomData.findOneAndUpdate({ room: sanitizedroom }, { settings: sanitizedsettings }, { new: true }).then((existingRoom) => {
+        const newroomsettings = {
+            description: sanitizednewdescription,
+            emoji: sanitizednewemoji
+        };
+        RoomData.findOneAndUpdate({ room: sanitizedroom }, { room: sanitizednewname, settings: newroomsettings }, { new: true }).then((existingRoom) => {
             if (existingRoom) {
                 console.log('Room settings updated.');
                 console.log(existingRoom.settings);

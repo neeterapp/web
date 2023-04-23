@@ -32,15 +32,23 @@ backbutton.addEventListener('click', () => {
 });
 
 const circlesettingsbutton = document.getElementById('room-settings');
-circlesettingsbutton.addEventListener('click', () => {
+circlesettingsbutton.addEventListener('click', function(event) {
+    event.preventDefault();
     $('#chat-window').hide();
     $('#circlesettings-window').show();
 });
 
 const circlesettingsbackbutton = document.getElementById('circlesettings-back-button');
-circlesettingsbackbutton.addEventListener('click', () => {
+circlesettingsbackbutton.addEventListener('click', function(event) {
+    event.preventDefault();
     $('#circlesettings-window').hide();
     $('#chat-window').show();
+});
+
+const circleSettingsSaveButton = document.getElementById('circlesettings-save-button');
+circleSettingsSaveButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    socket.emit('update room settings', currentRoom, $('#circle-description').val(), $('#circle-emoji').val(), $('#circle-name').val());
 });
 
 let responsetomsg = '';
@@ -99,6 +107,7 @@ $('#username-form').submit(() => {
     document.title = `Neeter - ${currentRoom}`
     return false;
 });
+
 $('#message-form').submit(() => {
     const message = $('#message').val();
     if (editingmsg === true) {
