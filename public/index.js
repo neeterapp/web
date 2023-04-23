@@ -53,6 +53,8 @@ circleSettingsSaveButton.addEventListener('click', function(event) {
     $('#current-room').text(currentRoom);
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
+    urlParams.set('username', username);
+    history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
     if ($('#circle-name').val() !== '') {
         socket.emit('room renamed', $('#circle-name').val());
     }
