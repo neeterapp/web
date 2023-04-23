@@ -111,8 +111,8 @@ $('#username-form').submit(() => {
     window.history.pushState({}, '', newUrl);
     socket.emit('join room', currentRoom, username);
     document.title = `Neeter - ${currentRoom}`
-    return false;
     }
+    return false;
 });
 
 $('#message-form').submit(() => {
