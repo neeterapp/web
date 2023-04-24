@@ -114,8 +114,7 @@ messageinput.addEventListener('keydown', function (event) {
 });
 
 $('#username-form').submit(() => {
-    if ($('#username-input').val() === '') {
-        $('#username-input').placeholder = 'Username (Required)';
+    if ($('#username-input').val() === '' || ($('#room-select').val() === 'Create Circle' && $('#create-room-name').val() === '')) {
     } else {
         username = $('#username-input').val();
         currentRoom = $('#room-select').val();
