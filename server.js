@@ -112,7 +112,15 @@ io.on('connection', (socket) => {
         const sanitizedoldroom = DOMPurify.sanitize(oldroom);
         socket.leave(sanitizedoldroom);
         socket.join(sanitizednewroom);
-        io.in(sanitizedoldroom).emit('room name changed', sanitizednewroom);
+        // Find the new room name and get its settings
+        RoomData.findOne({ room: sanitizednewroom }).then((existingRoom) => {
+            if (existingRoom) {
+                newroomsettings = existingRoom.settings;
+                io.in(sanitizedoldroom).emit('room name changed', sanitizednewroom, newroomsettings);
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
     });
 
     socket.on('change room name from socket', (newroomname) => {
@@ -136,7 +144,7 @@ io.on('connection', (socket) => {
                 newRoom.save().then(() => {
                     console.log(`Created room ${sanitizedroom} with owner ${usrname}`);
                     isowner = true;
-                    socket.emit('user connected', usrname, isowner);
+                    socket.emit('user connected', usrname, isowner, newRoom.settings);
                 }).catch((err) => {
                     console.error(err);
                 });
@@ -145,11 +153,11 @@ io.on('connection', (socket) => {
                 if (existingRoom.owner === usrname) {
                     console.log(`${usrname} is the owner of room ${sanitizedroom}`);
                     isowner = true;
-                    socket.emit('user connected', usrname, isowner);
+                    socket.emit('user connected', usrname, isowner, existingRoom.settings);
                 } else {
                     console.log(`${usrname} is not the owner of room ${sanitizedroom}`);
                     isowner = false;
-                    socket.emit('user connected', usrname, isowner);
+                    socket.emit('user connected', usrname, isowner, existingRoom.settings);
                 }
             }
         }).catch((err) => {
