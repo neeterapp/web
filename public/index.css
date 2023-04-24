@@ -91,6 +91,19 @@
     font-weight: bold;
     color: orange;
   }
+
+  #roomnam {
+    margin-right: 8px;
+  }
+
+  #roomdesc {
+    padding-top: 3.5px;
+    flex: 1;
+  }
+
+  #roomnameanddesc {
+    display: flex;
+  }
   
   #deletebtn {
     cursor: pointer;

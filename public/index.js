@@ -42,7 +42,7 @@ socket.on('room settings', (roomsettingsdata, roomsettingsname) => {
     $('#circlesettings-window').show();
     $('#circle-name').val(roomsettingsname);
     $('#circle-emoji').val(roomsettingsdata.emoji);
-    $('#circle-description').val(roomsettingsdata.description);
+    $('#circle-description').val(' | ' + roomsettingsdata.description);
 });
 
 const circlesettingsbackbutton = document.getElementById('circlesettings-back-button');
@@ -59,9 +59,12 @@ circleSettingsSaveButton.addEventListener('click', function (event) {
     socket.emit('update room settings', currentRoom, $('#circle-description').val(), $('#circle-emoji').val(), $('#circle-name').val());
     currentRoom = $('#circle-name').val();
     if ($('#circle-description').val() !== '') {
-        $('#current-room').text($('#circle-emoji').val() + currentRoom + ' - ' + $('#circle-description').val());
+        $('#current-room-description').show();
+        $('#current-room').text($('#circle-emoji').val() + currentRoom);
+        $('#current-room-description').text(' | ' + $('#circle-description').val());
     } else {
         $('#current-room').text($('#circle-emoji').val() + currentRoom);
+        $('#current-room-description').hide();
     }
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
@@ -210,7 +213,7 @@ socket.on('rooms list', (roomslist) => {
     option.value = "Create Circle";
     option.text = "Create Circle";
     dropdown.add(option);
-    dropdown.value = "Main Circle";
+    dropdown.value = "Main";
     dropdown.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
         if (selectedValue === "Create Circle") {
@@ -226,14 +229,20 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
     currentRoom = newchangedroomname;
     if (newroomsettings.description) {
         if (newroomsettings.emoji) {
-            $('#current-room').text(newroomsettings.emoji + currentRoom + ' - ' + newroomsettings.description);
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + newroomsettings.description);
+            $('#current-room').text(newroomsettings.emoji + currentRoom);
         } else {
-            $('#current-room').text(currentRoom + ' - ' + newroomsettings.description);
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + newroomsettings.description);
+            $('#current-room').text(currentRoom);
         }
     } else {
         if (newroomsettings.emoji) {
+            $('#current-room-description').hide();
             $('#current-room').text(newroomsettings.emoji + currentRoom);
         } else {
+            $('#current-room-description').hide();
             $('#current-room').text(currentRoom);
         }
     }
@@ -519,14 +528,20 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
     }
     if (roomsettingsdata.description) {
         if (roomsettingsdata.emoji) {
-            $('#current-room').text(roomsettingsdata.emoji + currentRoom + ' - ' + roomsettingsdata.description);
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + roomsettingsdata.description);
+            $('#current-room').text(roomsettingsdata.emoji + currentRoom);
         } else {
-            $('#current-room').text(currentRoom + ' - ' + roomsettingsdata.description);
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + roomsettingsdata.description);
+            $('#current-room').text(currentRoom);
         }
     } else {
         if (roomsettingsdata.emoji) {
+            $('#current-room-description').hide()
             $('#current-room').text(roomsettingsdata.emoji + currentRoom);
         } else {
+            $('#current-room-description').hide()
             $('#current-room').text(currentRoom);
         }
     }
