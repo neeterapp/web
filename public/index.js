@@ -4,6 +4,7 @@ $('#create-room-name').hide();
 $('#replyingtotext').hide();
 $('#editingmsgtext').hide();
 $('#cancelreplyoredit').hide();
+$('#username-popup').show();
 const socket = io();
 const notificationSound = document.getElementById('notification');
 let username = '';
@@ -15,9 +16,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
 const urlusername = urlParams.get('username');
 
-// create a new unique ID for each user
-const uniqueID = Math.floor(Math.random() * 1000000);
-
 if (urlroom && urlusername) {
     username = urlusername;
     currentRoom = urlroom;
@@ -25,11 +23,57 @@ if (urlroom && urlusername) {
     $('#chat-window').show();
     socket.emit('join room', urlroom, urlusername);
     $('#current-room').text(urlroom);
+    document.title = `Neeter - ${currentRoom}`
 }
 
 const backbutton = document.getElementById('back-button');
 backbutton.addEventListener('click', () => {
     window.location.href = '/';
+});
+
+const circlesettingsbutton = document.getElementById('room-settings');
+circlesettingsbutton.addEventListener('click', function (event) {
+    event.preventDefault();
+    socket.emit('get room settings', currentRoom);
+});
+
+socket.on('room settings', (roomsettingsdata, roomsettingsname) => {
+    $('#chat-window').hide();
+    $('#circlesettings-window').show();
+    $('#circle-name').val(roomsettingsname);
+    $('#circle-emoji').val(roomsettingsdata.emoji);
+    $('#circle-description').val(' | ' + roomsettingsdata.description);
+});
+
+const circlesettingsbackbutton = document.getElementById('circlesettings-back-button');
+circlesettingsbackbutton.addEventListener('click', function (event) {
+    event.preventDefault();
+    $('#circlesettings-window').hide();
+    $('#chat-window').show();
+});
+
+const circleSettingsSaveButton = document.getElementById('circlesettings-save-button');
+circleSettingsSaveButton.addEventListener('click', function (event) {
+    event.preventDefault();
+    oldroomname = currentRoom;
+    socket.emit('update room settings', currentRoom, $('#circle-description').val(), $('#circle-emoji').val(), $('#circle-name').val());
+    currentRoom = $('#circle-name').val();
+    if ($('#circle-description').val() !== '') {
+        $('#current-room-description').show();
+        $('#current-room').text($('#circle-emoji').val() + currentRoom);
+        $('#current-room-description').text(' | ' + $('#circle-description').val());
+    } else {
+        $('#current-room').text($('#circle-emoji').val() + currentRoom);
+        $('#current-room-description').hide();
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('room', currentRoom);
+    urlParams.set('username', username);
+    history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+    document.title = `Neeter - ${currentRoom}`
+    if ($('#circle-name').val() !== '') {
+        socket.emit('room renamed', $('#circle-name').val(), oldroomname);
+    }
 });
 
 let responsetomsg = '';
@@ -42,49 +86,56 @@ let editedtext = '';
 const replyeditcancelbtn = document.getElementById('cancelreplyoredit');
 const sendoreditbutton = document.getElementById('sendbtn');
 const messageinput = document.getElementById('message');
-replyeditcancelbtn.addEventListener('click', function(event) {
+replyeditcancelbtn.addEventListener('click', function (event) {
     event.preventDefault();
     if (editingmsg === true) {
         editingmsg = false;
         editingmessageid = '';
         editedtext = '';
         $('#editingmsgtext').hide();
+        $('#message').val('');
     }
     if (isaresponse === true) {
         responsetomsg = '';
         msgresponsetousername = '';
         isaresponse = false
         $('#replyingtotext').hide();
+        $('#message').val('');
     }
     $('#cancelreplyoredit').hide();
     $('#sendbtn').text('Send');
 });
 
-messageinput.addEventListener('keydown', function(event) {
+messageinput.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
-      event.preventDefault();
-      sendoreditbutton.click();
+        event.preventDefault();
+        sendoreditbutton.click();
     }
-  });
+});
 
 $('#username-form').submit(() => {
-    username = $('#username-input').val();
-    currentRoom = $('#room-select').val();
-    $('#username-popup').hide();
-    $('#chat-window').show();
-    const dropdown = document.getElementById('room-select');
-    if (dropdown.value === "Create Circle") {
-        currentRoom = $('#create-room-name').val();
+    if ($('#username-input').val() === '' || ($('#room-select').val() === 'Create Circle' && $('#create-room-name').val() === '')) {
+    } else {
+        username = $('#username-input').val();
+        currentRoom = $('#room-select').val();
+        $('#username-popup').hide();
+        $('#chat-window').show();
+        const dropdown = document.getElementById('room-select');
+        if (dropdown.value === "Create Circle") {
+            currentRoom = $('#create-room-name').val();
+        }
+        $('#current-room').text(currentRoom);
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('room', currentRoom);
+        urlParams.set('username', username);
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        socket.emit('join room', currentRoom, username);
+        document.title = `Neeter - ${currentRoom}`
     }
-    $('#current-room').text(currentRoom);
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('room', currentRoom);
-    urlParams.set('username', username);
-    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-    window.history.pushState({}, '', newUrl);
-    socket.emit('join room', currentRoom, username);
     return false;
 });
+
 $('#message-form').submit(() => {
     const message = $('#message').val();
     if (editingmsg === true) {
@@ -161,6 +212,7 @@ socket.on('rooms list', (roomslist) => {
     option.value = "Create Circle";
     option.text = "Create Circle";
     dropdown.add(option);
+    dropdown.value = "Main";
     dropdown.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
         if (selectedValue === "Create Circle") {
@@ -171,11 +223,41 @@ socket.on('rooms list', (roomslist) => {
     });
 });
 
+socket.on('room name changed', (newchangedroomname, newroomsettings) => {
+    console.log('Name changed to ' + newchangedroomname);
+    currentRoom = newchangedroomname;
+    if (newroomsettings.description) {
+        if (newroomsettings.emoji) {
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + newroomsettings.description);
+            $('#current-room').text(newroomsettings.emoji + currentRoom);
+        } else {
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + newroomsettings.description);
+            $('#current-room').text(currentRoom);
+        }
+    } else {
+        if (newroomsettings.emoji) {
+            $('#current-room-description').hide();
+            $('#current-room').text(newroomsettings.emoji + currentRoom);
+        } else {
+            $('#current-room-description').hide();
+            $('#current-room').text(currentRoom);
+        }
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('room', currentRoom);
+    urlParams.set('username', username);
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.pushState({}, '', newUrl);
+    document.title = `Neeter - ${currentRoom}`
+    socket.emit('change room name from socket', currentRoom);
+});
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
         editedtext = '';
         if (msg.edited === true) {
-            editedtext = '(edited)';
+            editedtext = '(edited) ';
         }
         if (msg.username !== username) {
             if (msgisresponse === true) {
@@ -185,7 +267,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    
+
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
@@ -208,7 +290,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    
+
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
@@ -239,7 +321,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    
+
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
@@ -247,15 +329,16 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                 li.append(replyButton);
                 if (msg.username === username) {
                     const editButton = $('<button>').attr('id', `editbtn`).text('Edit');
-                        editButton.click(() => {
-                            editingmsg = true;
-                            editingmessageid = msg._id;
-                            $('#messageinput').val(msg.message);
-                            $('#sendbtn').text('Save');
-                            $('#editingmsgtext').show();
-                            $('#cancelreplyoredit').show();
-                        });
-                        li.append(editButton);
+                    editButton.click(() => {
+                        editingmsg = true;
+                        editingmessageid = msg._id;
+                        $('#messageinput').val(msg.message);
+                        $('#sendbtn').text('Save');
+                        $('#editingmsgtext').show();
+                        $('#cancelreplyoredit').show();
+                        $('#message').val(msg.message);
+                    });
+                    li.append(editButton);
                 }
                 $('#messages').append(li);
                 $('#ratelimitalert').hide();
@@ -272,7 +355,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     isaresponse = true;
                     responsetomsg = `${msg._id}`;
                     msgresponsetousername = msg.username;
-                    
+
                     $('#replyingtotext').show();
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
@@ -280,15 +363,16 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                 li.append(replyButton);
                 if (msg.username === username) {
                     const editButton = $('<button>').attr('id', `editbtn`).text('Edit');
-                        editButton.click(() => {
-                            editingmsg = true;
-                            editingmessageid = msg._id;
-                            $('#messageinput').val(msg.message);
-                            $('#sendbtn').text('Save');
-                            $('#editingmsgtext').show();
-                            $('#cancelreplyoredit').show();
-                        });
-                        li.append(editButton);
+                    editButton.click(() => {
+                        editingmsg = true;
+                        editingmessageid = msg._id;
+                        $('#messageinput').val(msg.message);
+                        $('#sendbtn').text('Save');
+                        $('#editingmsgtext').show();
+                        $('#cancelreplyoredit').show();
+                        $('#message').val(msg.message);
+                    });
+                    li.append(editButton);
                 }
                 $('#messages').append(li);
                 $('#ratelimitalert').hide();
@@ -313,7 +397,7 @@ socket.on('load messages', (messages) => {
     messages.forEach((msg) => {
         if (msg.room === currentRoom) {
             if (msg.edited === true) {
-                editedtext = '(edited)';
+                editedtext = '(edited) ';
             } else {
                 editedtext = '';
             };
@@ -330,16 +414,16 @@ socket.on('load messages', (messages) => {
                         li.append(delButton);
                     }
                     const replyButton = $('<button>').attr('id', `replybtn`).text('Reply');
-                        replyButton.click(() => {
-                            isaresponse = true;
-                            responsetomsg = `${msg._id}`;
-                            msgresponsetousername = msg.username;
-                            
-                            $('#replyingtotext').show();
-                            $('#replyingtotext').text(`Replying to ${msg.username}`);
-                            $('#cancelreplyoredit').show();
-                        });
-                        li.append(replyButton);
+                    replyButton.click(() => {
+                        isaresponse = true;
+                        responsetomsg = `${msg._id}`;
+                        msgresponsetousername = msg.username;
+
+                        $('#replyingtotext').show();
+                        $('#replyingtotext').text(`Replying to ${msg.username}`);
+                        $('#cancelreplyoredit').show();
+                    });
+                    li.append(replyButton);
                 } else if (msg.isresponse === false) {
                     const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${msg.message} ${editedtext}`);
                     $('#messages').append(li);
@@ -352,16 +436,16 @@ socket.on('load messages', (messages) => {
                         li.append(delButton);
                     }
                     const replyButton = $('<button>').attr('id', `replybtn`).text('Reply');
-                        replyButton.click(() => {
-                            isaresponse = true;
-                            responsetomsg = `${msg._id}`;
-                            msgresponsetousername = msg.username;
-                            
-                            $('#replyingtotext').show();
-                            $('#replyingtotext').text(`Replying to ${msg.username}`);
-                            $('#cancelreplyoredit').show();
-                        });
-                        li.append(replyButton);
+                    replyButton.click(() => {
+                        isaresponse = true;
+                        responsetomsg = `${msg._id}`;
+                        msgresponsetousername = msg.username;
+
+                        $('#replyingtotext').show();
+                        $('#replyingtotext').text(`Replying to ${msg.username}`);
+                        $('#cancelreplyoredit').show();
+                    });
+                    li.append(replyButton);
                 }
             } else if (msg.username === username) {
                 if (msg.isresponse === true) {
@@ -377,7 +461,7 @@ socket.on('load messages', (messages) => {
                         isaresponse = true;
                         responsetomsg = `${msg._id}`;
                         msgresponsetousername = msg.username;
-                        
+
                         $('#replyingtotext').show();
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
                         $('#cancelreplyoredit').show();
@@ -391,6 +475,7 @@ socket.on('load messages', (messages) => {
                         $('#sendbtn').text('Save');
                         $('#editingmsgtext').show();
                         $('#cancelreplyoredit').show();
+                        $('#message').val(msg.message);
                     });
                     li.append(editButton);
                     $('#messages').append(li);
@@ -407,7 +492,7 @@ socket.on('load messages', (messages) => {
                         isaresponse = true;
                         responsetomsg = `${msg._id}`;
                         msgresponsetousername = msg.username;
-                        
+
                         $('#replyingtotext').show();
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
                         $('#cancelreplyoredit').show();
@@ -421,6 +506,7 @@ socket.on('load messages', (messages) => {
                         $('#sendbtn').text('Save');
                         $('#editingmsgtext').show();
                         $('#cancelreplyoredit').show();
+                        $('#message').val(msg.message);
                     });
                     li.append(editButton);
                     $('#messages').append(li);
@@ -435,15 +521,34 @@ socket.on('message deleted', (msgId) => {
     $(`#msg-${msgId}`).remove();
 });
 
-socket.on('user connected', (usrname, isowner) => {
+socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
     if (isowner) {
         $('#room-settings').show();
+    }
+    if (roomsettingsdata.description) {
+        if (roomsettingsdata.emoji) {
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + roomsettingsdata.description);
+            $('#current-room').text(roomsettingsdata.emoji + currentRoom);
+        } else {
+            $('#current-room-description').show();
+            $('#current-room-description').text(' | ' + roomsettingsdata.description);
+            $('#current-room').text(currentRoom);
+        }
+    } else {
+        if (roomsettingsdata.emoji) {
+            $('#current-room-description').hide()
+            $('#current-room').text(roomsettingsdata.emoji + currentRoom);
+        } else {
+            $('#current-room-description').hide()
+            $('#current-room').text(currentRoom);
+        }
     }
 });
 
 socket.on('message edited', (messageEditingID, newMessage) => {
     if (newMessage.isresponse === true) {
-        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(`<b>${newMessage.username} (in response to <a onclick="goToMsg('${newMessage.responsetomessage}')">${newMessage.responsetousername}</a>):</b> ${newMessage.message} (edited)`);
+        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(`<b>${newMessage.username} (in response to <a onclick="goToMsg('${newMessage.responsetomessage}')">${newMessage.responsetousername}</a>):</b> ${newMessage.message} (edited) `);
         const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
         delButton.click(() => {
             socket.emit('delete message', newMessage, newMessage.username);
@@ -455,7 +560,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             isaresponse = true;
             responsetomsg = `${newMessage._id}`;
             msgresponsetousername = newMessage.username;
-            
+
             $('#replyingtotext').show();
             $('#replyingtotext').text(`Replying to ${newMessage.username}`);
             $('#cancelreplyoredit').show();
@@ -463,20 +568,21 @@ socket.on('message edited', (messageEditingID, newMessage) => {
         li.append(replyButton);
         if (newMessage.username === username) {
             const editButton = $('<button>').attr('id', `editbtn`).text('Edit');
-                editButton.click(() => {
-                    editingmsg = true;
-                    editingmessageid = newMessage._id;
-                    $('#messageinput').val(newMessage.message);
-                    $('#sendbtn').text('Save');
-                    $('#editingmsgtext').show();
-                    $('#cancelreplyoredit').show();
-                });
-                li.append(editButton);
+            editButton.click(() => {
+                editingmsg = true;
+                editingmessageid = newMessage._id;
+                $('#messageinput').val(newMessage.message);
+                $('#sendbtn').text('Save');
+                $('#editingmsgtext').show();
+                $('#cancelreplyoredit').show();
+                $('#message').val(msg.message);
+            });
+            li.append(editButton);
         }
         $(`#msg-${messageEditingID}`).replaceWith(li);
         $('#ratelimitalert').hide();
     } else if (newMessage.isresponse === false) {
-        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(`<b>${newMessage.username}:</b> ${newMessage.message} (edited)`);
+        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(`<b>${newMessage.username}:</b> ${newMessage.message} (edited) `);
         const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
         delButton.click(() => {
             socket.emit('delete message', newMessage, newMessage.username);
@@ -488,7 +594,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             isaresponse = true;
             responsetomsg = `${newMessage._id}`;
             msgresponsetousername = newMessage.username;
-            
+
             $('#replyingtotext').show();
             $('#replyingtotext').text(`Replying to ${newMessage.username}`);
             $('#cancelreplyoredit').show();
@@ -496,15 +602,16 @@ socket.on('message edited', (messageEditingID, newMessage) => {
         li.append(replyButton);
         if (newMessage.username === username) {
             const editButton = $('<button>').attr('id', `editbtn`).text('Edit');
-                editButton.click(() => {
-                    editingmsg = true;
-                    editingmessageid = newMessage._id;
-                    $('#messageinput').val(newMessage.message);
-                    $('#sendbtn').text('Save');
-                    $('#editingmsgtext').show();
-                    $('#cancelreplyoredit').show();
-                });
-                li.append(editButton);
+            editButton.click(() => {
+                editingmsg = true;
+                editingmessageid = newMessage._id;
+                $('#messageinput').val(newMessage.message);
+                $('#sendbtn').text('Save');
+                $('#editingmsgtext').show();
+                $('#cancelreplyoredit').show();
+                $('#message').val(msg.message);
+            });
+            li.append(editButton);
         }
         $(`#msg-${messageEditingID}`).replaceWith(li);
         $('#ratelimitalert').hide();

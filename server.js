@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const DOMPurify = require('isomorphic-dompurify');
 require('dotenv').config();
 const { Configuration, OpenAIApi } = require("openai");
+const emojiRegex = require('emoji-regex');
+const emjregex = emojiRegex();
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -15,13 +17,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 const messageCount = {};
 let isowner = false;
 let roomsList = [];
-let resulthate;
-let resultsexual;
-let resultviolence;
-let resultselfharm;
-let resultsexualminors;
-let resulthatethreatening;
-let resultviolencegraphic;
+let roomSettings;
 
 // Define message schema
 const messageSchema = new mongoose.Schema({
@@ -63,7 +59,8 @@ const messageSchema = new mongoose.Schema({
 const roomSchema = new mongoose.Schema({
     room: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     owner: {
         type: String,
@@ -109,6 +106,28 @@ io.on('connection', (socket) => {
             console.log(err);
         });
     // Join room and load messages
+
+    socket.on('room renamed', (newroom, oldroom) => {
+        const sanitizednewroom = DOMPurify.sanitize(newroom);
+        const sanitizedoldroom = DOMPurify.sanitize(oldroom);
+        socket.leave(sanitizedoldroom);
+        socket.join(sanitizednewroom);
+        // Find the new room name and get its settings
+        RoomData.findOne({ room: sanitizednewroom }).then((existingRoom) => {
+            if (existingRoom) {
+                newroomsettings = existingRoom.settings;
+                io.in(sanitizedoldroom).emit('room name changed', sanitizednewroom, newroomsettings);
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+
+    socket.on('change room name from socket', (newroomname) => {
+        socket.leave(socket.room);
+        socket.join(newroomname);
+    });
+
     socket.on('join room', (room, usrname) => {
         const sanitizedroom = DOMPurify.sanitize(room);
         console.log(`${usrname} joined room ${sanitizedroom}`);
@@ -125,7 +144,7 @@ io.on('connection', (socket) => {
                 newRoom.save().then(() => {
                     console.log(`Created room ${sanitizedroom} with owner ${usrname}`);
                     isowner = true;
-                    socket.emit('user connected', usrname, isowner);
+                    socket.emit('user connected', usrname, isowner, newRoom.settings);
                 }).catch((err) => {
                     console.error(err);
                 });
@@ -134,11 +153,11 @@ io.on('connection', (socket) => {
                 if (existingRoom.owner === usrname) {
                     console.log(`${usrname} is the owner of room ${sanitizedroom}`);
                     isowner = true;
-                    socket.emit('user connected', usrname, isowner);
+                    socket.emit('user connected', usrname, isowner, existingRoom.settings);
                 } else {
                     console.log(`${usrname} is not the owner of room ${sanitizedroom}`);
                     isowner = false;
-                    socket.emit('user connected', usrname, isowner);
+                    socket.emit('user connected', usrname, isowner, existingRoom.settings);
                 }
             }
         }).catch((err) => {
@@ -148,6 +167,52 @@ io.on('connection', (socket) => {
         // Load messages for the room
         Message.find({ room: sanitizedroom }).then((messages) => {
             socket.emit('load messages', messages);
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+
+    socket.on('get room settings', (room) => {
+        const sanitizedroom = DOMPurify.sanitize(room);
+        RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+            if (existingRoom) {
+                roomSettings = existingRoom.settings;
+                roomname = existingRoom.room;
+                socket.emit('room settings', roomSettings, roomname);
+                console.log('Room settings sent.');
+                console.log(roomSettings);
+            } else {
+                console.log('Room not found.');
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+
+    socket.on('update room settings', (room, newRoomDescription, newRoomEmoji, newRoomName) => {
+        const sanitizednewdescription = DOMPurify.sanitize(newRoomDescription);
+        const sanitizednewemoji = DOMPurify.sanitize(newRoomEmoji);
+        const sanitizednewname = DOMPurify.sanitize(newRoomName);
+        const sanitizedroom = DOMPurify.sanitize(room);
+        const newroomsettings = {
+            description: sanitizednewdescription,
+            emoji: sanitizednewemoji
+        };
+        if (!sanitizednewname) {
+            sanitizednewname = sanitizedroom;
+        } else {
+            //replace all messages from the old room name to the new room name
+            Message.updateMany({ room: sanitizedroom }, { room: sanitizednewname }).then((messages) => {
+                console.log('Messages updated.');
+            }).catch((err) => {
+                console.error(err);
+            });
+        }
+        RoomData.findOneAndUpdate({ room: sanitizedroom }, { room: sanitizednewname, settings: newroomsettings }, { new: true }).then((existingRoom) => {
+            if (existingRoom) {
+                console.log('Room settings updated.');
+                console.log(existingRoom.settings);
+            }
         }).catch((err) => {
             console.error(err);
         });

@@ -1,45 +1,126 @@
-ul {
-    list-style-type: none;
-    max-width: 1020px;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
+/* Global styles */
 
-body {
+:root {
+    --background-color: #1f1f1f;
+    --text-color: #f5f5f5;
+    --link-color: #6c63ff;
+    --accent-color: #60d1ab;
+    --button-text-color: #1f1f1f;
+  }
+  
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-}
+  }
+  
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.2s ease-out;
+  }
+  
+  a:hover {
+    color: var(--accent-color);
+  }
+  
+  button {
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 4px;
+    color: var(--button-text-color);
+    cursor: pointer;
+    font-size: 16px;
+    height: 33px;
+    padding: 0 8px;
+    font-weight: 600;
+    margin-right: 3px;
+    transition: background-color 0.2s ease-out;
+  }
+  
+  button:hover {
+    background-color: #5df3c1;
+  }
 
-.warning {
-    color: red;
-}
+  ul li {
+    margin-bottom: 4px;
+  }
 
-.word-count-warning {
+  button:last-of-type {
+    margin-right: 0;
+  }
+  
+  input[type="text"],
+  select {
+    background-color: #2e2e2e;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 16px;
+    padding: 0 8px;
+    height: 33px;
+  }
+  
+  textarea {
+    background-color: #2e2e2e;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 16px;
+    padding: 10px;
+    resize: none;
+  }
+  
+  /* Specific styles */
+  
+  ul {
+    list-style-type: none;
+    max-width: 1020px;
+    margin: 0 20px;
+    padding: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .warning {
+    color: #ff4d4d;
+  }
+  
+  .word-count-warning {
     font-weight: bold;
     color: orange;
-}
+  }
 
-#deletebtn {
-    margin-left: 5px;
+  #roomnam {
+    margin-right: 8px;
+  }
+
+  #roomdesc {
+    padding-top: 3.5px;
+    flex: 1;
+  }
+
+  #roomnameanddesc {
+    display: flex;
+  }
+  
+  #deletebtn {
     cursor: pointer;
-}
-
-a {
-    color: blueviolet;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-strong {
+  }
+  
+  strong {
     font-weight: 600;
-}
-
-.highlight {
-    background-color: yellow;
+  }
+  
+  .highlight {
+    padding: 2.2px 5px;
+    border-radius: 3px;
+    background-color: #9b9a95;
     transition: all 0.2s ease-out;
-}
-
-.highlight.remove {
+  }
+  
+  .highlight.remove {
+    padding: 0px;
     background-color: transparent;
-}
+  }

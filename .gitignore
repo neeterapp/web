@@ -1,4 +1,3 @@
 node_modules
-ovwithapi
 .env
-dompurifytest.js
+package-lock.json

@@ -15,8 +15,9 @@
 </head>
 
 <body>
-  <div id="username-popup">
-    <h2>Enter your username and select a Circle:</h2>
+  <div id="username-popup" style="display: none;">
+    <h2>Welcome Back!</h2>
+    <p>Please enter your username and select a Circle.</p>
     <form id="username-form">
       <input id="username-input" type="text" placeholder="Username"></input>
       <select id="room-select"></select>
@@ -27,7 +28,10 @@
   <div id="chat-window" style="display: none;">
     <button id="back-button">Back</button>
     <button id="room-settings">Room Settings</button>
-    <h2>Circle: <span id="current-room"></span></h2>
+    <div id="roomnameanddesc">
+    <h2 id="roomnam"><span id="current-room"></span></h2>
+    <h3 id="roomdesc"><span id="current-room-description"></span></h3>
+    </div>
     <ul id="messages"></ul>
     <form id="message-form">
       <span id="replyingtotext">Replying</span>
@@ -40,6 +44,15 @@
     </form>
     <audio id="notification" src="/notification.mp3"></audio>
   </div>
+  <div id="circlesettings-window" style="display: none;">
+    <button id="circlesettings-back-button">Close Settings</button>
+    <h2>Circle Settings</h2>
+    <form id="circle-settings-form">
+      <input id="circle-name" type="text" placeholder="Circle Name"></input>
+      <input id="circle-description" type="text" placeholder="Circle Description"></input>
+      <input id="circle-emoji" type="text" placeholder="Circle Icon (Emoji)"></input>
+      <button id="circlesettings-save-button">Save</button>
+    </form>
   <script src="index.js"></script>
 </body>
 
