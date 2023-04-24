@@ -34,8 +34,15 @@ backbutton.addEventListener('click', () => {
 const circlesettingsbutton = document.getElementById('room-settings');
 circlesettingsbutton.addEventListener('click', function(event) {
     event.preventDefault();
+    socket.emit('get room settings', currentRoom);
+});
+
+socket.on('room settings', (roomsettingsdata, roomsettingsname) => {
     $('#chat-window').hide();
     $('#circlesettings-window').show();
+    $('#circle-name').val(roomsettingsname);
+    $('#circle-emoji').val(roomsettingsdata.emoji);
+    $('#circle-description').val(roomsettingsdata.description);
 });
 
 const circlesettingsbackbutton = document.getElementById('circlesettings-back-button');

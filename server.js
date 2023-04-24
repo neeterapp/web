@@ -177,7 +177,8 @@ io.on('connection', (socket) => {
         RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
             if (existingRoom) {
                 roomSettings = existingRoom.settings;
-                socket.emit('room settings', roomSettings);
+                roomname = existingRoom.room;
+                socket.emit('room settings', roomSettings, roomname);
                 console.log('Room settings sent.');
                 console.log(roomSettings);
             } else {
