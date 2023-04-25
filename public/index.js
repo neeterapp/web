@@ -42,7 +42,7 @@ socket.on('room settings', (roomsettingsdata, roomsettingsname) => {
     $('#circlesettings-window').show();
     $('#circle-name').val(roomsettingsname);
     $('#circle-emoji').val(roomsettingsdata.emoji);
-    $('#circle-description').val(' | ' + roomsettingsdata.description);
+    $('#circle-description').val(roomsettingsdata.description);
 });
 
 const circlesettingsbackbutton = document.getElementById('circlesettings-back-button');
@@ -61,7 +61,7 @@ circleSettingsSaveButton.addEventListener('click', function (event) {
     if ($('#circle-description').val() !== '') {
         $('#current-room-description').show();
         $('#current-room').text($('#circle-emoji').val() + currentRoom);
-        $('#current-room-description').text(' | ' + $('#circle-description').val());
+        $('#current-room-description').text($('#circle-description').val());
     } else {
         $('#current-room').text($('#circle-emoji').val() + currentRoom);
         $('#current-room-description').hide();
@@ -229,11 +229,11 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
     if (newroomsettings.description) {
         if (newroomsettings.emoji) {
             $('#current-room-description').show();
-            $('#current-room-description').text(' | ' + newroomsettings.description);
+            $('#current-room-description').text(newroomsettings.description);
             $('#current-room').text(newroomsettings.emoji + currentRoom);
         } else {
             $('#current-room-description').show();
-            $('#current-room-description').text(' | ' + newroomsettings.description);
+            $('#current-room-description').text(newroomsettings.description);
             $('#current-room').text(currentRoom);
         }
     } else {
@@ -528,11 +528,11 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
     if (roomsettingsdata.description) {
         if (roomsettingsdata.emoji) {
             $('#current-room-description').show();
-            $('#current-room-description').text(' | ' + roomsettingsdata.description);
+            $('#current-room-description').text(roomsettingsdata.description);
             $('#current-room').text(roomsettingsdata.emoji + currentRoom);
         } else {
             $('#current-room-description').show();
-            $('#current-room-description').text(' | ' + roomsettingsdata.description);
+            $('#current-room-description').text(roomsettingsdata.description);
             $('#current-room').text(currentRoom);
         }
     } else {

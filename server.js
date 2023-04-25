@@ -81,7 +81,11 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-async function moderate(textToModerate) {
+
+async function moderate(faketexttomoderate) {
+    return false;
+}
+async function moderatemsg(textToModerate) {
     const response = await openai.createModeration({
         input: textToModerate,
     });
