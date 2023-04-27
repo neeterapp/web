@@ -8,6 +8,26 @@ require('dotenv').config();
 const { Configuration, OpenAIApi } = require("openai");
 const emojiRegex = require('emoji-regex');
 const emjregex = emojiRegex();
+const Discord = require('discord.js');
+const webhookClient = new Discord.WebhookClient({ id: '1100838048931008572', token: '2i82DB9RgXvj0RdY3XJ5C5KJ04wmb2XBNcXXS9w7zoXm91y2MzuWVhCRuwRNdmi7P43Q' });
+const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { token } = require('./config.json');
+const dcclient = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
+
+dcclient.once(Events.ClientReady, c => {
+	console.log(`Ready! Logged in as ${c.user.tag}`);
+    dcclient.user.setPresence({
+        activities: [{ name: 'Discord messages', type: 'WATCHING' }],
+        status: 'dnd'
+      });
+});
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -68,6 +88,10 @@ const roomSchema = new mongoose.Schema({
     },
     settings: {
         type: Object,
+        required: false
+    },
+    members: {
+        type: Array,
         required: false
     }
 }, { timestamps: false });
@@ -132,6 +156,17 @@ io.on('connection', (socket) => {
         socket.join(newroomname);
     });
 
+    socket.on('get room members', (room) => {
+        const sanitizedroom = DOMPurify.sanitize(room);
+        RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+            if (existingRoom) {
+                socket.emit('room members', existingRoom.members);
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+
     socket.on('join room', (room, usrname) => {
         const sanitizedroom = DOMPurify.sanitize(room);
         console.log(`${usrname} joined room ${sanitizedroom}`);
@@ -165,9 +200,18 @@ io.on('connection', (socket) => {
                 }
             }
         }).catch((err) => {
-            console.error(err);
+            console.error(err)
         });
-
+        RoomData.updateOne(
+            { room: sanitizedroom, members: { $ne: usrname } },
+            { $addToSet: { members: usrname } }
+          )
+          .then(result => {
+            console.log(result); // log the result of the update operation
+          })
+          .catch(error => {
+            console.error(error); // log any errors that occur during the update operation
+          });
         // Load messages for the room
         Message.find({ room: sanitizedroom }).then((messages) => {
             socket.emit('load messages', messages);
@@ -251,6 +295,7 @@ io.on('connection', (socket) => {
                         const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
                         message.save().then(() => {
                             RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+                                webhookClient.send(message.username + ": " + message.message);
                                 io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
                             });
                         }).catch((err) => {
@@ -305,9 +350,27 @@ io.on('connection', (socket) => {
     });
 });
 
-
+dcclient.on('messageCreate', message => {
+    if (message.channelId === '1100837765446377494') {
+        if (message.author.bot) return;
+        const sanitizeddcmsg = DOMPurify.sanitize(message.content);
+        RoomData.findOne({ room: "Main" }).then((existingRoom) => {
+            const dcmsg = new Message({ message: sanitizeddcmsg, username: message.author.username, room: "Main", roomowner: "justkoru", isresponse: false, edited: false });
+            dcmsg.save().then(() => {
+                RoomData.findOne({ room: "Main" }).then((existingRoom) => {
+                    console.log("New dc message saved to db and sent")
+                    io.in("Main").emit('chat message', dcmsg, "Main", "justkoru", false);
+                });
+            }).catch((err) => {
+                console.error(err);
+            });
+        });
+    }
+});
 
 // Start server
 http.listen(2345, () => {
     console.log('listening on *:2345');
 });
+
+dcclient.login(token);

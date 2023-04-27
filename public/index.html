@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-UK">
 
 <head>
   <title>Neeter</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,21 +13,22 @@
     href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="stylesheet" href="index.css" media="screen and (min-width: 768px)">
+    <link rel="stylesheet" href="index-mobile.css" media="screen and (max-width: 767px)">
 </head>
 
 <body>
-  <div id="username-popup" style="display: none;">
+  <div id="username-popup">
     <h2>Welcome Back!</h2>
     <p>Please enter your username and select a Circle.</p>
     <form id="username-form">
       <input id="username-input" type="text" placeholder="Username"></input>
       <select id="room-select"></select>
       <input id="create-room-name" type="text" placeholder="Circle Name"></input>
-      <button>Submit</button>
+      <button type="submit">Submit</button>
     </form>
   </div>
-  <div id="chat-window" style="display: none;">
+  <div id="chat-window">
     <button id="back-button">Back</button>
     <button id="room-settings">Room Settings</button>
     <div id="roomnameanddesc">
@@ -36,11 +39,11 @@
     <form id="message-form">
       <span id="replyingtotext">Replying</span>
       <span id="editingmsgtext">Editing a message </span>
-      <button id="cancelreplyoredit">Cancel</button>
+      <button type="button" id="cancelreplyoredit">Cancel</button>
       <input id="message" type="text" placeholder="Type a message..." maxlength="2000">
       <span id="char-count"></span>
       <span id="ratelimitalert">Whoa! You're going too fast! Slow down a bit and try again.</span>
-      <button id="sendbtn">
+      <button type="submit" id="sendbtn">
         <svg id="Group_10235" data-name="Group 10235" xmlns="http://www.w3.org/2000/svg" width="18" height="13" viewBox="0 0 173.64 149.826">
           <path id="Path_8370" data-name="Path 8370" d="M163.3,94.537,23.2,36.4A16.767,16.767,0,0,0,.529,56.035L13,104.936H74.053a5.087,5.087,0,0,1,0,10.175H13l-12.47,48.9A16.768,16.768,0,0,0,23.2,183.643l140.1-58.132a16.767,16.767,0,0,0,0-30.974Z" transform="translate(-0.001 -35.111)"/>
         </svg>        
@@ -48,14 +51,14 @@
     </form>
     <audio id="notification" src="/notification.mp3"></audio>
   </div>
-  <div id="circlesettings-window" style="display: none;">
+  <div id="circlesettings-window">
     <button id="circlesettings-back-button">Close Settings</button>
     <h2>Circle Settings</h2>
     <form id="circle-settings-form">
       <input id="circle-name" type="text" placeholder="Circle Name"></input>
       <input id="circle-description" type="text" placeholder="Circle Description"></input>
       <input id="circle-emoji" type="text" placeholder="Circle Icon (Emoji)"></input>
-      <button id="circlesettings-save-button">Save</button>
+      <button type="button" id="circlesettings-save-button">Save</button>
     </form>
   <script src="index.js"></script>
 </body>

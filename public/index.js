@@ -253,11 +253,19 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
     document.title = `Neeter - ${currentRoom}`
     socket.emit('change room name from socket', currentRoom);
 });
+
+socket.on('room members', (roommembers) => {
+    console.log(roommembers);
+});
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
         editedtext = '';
         if (msg.edited === true) {
             editedtext = '(edited) ';
+        }
+        if (msg.message.includes('@') && msg.message.indexOf('@') < msg.message.length - 2) {
+            console.log("Message contains @");
+            socket.emit('get room members', currentRoom);
         }
         if (msg.username !== username) {
             if (msgisresponse === true) {
@@ -396,6 +404,10 @@ goToMsg = (msgID) => {
 socket.on('load messages', (messages) => {
     messages.forEach((msg) => {
         if (msg.room === currentRoom) {
+            if (msg.message.includes('@') && msg.message.indexOf('@') < msg.message.length - 2) {
+                console.log("Message contains @");
+                socket.emit('get room members', currentRoom);
+            }
             if (msg.edited === true) {
                 editedtext = '(edited) ';
             } else {

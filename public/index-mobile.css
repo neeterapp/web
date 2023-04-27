@@ -1,4 +1,4 @@
-@media screen and (min-width: 768px) {
+@media screen and (max-width: 767px) {
 
 /* Global styles */
 
@@ -77,9 +77,13 @@
   /* Specific styles */
   
   ul {
+    -webkit-user-select: none;
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none;
+    user-select: none;
     list-style-type: none;
-    max-width: 1020px;
-    margin: 0 20px;
+    max-width: 708px;
+    margin: 0 6px;
     padding: 0;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -94,18 +98,6 @@
     color: orange;
   }
 
-  #username-popup {
-    display: none;
-  }
-
-  #chat-window {
-    display: none;
-  }
-
-  #circlesettings-window {
-    display: none;
-  }
-
   #roomnam {
     margin-right: 8px;
   }
@@ -117,6 +109,18 @@
 
   #roomnameanddesc {
     display: flex;
+  }
+
+  #username-popup {
+    display: none;
+  }
+
+  #chat-window {
+    display: none;
+  }
+
+  #circlesettings-window {
+    display: none;
   }
   
   #deletebtn {
