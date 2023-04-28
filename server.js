@@ -9,7 +9,7 @@ const { Configuration, OpenAIApi } = require("openai");
 const emojiRegex = require('emoji-regex');
 const emjregex = emojiRegex();
 const Discord = require('discord.js');
-const webhookClient = new Discord.WebhookClient({ id: '1100838048931008572', token: '2i82DB9RgXvj0RdY3XJ5C5KJ04wmb2XBNcXXS9w7zoXm91y2MzuWVhCRuwRNdmi7P43Q' });
+const webhookClient = new Discord.WebhookClient({ id: process.env.DISCORD_WEBHOOK_ID, token: process.env.DISCORD_WEBHOOK_TOKEN });
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 const dcclient = new Client({
@@ -38,6 +38,31 @@ const messageCount = {};
 let isowner = false;
 let roomsList = [];
 let roomSettings;
+
+// Define hubs schema
+const hubSchema = new mongoose.Schema({
+    hubname: {
+        type: String,
+        required: true
+    },
+    owner: {
+        type: String,
+        required: true
+    },
+    members: {
+        type: Array,
+        required: false
+    },
+    settings: {
+        type: Object,
+        required: false
+    },
+    rooms: {
+        type: Array,
+        required: false
+    }
+}, { timestamps: false });
+
 
 // Define message schema
 const messageSchema = new mongoose.Schema({
@@ -96,6 +121,7 @@ const roomSchema = new mongoose.Schema({
     }
 }, { timestamps: false });
 
+const Hub = mongoose.model('Hub', hubSchema);
 const Message = mongoose.model('Message', messageSchema);
 const RoomData = mongoose.model('Room', roomSchema);
 
