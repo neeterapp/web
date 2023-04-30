@@ -4,6 +4,7 @@ $('#create-room-name').hide();
 $('#replyingtotext').hide();
 $('#editingmsgtext').hide();
 $('#cancelreplyoredit').hide();
+$('#circle-selector').hide();
 $('#username-popup').show();
 const socket = io();
 const notificationSound = document.getElementById('notification');
@@ -20,6 +21,7 @@ if (urlroom && urlusername) {
     username = urlusername;
     currentRoom = urlroom;
     $('#username-popup').hide();
+    $('#circle-selector').show();
     $('#chat-window').show();
     socket.emit('join room', urlroom, urlusername);
     $('#current-room').text(urlroom);
@@ -113,25 +115,24 @@ messageinput.addEventListener('keydown', function (event) {
     }
 });
 
-$('#username-form').submit(() => {
-    if ($('#username-input').val() === '' || ($('#room-select').val() === 'Create Circle' && $('#create-room-name').val() === '')) {
-    } else {
-        username = $('#username-input').val();
-        currentRoom = $('#room-select').val();
-        $('#username-popup').hide();
-        $('#chat-window').show();
-        const dropdown = document.getElementById('room-select');
-        if (dropdown.value === "Create Circle") {
-            currentRoom = $('#create-room-name').val();
-        }
-        $('#current-room').text(currentRoom);
-        const urlParams = new URLSearchParams(window.location.search);
+/* Onclick room selector
+    currentRoom = room
+    $('#current-room').text(currentRoom)
+    const urlParams = new URLSearchParams(window.location.search);
         urlParams.set('room', currentRoom);
         urlParams.set('username', username);
         const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
         window.history.pushState({}, '', newUrl);
         socket.emit('join room', currentRoom, username);
         document.title = `Neeter - ${currentRoom}`
+*/
+
+$('#username-form').submit(() => {
+    if ($('#username-input').val() === '') {
+    } else {
+        username = $('#username-input').val();
+        $('#username-popup').hide();
+        $('#circle-popup').show();
     }
     return false;
 });
@@ -201,27 +202,53 @@ socket.on('msgratelimit', (msg, senderusername, room) => {
 
 socket.on('rooms list', (roomslist) => {
     allroomsList = roomslist;
-    const dropdown = document.getElementById('room-select');
+    const grid = document.querySelector('.circle-grid');
+    grid.innerHTML = '';
+    const tippyInstances = [];
     allroomsList.forEach(roomname => {
-        const option = document.createElement('option');
-        option.value = roomname;
-        option.text = roomname;
-        dropdown.add(option);
+        const li = document.createElement('li');
+        const div = document.createElement('div');
+        const img = document.createElement('img');
+        img.src = "https://i.ibb.co/vvC7qqP/Circle.png";
+        img.alt = roomname;
+        div.classList.add('circle');
+        div.appendChild(img);
+        li.appendChild(div);
+        grid.appendChild(li);
+
+        const instance = tippy(div, {
+            content: truncateText(roomname, 40),
+            theme: 'light',
+            placement: 'bottom',
+            arrow: false,
+          });
+          tippyInstances.push(instance);
     });
-    const option = document.createElement('option');
-    option.value = "Create Circle";
-    option.text = "Create Circle";
-    dropdown.add(option);
-    dropdown.value = "Main";
-    dropdown.addEventListener('change', (event) => {
-        const selectedValue = event.target.value;
-        if (selectedValue === "Create Circle") {
-            $('#create-room-name').show();
-        } else {
-            $('#create-room-name').hide();
-        }
-    });
+    tippy.createSingleton(tippyInstances, {
+        placement: 'bottom',
+        theme: 'light',
+        moveTransition: 'transform 0.2s ease-out',
+        arrow: false,
+        appendTo: () => document.body,
+      });
 });
+
+function convertMarkdownToHTML(markdown) {
+    const converter = new showdown.Converter({breaks: true, simpleLineBreaks: true});
+    const html = converter.makeHtml(markdown);
+    const parser = new DOMParser();
+    const parsedHtml = parser.parseFromString(html, 'text/html');
+    const innerHtml = parsedHtml.body.firstChild.innerHTML;
+    return innerHtml;
+  }
+
+function truncateText(text, maxLength) {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + '...';
+    } else {
+      return text;
+    }
+  }
 
 socket.on('room name changed', (newchangedroomname, newroomsettings) => {
     console.log('Name changed to ' + newchangedroomname);
@@ -259,6 +286,7 @@ socket.on('room members', (roommembers) => {
 });
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
+        const htmlmdmsg = convertMarkdownToHTML(msg.message);
         editedtext = '';
         if (msg.edited === true) {
             editedtext = '(edited) ';
@@ -269,7 +297,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
         }
         if (msg.username !== username) {
             if (msgisresponse === true) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${msg.message} ${editedtext}`);
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`);
                 const replyButton = $('<button>').attr('id', `replybtn`).text('Reply');
                 replyButton.click(() => {
                     isaresponse = true;
@@ -292,7 +320,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                 $('#messages').append(li);
                 notificationSound.play();
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${msg.message} ${editedtext}`);
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${htmlmdmsg} ${editedtext}`);
                 const replyButton = $('<button>').attr('id', `replybtn`).text('Reply');
                 replyButton.click(() => {
                     isaresponse = true;
@@ -317,7 +345,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
             }
         } else if (msg.username === username || roominfo === username) {
             if (msgisresponse === true) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${msg.message} ${editedtext}`);
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`);
                 const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
                 delButton.click(() => {
                     socket.emit('delete message', msg, msg.username);
@@ -351,7 +379,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                 $('#messages').append(li);
                 $('#ratelimitalert').hide();
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${msg.message} ${editedtext}`);
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${htmlmdmsg} ${editedtext}`);
                 const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
                 delButton.click(() => {
                     socket.emit('delete message', msg, msg.username);
@@ -404,6 +432,7 @@ goToMsg = (msgID) => {
 socket.on('load messages', (messages) => {
     messages.forEach((msg) => {
         if (msg.room === currentRoom) {
+            const htmlmdmsg = convertMarkdownToHTML(msg.message);
             if (msg.message.includes('@') && msg.message.indexOf('@') < msg.message.length - 2) {
                 console.log("Message contains @");
                 socket.emit('get room members', currentRoom);
@@ -415,7 +444,7 @@ socket.on('load messages', (messages) => {
             };
             if (msg.username !== username) {
                 if (msg.isresponse === true) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${msg.message} ${editedtext}`);
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`);
                     $('#messages').append(li);
                     if (msg.roomowner === username) {
                         const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
@@ -437,7 +466,7 @@ socket.on('load messages', (messages) => {
                     });
                     li.append(replyButton);
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${msg.message} ${editedtext}`);
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${htmlmdmsg} ${editedtext}`);
                     $('#messages').append(li);
                     if (msg.roomowner === username) {
                         const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
@@ -461,7 +490,7 @@ socket.on('load messages', (messages) => {
                 }
             } else if (msg.username === username) {
                 if (msg.isresponse === true) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${msg.message} ${editedtext}`);
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username} (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`);
                     const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
                     delButton.click(() => {
                         socket.emit('delete message', msg, username);
@@ -492,7 +521,7 @@ socket.on('load messages', (messages) => {
                     li.append(editButton);
                     $('#messages').append(li);
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${msg.message} ${editedtext}`);
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(`<b>${msg.username}:</b> ${htmlmdmsg} ${editedtext}`);
                     const delButton = $('<button>').attr('id', `deletebtn`).text('Delete');
                     delButton.click(() => {
                         socket.emit('delete message', msg, username);
