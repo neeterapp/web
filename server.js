@@ -125,7 +125,7 @@ const Hub = mongoose.model('Hub', hubSchema);
 const Message = mongoose.model('Message', messageSchema);
 const RoomData = mongoose.model('Room', roomSchema);
 
-app.use(express.static('public'));
+app.use(express.static('horizon'));
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
