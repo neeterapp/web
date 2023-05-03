@@ -115,24 +115,22 @@ messageinput.addEventListener('keydown', function (event) {
     }
 });
 
-/* Onclick room selector
-    currentRoom = room
-    $('#current-room').text(currentRoom)
-    const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('room', currentRoom);
-        urlParams.set('username', username);
-        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-        window.history.pushState({}, '', newUrl);
-        socket.emit('join room', currentRoom, username);
-        document.title = `Neeter - ${currentRoom}`
-*/
-
 $('#username-form').submit(() => {
     if ($('#username-input').val() === '') {
     } else {
         username = $('#username-input').val();
         $('#username-popup').hide();
-        $('#circle-popup').show();
+        currentRoom = "Main";
+        $('#circle-selector').show();
+        $('#chat-window').show();
+        socket.emit('join room', currentRoom, username);
+        $('#current-room').text(currentRoom);
+        document.title = `Neeter - ${currentRoom}`
+        const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('room', currentRoom);
+            urlParams.set('username', username);
+            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+            window.history.pushState({}, '', newUrl);
     }
     return false;
 });
@@ -215,7 +213,19 @@ socket.on('rooms list', (roomslist) => {
         div.appendChild(img);
         li.appendChild(div);
         grid.appendChild(li);
-
+        img.addEventListener('click', (event) => {
+            event.preventDefault();
+            $('#messages').empty();
+            currentRoom = roomname;
+            $('#current-room').text(currentRoom);
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('room', currentRoom);
+            urlParams.set('username', username);
+            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+            window.history.pushState({}, '', newUrl);
+            socket.emit('join room', currentRoom, username);
+            document.title = `Neeter - ${currentRoom}`;
+        });
         const instance = tippy(div, {
             content: truncateText(roomname, 40),
             theme: 'light',
@@ -555,6 +565,11 @@ socket.on('load messages', (messages) => {
             }
 
         }
+    });
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        left: 0,
+        behavior: 'smooth'
     });
 });
 

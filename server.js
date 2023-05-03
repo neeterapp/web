@@ -32,7 +32,7 @@ dcclient.once(Events.ClientReady, c => {
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on('error', console.error.bind(console, 'Database connection error:'));
 
 const messageCount = {};
 let isowner = false;
@@ -118,6 +118,10 @@ const roomSchema = new mongoose.Schema({
     members: {
         type: Array,
         required: false
+    },
+    hub: {
+        type: String,
+        required: true
     }
 }, { timestamps: false });
 
@@ -204,7 +208,9 @@ io.on('connection', (socket) => {
                 const newRoom = new RoomData({
                     room: sanitizedroom,
                     owner: usrname,
-                    settings: { "test": "test" }
+                    settings: { "wow": "easter egg!" },
+                    members: [usrname],
+                    hub: "Hangout"
                 });
                 newRoom.save().then(() => {
                     console.log(`Created room ${sanitizedroom} with owner ${usrname}`);
