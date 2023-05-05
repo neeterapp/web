@@ -225,6 +225,12 @@ socket.on('rooms list', (roomslist) => {
             window.history.pushState({}, '', newUrl);
             socket.emit('join room', currentRoom, username);
             document.title = `Neeter - ${currentRoom}`;
+            // select the image and deselect all other image in the grid
+            const selected = document.querySelector('.selected');
+            if (selected) {
+                selected.classList.remove('selected');
+            }
+            img.classList.add('selected');
         });
         const instance = tippy(div, {
             content: truncateText(roomname, 40),
