@@ -149,11 +149,11 @@
   }
 
   .circle-grid li img:hover {
-    box-shadow: 0 0 10px gray;
+    box-shadow: 0 0 15px gray;
   }
 
   .circle-grid li img.selected {
-    box-shadow: 0 0 10px gray;
+    box-shadow: 0 0 15px #808080;
   }
 
   .circle-grid li .circle {

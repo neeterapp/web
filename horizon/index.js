@@ -207,7 +207,8 @@ socket.on('rooms list', (roomslist) => {
         const li = document.createElement('li');
         const div = document.createElement('div');
         const img = document.createElement('img');
-        img.src = "https://i.ibb.co/vvC7qqP/Circle.png";
+        truncatedroomname = truncateText(roomname, 40);
+        img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
         img.alt = roomname;
         div.classList.add('circle');
         div.appendChild(img);
