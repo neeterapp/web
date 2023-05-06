@@ -17,6 +17,8 @@ const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
 const urlusername = urlParams.get('username');
 
+let circlesLoadedSuccessfully
+
 if (urlroom && urlusername) {
     username = urlusername;
     currentRoom = urlroom;
@@ -127,10 +129,10 @@ $('#username-form').submit(() => {
         $('#current-room').text(currentRoom);
         document.title = `Neeter - ${currentRoom}`
         const urlParams = new URLSearchParams(window.location.search);
-            urlParams.set('room', currentRoom);
-            urlParams.set('username', username);
-            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-            window.history.pushState({}, '', newUrl);
+        urlParams.set('room', currentRoom);
+        urlParams.set('username', username);
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
     }
     return false;
 });
@@ -210,6 +212,7 @@ socket.on('rooms list', (roomslist) => {
         truncatedroomname = truncateText(roomname, 40);
         img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
         img.alt = roomname;
+        img.id = roomname;
         div.classList.add('circle');
         div.appendChild(img);
         li.appendChild(div);
@@ -238,8 +241,8 @@ socket.on('rooms list', (roomslist) => {
             theme: 'light',
             placement: 'bottom',
             arrow: false,
-          });
-          tippyInstances.push(instance);
+        });
+        tippyInstances.push(instance);
     });
     tippy.createSingleton(tippyInstances, {
         placement: 'bottom',
@@ -247,25 +250,27 @@ socket.on('rooms list', (roomslist) => {
         moveTransition: 'transform 0.2s ease-out',
         arrow: false,
         appendTo: () => document.body,
-      });
+    });
+    const selectedCircle = document.getElementById(currentRoom);
+    selectedCircle.classList.add('selected');
 });
 
 function convertMarkdownToHTML(markdown) {
-    const converter = new showdown.Converter({breaks: true, simpleLineBreaks: true});
+    const converter = new showdown.Converter({ breaks: true, simpleLineBreaks: true });
     const html = converter.makeHtml(markdown);
     const parser = new DOMParser();
     const parsedHtml = parser.parseFromString(html, 'text/html');
     const innerHtml = parsedHtml.body.firstChild.innerHTML;
     return innerHtml;
-  }
+}
 
 function truncateText(text, maxLength) {
     if (text.length > maxLength) {
-      return text.slice(0, maxLength) + '...';
+        return text.slice(0, maxLength) + '...';
     } else {
-      return text;
+        return text;
     }
-  }
+}
 
 socket.on('room name changed', (newchangedroomname, newroomsettings) => {
     console.log('Name changed to ' + newchangedroomname);
