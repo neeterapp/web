@@ -113,8 +113,29 @@
     flex: 1;
   }
 
-  #deletebtn {
+  #deletebtnoriginal {
     cursor: pointer;
+    display: none;
+  }
+
+  #replybtnoriginal {
+    cursor: pointer;
+    display: none;
+  }
+
+  #editbtnoriginal {
+    cursor: pointer;
+    display: none;
+  }
+
+  .showing {
+    display: inline-block;
+    transition: all 0.2s ease-out;
+  }
+
+  .notshowing {
+    display: none;
+    transition: all 0.2s ease-out;
   }
 
   strong {
@@ -257,6 +278,18 @@
   body {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  #secret-experiments-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    padding: 20px;
+    background-color: #3b3b3b;
+    border-radius: 10px;
   }
 
 }
