@@ -76,7 +76,7 @@
 
   ul {
     list-style-type: none;
-    max-width: 1020px;
+    max-width: calc(100vw - 120px);
     margin: 0 20px;
     padding: 0;
     word-wrap: break-word;
@@ -126,6 +126,15 @@
   #editbtnoriginal {
     cursor: pointer;
     display: none;
+  }
+
+  #editbtn {
+  }
+
+  #deletebtn {
+  }
+
+  #replybtn {
   }
 
   .showing {

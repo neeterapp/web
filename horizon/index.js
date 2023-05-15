@@ -843,6 +843,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
         $(`#msg-${messageEditingID}`).replaceWith(li);
         $('#ratelimitalert').hide();
         li.append(delButton);
+        $('#messages').append(li);
         $(`#msg-${newMessage._id} #replybtn`).addClass('notshowing');
         $(`#msg-${newMessage._id} #deletebtn`).addClass('notshowing');
         $(`#msg-${newMessage._id} #editbtn`).addClass('notshowing');
@@ -901,7 +902,6 @@ socket.on('message edited', (messageEditingID, newMessage) => {
         li.append(delButton);
         $(`#msg-${messageEditingID}`).replaceWith(li);
         $('#ratelimitalert').hide();
-
         $(`#msg-${newMessage._id} #replybtn`).addClass('notshowing');
         $(`#msg-${newMessage._id} #deletebtn`).addClass('notshowing');
         $(`#msg-${newMessage._id} #editbtn`).addClass('notshowing');
