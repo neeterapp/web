@@ -11,24 +11,80 @@ const notificationSound = document.getElementById('notification');
 let username = '';
 let currentRoom = '';
 let allroomsList = [];
-
+let truncatedroomname
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
 // grab the room name and username from the URL
 const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
 const urlusername = urlParams.get('username');
 const showexperimentspopup = urlParams.get('experimentsenabled');
-let circlesLoadedSuccessfully
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVqlFta6rULlWiiYu1yDDs9zsLH1fGddU",
+    authDomain: "i3e-5d95a.firebaseapp.com",
+    databaseURL: "https://i3e-5d95a.firebaseio.com",
+    projectId: "i3e-5d95a",
+    storageBucket: "i3e-5d95a.appspot.com",
+    messagingSenderId: "229507724277",
+    appId: "1:229507724277:web:deb1eea04d486f18f0e6bc"
+  };
+  const app = initializeApp(firebaseConfig);
 
-if (urlroom && urlusername) {
-    username = urlusername;
-    currentRoom = urlroom;
+socket.on('user data', (userdata) => {
+    if (urlroom) {
+        currentRoom = urlroom;
+    } else {
+        currentRoom = "Main";
+    }
+    username = userdata.username;
     $('#username-popup').hide();
     $('#circle-selector').show();
     $('#chat-window').show();
-    socket.emit('join room', urlroom, urlusername);
-    $('#current-room').text(urlroom);
+    socket.emit('join room', currentRoom, username);
+    $('#current-room').text(currentRoom);
     document.title = `Neeter - ${currentRoom}`
-}
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('room', currentRoom);
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.pushState({}, '', newUrl);
+});
+
+const registerForm = document.getElementById('register-form');
+const loginForm = document.getElementById('login-form');
+registerForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const email = document.getElementById('reg-email-input').value;
+    const password = document.getElementById('reg-password-input').value;
+    const username = document.getElementById('reg-username-input').value;
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            socket.emit('register user', user.uid, username);
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode);
+            console.log(errorMessage);
+        });
+});
+loginForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const email = document.getElementById('login-email-input').value;
+    const password = document.getElementById('login-password-input').value;
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            socket.emit('user data', user.uid);
+        }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode);
+            console.log(errorMessage);
+        });
+});
 
 const backbutton = document.getElementById('back-button');
 backbutton.addEventListener('click', () => {
@@ -40,6 +96,13 @@ circlesettingsbutton.addEventListener('click', function (event) {
     event.preventDefault();
     socket.emit('get room settings', currentRoom);
 });
+
+const fireuserdata = getAuth()
+console.log(fireuserdata)
+if (fireuserdata) {
+    console.log(fireuserdata.uid)
+    socket.emit('user data', fireuserdata.uid);
+}
 
 socket.on('room settings', (roomsettingsdata, roomsettingsname) => {
     $('#chat-window').hide();
@@ -115,26 +178,6 @@ messageinput.addEventListener('keydown', function (event) {
         event.preventDefault();
         sendoreditbutton.click();
     }
-});
-
-$('#username-form').submit(() => {
-    if ($('#username-input').val() === '') {
-    } else {
-        username = $('#username-input').val();
-        $('#username-popup').hide();
-        currentRoom = "Main";
-        $('#circle-selector').show();
-        $('#chat-window').show();
-        socket.emit('join room', currentRoom, username);
-        $('#current-room').text(currentRoom);
-        document.title = `Neeter - ${currentRoom}`
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('room', currentRoom);
-        urlParams.set('username', username);
-        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-        window.history.pushState({}, '', newUrl);
-    }
-    return false;
 });
 
 $('#message-form').submit(() => {
@@ -251,8 +294,10 @@ socket.on('rooms list', (roomslist) => {
         arrow: false,
         appendTo: () => document.body,
     });
-    const selectedCircle = document.getElementById(currentRoom);
-    selectedCircle.classList.add('selected');
+    if (currentRoom) {
+        const selectedCircle = document.getElementById(currentRoom);
+        selectedCircle.classList.add('selected');
+    }
 });
 
 function convertMarkdownToHTML(markdown) {
@@ -306,6 +351,19 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
 socket.on('room members', (roommembers) => {
     console.log(roommembers);
 });
+
+function goToMsg(msgID) {
+    const msg = document.getElementById(`msg-${msgID}`);
+    msg.scrollIntoView({ behavior: 'smooth' });
+    msg.classList.add('highlight');
+    setTimeout(() => {
+        msg.classList.add('remove');
+        setTimeout(() => {
+            msg.classList.remove('highlight', 'remove');
+        }, 250);
+    }, 1000);
+}
+
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
         const htmlmdmsg = convertMarkdownToHTML(msg.message);
@@ -535,18 +593,6 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
         }
     }
 });
-
-goToMsg = (msgID) => {
-    const msg = document.getElementById(`msg-${msgID}`);
-    msg.scrollIntoView({ behavior: 'smooth' });
-    msg.classList.add('highlight');
-    setTimeout(() => {
-        msg.classList.add('remove');
-        setTimeout(() => {
-            msg.classList.remove('highlight', 'remove');
-        }, 250);
-    }, 1000);
-}
 
 socket.on('load messages', (messages) => {
     messages.forEach((msg) => {

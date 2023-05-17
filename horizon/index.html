@@ -21,10 +21,19 @@
   <div id="username-popup">
     <h2>Welcome Back!</h2>
     <p>Please enter your username to log in.</p>
-    <form id="username-form">
-      <input id="username-input" type="text" placeholder="Username"></input>
+    <div id="username-form">
+      <form id="register-form">
+        <input id="reg-email-input" type="text" placeholder="Email"></input>
+        <input id="reg-username-input" type="text" placeholder="Username"></input>
+        <input id="reg-password-input" type="password" placeholder="Password"></input>
+        <button type="submit">Sign Up</button>
+      </form>
+      <form id="login-form">
+      <input id="login-email-input" type="text" placeholder="Email"></input>
+      <input id="login-password-input" type="password" placeholder="Password"></input>
       <button type="submit">Login</button>
-    </form>
+      </form>
+    </div>
   </div>
   <div id="chat-window">
     <div id="room-settings-and-back">
@@ -93,7 +102,7 @@
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
     <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
-    <script src="index.js"></script>
+    <script type="module" src="index.js"></script>
   </div>
   <div id="secret-experiments-popup">
     <h2>Secret Experiments</h2>

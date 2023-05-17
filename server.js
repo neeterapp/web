@@ -63,7 +63,26 @@ const hubSchema = new mongoose.Schema({
     }
 }, { timestamps: false });
 
-
+const userSchema = new mongoose.Schema({
+    userid: {
+        type: String,
+        required: true
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        maxlength: 32
+    },
+    rooms: {
+        type: Array,
+        required: false
+    },
+    hubs: {
+        type: Array,
+        required: false
+    }
+}, { timestamps: false });
 // Define message schema
 const messageSchema = new mongoose.Schema({
     message: {
@@ -128,6 +147,7 @@ const roomSchema = new mongoose.Schema({
 const Hub = mongoose.model('Hub', hubSchema);
 const Message = mongoose.model('Message', messageSchema);
 const RoomData = mongoose.model('Room', roomSchema);
+const UserData = mongoose.model('User', userSchema);
 
 app.use(express.static('horizon'));
 
@@ -163,8 +183,42 @@ io.on('connection', (socket) => {
         .catch((err) => {
             console.log(err);
         });
-    // Join room and load messages
+    socket.on('register user', (userid, username) => {
+        const sanitizeduserid = DOMPurify.sanitize(userid);
+        const sanitizedusername = DOMPurify.sanitize(username);
+        console.log(`Registering user ${sanitizedusername} with id ${sanitizeduserid}`);
+        const newUser = new UserData({
+            userid: sanitizeduserid,
+            username: sanitizedusername,
+            rooms: [],
+            hubs: []
+        });
+        newUser.save().then((savedUserData) => {
+            console.log(`User ${sanitizedusername} registered.`);
+            socket.emit('user data', savedUserData);
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
 
+    socket.on('user data', (usrid) => {
+        const sanitizedusrid = DOMPurify.sanitize(usrid);
+        console.log(`User id: ${sanitizedusrid}`);
+        // search for the user id on the users database and return the user data:
+        console.log('getting data...');
+        UserData.findOne({ userid: sanitizedusrid }).then((existingUser) => {
+            if (existingUser) {
+                console.log('User found.');
+                console.log(existingUser);
+                socket.emit('user data', existingUser);
+            } else {
+                console.log('User not found.');
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
+        
+    });
     socket.on('room renamed', (newroom, oldroom) => {
         const sanitizednewroom = DOMPurify.sanitize(newroom);
         const sanitizedoldroom = DOMPurify.sanitize(oldroom);
