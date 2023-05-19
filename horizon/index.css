@@ -62,6 +62,16 @@
     height: 33px;
   }
 
+  input[type="password"] {
+    background-color: #2e2e2e;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 16px;
+    padding: 0 8px;
+    height: 33px;
+  }
+
   textarea {
     background-color: #2e2e2e;
     border: none;

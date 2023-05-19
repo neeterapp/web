@@ -13,7 +13,7 @@ let currentRoom = '';
 let allroomsList = [];
 let truncatedroomname
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
+import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
 // grab the room name and username from the URL
 const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
@@ -57,6 +57,8 @@ registerForm.addEventListener('submit', (event) => {
     const password = document.getElementById('reg-password-input').value;
     const username = document.getElementById('reg-username-input').value;
     const auth = getAuth();
+    setPersistence(auth, browserSessionPersistence)
+    .then(() => {
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
@@ -68,12 +70,21 @@ registerForm.addEventListener('submit', (event) => {
             console.log(errorCode);
             console.log(errorMessage);
         });
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+    });
 });
 loginForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const email = document.getElementById('login-email-input').value;
     const password = document.getElementById('login-password-input').value;
     const auth = getAuth();
+    setPersistence(auth, browserSessionPersistence)
+    .then(() => {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
@@ -84,11 +95,21 @@ loginForm.addEventListener('submit', (event) => {
             console.log(errorCode);
             console.log(errorMessage);
         });
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+    });
 });
 
 const backbutton = document.getElementById('back-button');
 backbutton.addEventListener('click', () => {
-    window.location.href = '/';
+    const auth = getAuth();
+    auth.signOut().then(() => {
+        location.href = '/';
+    });
 });
 
 const circlesettingsbutton = document.getElementById('room-settings');
@@ -97,12 +118,12 @@ circlesettingsbutton.addEventListener('click', function (event) {
     socket.emit('get room settings', currentRoom);
 });
 
-const fireuserdata = getAuth()
-console.log(fireuserdata)
-if (fireuserdata) {
-    console.log(fireuserdata.uid)
-    socket.emit('user data', fireuserdata.uid);
-}
+getAuth().onAuthStateChanged((user) => {
+    if (user) {
+      socket.emit('user data', user.uid);
+    } else {
+    }
+  }, { once: true });
 
 socket.on('room settings', (roomsettingsdata, roomsettingsname) => {
     $('#chat-window').hide();
