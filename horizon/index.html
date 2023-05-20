@@ -20,18 +20,22 @@
 <body>
   <div id="username-popup">
     <h2>Welcome Back!</h2>
-    <p>Please enter your username to log in.</p>
+    <p>Please log in/register.</p>
     <div id="username-form">
+      <button id="register-button">Register</button>
+      <button id="login-button">Login</button>
       <form id="register-form">
         <input id="reg-email-input" type="text" placeholder="Email"></input>
         <input id="reg-username-input" type="text" placeholder="Username"></input>
         <input id="reg-password-input" type="password" placeholder="Password"></input>
         <button type="submit">Sign Up</button>
+        <button type="button" id="cancel-register-button">Log In Instead</button>
       </form>
       <form id="login-form">
       <input id="login-email-input" type="text" placeholder="Email"></input>
       <input id="login-password-input" type="password" placeholder="Password"></input>
       <button type="submit">Login</button>
+      <button type="button" id="cancel-login-button">Register Instead</button>
       </form>
     </div>
   </div>

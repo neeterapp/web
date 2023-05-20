@@ -51,6 +51,11 @@
     margin-right: 0;
   }
 
+  #register-form,
+  #login-form {
+    display: none;
+  }
+
   input[type="text"],
   select {
     background-color: #2e2e2e;

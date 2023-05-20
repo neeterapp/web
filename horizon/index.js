@@ -47,6 +47,35 @@ socket.on('user data', (userdata) => {
     urlParams.set('room', currentRoom);
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({}, '', newUrl);
+    const selectedCircle = document.getElementById(currentRoom);
+    selectedCircle.classList.add('selected');
+});
+
+const showRegisterformButton = document.getElementById('register-button');
+const showLoginformButton = document.getElementById('login-button');
+const cancelLoginButton = document.getElementById('cancel-login-button');
+const cancelRegisterButton = document.getElementById('cancel-register-button');
+
+cancelLoginButton.addEventListener('click', () => {
+    $('#login-form').hide();
+    $('#register-form').show();
+});
+
+cancelRegisterButton.addEventListener('click', () => {
+    $('#register-form').hide();
+    $('#login-form').show();
+});
+
+showRegisterformButton.addEventListener('click', () => {
+    $('#login-button').hide();
+    $('#register-button').hide();
+    $('#register-form').show();
+});
+
+showLoginformButton.addEventListener('click', () => {
+    $('#login-button').hide();
+    $('#register-button').hide();
+    $('#login-form').show();
 });
 
 const registerForm = document.getElementById('register-form');
