@@ -12,7 +12,6 @@ const Discord = require('discord.js');
 const webhookClient = new Discord.WebhookClient({ id: process.env.DISCORD_WEBHOOK_ID, token: process.env.DISCORD_WEBHOOK_TOKEN });
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
-const ngrokenabled = true;
 const dcclient = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -458,13 +457,5 @@ dcclient.on('messageCreate', message => {
 http.listen(2345, () => {
     console.log('listening on *:2345');
 });
-
-if (ngrokenabled) {
-const ngrok = require('ngrok');
-(async function() {
-    const url = await ngrok.connect(2345);
-    console.log(url);
-})();
-}
 
 dcclient.login(token);
