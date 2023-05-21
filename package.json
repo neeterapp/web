@@ -32,7 +32,8 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "socket.io": "^4.6.1",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "uuid": "^9.0.0"
   },
   "description": ""
 }
