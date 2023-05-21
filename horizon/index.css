@@ -57,6 +57,7 @@
   }
 
   input[type="text"],
+  input[type="password"],
   select {
     background-color: #2e2e2e;
     border: none;
@@ -134,6 +135,17 @@
   }
 
   #editbtn {
+  }
+
+  .userpopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #423f3f;
+    border: 1px solid #000;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   #deletebtn {

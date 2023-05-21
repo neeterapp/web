@@ -406,7 +406,7 @@ socket.on('room members', (roommembers) => {
 function goToMsg(msgID) {
     const msg = document.getElementById(`msg-${msgID}`);
     msg.scrollIntoView({ behavior: 'smooth' });
-    msg.classList.add('highlight');
+    msg.classList.add('highlight'); 
     setTimeout(() => {
         msg.classList.add('remove');
         setTimeout(() => {
@@ -416,7 +416,6 @@ function goToMsg(msgID) {
 }
 
 const messagesParentElement = document.getElementById("messages");
-
 messagesParentElement.addEventListener("click", (event) => {
     if (event.target && event.target.id === "usernametext") {
         const popup = document.createElement("div");
@@ -430,6 +429,18 @@ messagesParentElement.addEventListener("click", (event) => {
       }
 });
 
+window.addEventListener('click', ({ target }) => {
+    const popups = document.querySelectorAll('.userpopup');
+    const popup = target.closest('.userpopup');
+    const clickedOnClosedPopup = popup && popup.classList.contains('closed');
+    
+    if (clickedOnClosedPopup) return;
+    
+    popups.forEach(p => $('.userpopup').hide());
+    
+    if (popup) popup.classList.add('show');  
+  });
+  
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
         const htmlmdmsg = convertMarkdownToHTML(msg.message);
