@@ -415,9 +415,9 @@ function goToMsg(msgID) {
     }, 1000);
 }
 
-const parentElement = document.getElementById("messages");
+const messagesParentElement = document.getElementById("messages");
 
-parentElement.addEventListener("click", (event) => {
+messagesParentElement.addEventListener("click", (event) => {
     if (event.target && event.target.id === "usernametext") {
         const popup = document.createElement("div");
         popup.classList.add("userpopup");
