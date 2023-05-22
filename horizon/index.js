@@ -18,6 +18,8 @@ import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmai
 const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
 const urlusername = urlParams.get('username');
+let joined = false;
+let messagesloaded = false;
 const showexperimentspopup = urlParams.get('experimentsenabled');
   const firebaseConfig = {
     apiKey: "AIzaSyCVqlFta6rULlWiiYu1yDDs9zsLH1fGddU",
@@ -40,7 +42,10 @@ socket.on('user data', (userdata) => {
     $('#username-popup').hide();
     $('#circle-selector').show();
     $('#chat-window').show();
+    if (joined === false) {
     socket.emit('join room', currentRoom, username);
+    joined = true;
+    }
     $('#current-room').text(currentRoom);
     document.title = `Neeter - ${currentRoom}`
     const urlParams = new URLSearchParams(window.location.search);
@@ -672,6 +677,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
 });
 
 socket.on('load messages', (messages) => {
+    if (messagesloaded === false) {
     messages.forEach((msg) => {
         if (msg.room === currentRoom) {
             const htmlmdmsg = convertMarkdownToHTML(msg.message);
@@ -889,11 +895,13 @@ socket.on('load messages', (messages) => {
 
         }
     });
+    messagesloaded = true;
     window.scrollTo({
         top: document.body.scrollHeight,
         left: 0,
         behavior: 'smooth'
     });
+}
 });
 
 socket.on('message deleted', (msgId) => {
