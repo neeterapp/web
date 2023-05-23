@@ -171,8 +171,12 @@
   .highlight {
     padding: 2.2px 5px;
     border-radius: 3px;
-    background-color: #646462;
+    background-color: #a0a074;
     transition: all 0.2s ease-out;
+  }
+
+  .mention {
+    background-color: #51c2b3;
   }
 
   .highlight.remove {
