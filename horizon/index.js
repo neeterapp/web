@@ -326,7 +326,11 @@ socket.on('rooms list', (roomslist) => {
         const div = document.createElement('div');
         const img = document.createElement('img');
         truncatedroomname = truncateText(roomname, 40);
-        img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
+        if (roomname === "Main") {
+            img.src = `https://i.postimg.cc/4nkSssfh/Neeter-Logo-2305.png`;
+        } else {
+            img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
+        }
         img.alt = roomname;
         img.id = roomname;
         div.classList.add('circle');
