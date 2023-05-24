@@ -53,6 +53,7 @@ body {
 }
 
 .login-form .password {
+  font-family: 'Poppins';
   background: hsla(0, 0%, 100%, 0);
   padding: 1em;
   display: flex;
@@ -63,12 +64,14 @@ body {
 }
 
 .login-form .password input {
+  font-family: 'Poppins';
   background: hsla(0, 0%, 100%, 0);
   outline: none;
   border: none;
 }
 
 .login-form .password input::placeholder {
+  font-family: 'Poppins';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
