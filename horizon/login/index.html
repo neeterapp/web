@@ -12,18 +12,17 @@
   <div class="login-form">
     <div class="email">
         <div class="sec-2">
-            <input type="email" name="email" placeholder="Email / Username"/>
+            <input id="login-email-input" type="email" name="email" placeholder="Email / Username"/>
         </div>
     </div>
 
     <div class="password">
         <div class="sec-2">
-            <input type="password" name="password" class="pas" placeholder="Password"/>
-            <ion-icon class="show-hide" name="eye-outline"></ion-icon>
+            <input id="login-password-input" type="password" name="password" class="password" placeholder="Password"/>
         </div>
     </div>
 
-    <button class="login">Login</button>
+    <button class="login" id="login-button">Login</button>
 
     <div class="footer">
         <span>Sign up Instead</span>
@@ -33,25 +32,24 @@
 <div class="register-form">
   <div class="email">
       <div class="sec-2">
-          <input type="email" name="email" placeholder="Email Address"/>
+          <input id="reg-email-input" type="email" name="email" placeholder="Email Address"/>
       </div>
   </div>
   
   <div class="username">
-    <label for="username">Username</label>
     <div class="sec-2">
-        <input type="text" name="username" placeholder="Username"/>
+        <input id="reg-username-input" type="text" name="username" placeholder="Username"/>
     </div>
 </div>
 
   <div class="password">
       <div class="sec-2">
-          <input type="password" name="password" class="pas" placeholder="Password"/>
+          <input id="reg-password-input" type="password" name="password" class="pas" placeholder="Password"/>
           <ion-icon class="show-hide" name="eye-outline"></ion-icon>
       </div>
   </div>
 
-  <button class="register">Register</button>
+  <button id="register-button" class="register">Register</button>
 
   <div class="footer">
       <span>Sign up Instead</span>
