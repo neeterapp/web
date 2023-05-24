@@ -5,39 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neeter - Login</title>
     <link rel="stylesheet" href="/login/index.css">
+    <script src="https://kit.fontawesome.com/cd0fd6e41b.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap">
 </head>
 <body>
-    <div class="frame-238859">
-      <div class="frame-238858">
-        <div class="group-568">
-          <p class="email-username">Email / Username</p>
+  <div class="login-form">
+    <div class="email">
+        <div class="sec-2">
+            <input type="email" name="email" placeholder="Email / Username"/>
         </div>
-        <div class="group-248">
-          <p class="password">Password</p>
-        </div>
-        <div class="group-238859">
-          <p class="log-in">Log in</p>
-        </div>
-        <div class="group-238860">
-          <img
-            src="https://firebasestorage.googleapis.com/v0/b/unify-v3-copy.appspot.com/o/6u5pm6fi71r-1%3A1608?alt=media&token=abc80f02-1b20-4184-9fb1-93348f08dc6d"
-            alt="Not Found"
-            class="google-icon-1"
-          />
-          <p class="log-in-with-google">Log in with Google</p>
-        </div>
-        <p class="don-thave-aneeter-accou">
-          Don’t have a Neeter account yet? Sign up for one free
-        </p>
-      </div>
-      <div class="group-238858">
-        <div class="frame-238860 clip-contents">
-          <p class="welcome-back">Welcome back!</p>
-          <p class="log-in-with-your-email-or">
-            Log in with your email or social accounts
-          </p>
-        </div>
-      </div>
     </div>
+
+    <div class="password">
+        <div class="sec-2">
+            <input type="password" name="password" class="pas" placeholder="Password"/>
+            <ion-icon class="show-hide" name="eye-outline"></ion-icon>
+        </div>
+    </div>
+
+    <button class="login">Login</button>
+
+    <div class="footer">
+        <span>Sign up Instead</span>
+        <span>Forgot Your Password?</span>
+    </div>
+</div>
+<div class="register-form">
+  <div class="email">
+      <div class="sec-2">
+          <input type="email" name="email" placeholder="Email Address"/>
+      </div>
+  </div>
+  
+  <div class="username">
+    <label for="username">Username</label>
+    <div class="sec-2">
+        <input type="text" name="username" placeholder="Username"/>
+    </div>
+</div>
+
+  <div class="password">
+      <div class="sec-2">
+          <input type="password" name="password" class="pas" placeholder="Password"/>
+          <ion-icon class="show-hide" name="eye-outline"></ion-icon>
+      </div>
+  </div>
+
+  <button class="register">Register</button>
+
+  <div class="footer">
+      <span>Sign up Instead</span>
+      <span>Forgot Your Password?</span>
+  </div>
+</div>
   </body>
 </html>
