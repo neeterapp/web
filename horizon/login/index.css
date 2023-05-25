@@ -8,7 +8,21 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-	font-family: 'Poppins';
+	font-family: 'Space Grotesk';
+}
+
+h1 {
+  font-family: 'Space Grotesk';
+  font-size: 2em;
+  color: hsl(0, 0%, 100%);
+}
+
+p {
+  font-family: 'Space Grotesk';
+  font-size: 1em;
+  color: hsl(0, 0%, 100%);
+  margin-top: -3em;
+  margin-bottom: 0;
 }
 
 .login-form {
@@ -29,59 +43,55 @@ body {
 }
 
 .login-form .email {
-  font-family: 'Poppins';
+  font-family: 'Space Grotesk';
   background: hsla(0, 0%, 100%, 0);
-  padding: 1em;
-  display: flex;
-  flex-direction: column;
   gap: 0.5em;
-  border-radius: 20px;
+  height: 45px;
+  border: 2px solid hsl(0, 0%, 82%);
+  border-radius: 50px;
   color: hsl(0, 0%, 100%);
 }
 
 .login-form .email input {
+  line-height: 40px;
+  padding-left: 1em;
   background: hsla(0, 0%, 100%, 0);
-  font-family: 'Poppins';
+  font-family: 'Space Grotesk';
   outline: none;
   border: none;
 }
 
 .login-form .email input::placeholder {
-  font-family: 'Poppins';
+  font-family: 'Space Grotesk';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
 
 .login-form .password {
-  font-family: 'Poppins';
+  font-family: 'Space Grotesk';
   background: hsla(0, 0%, 100%, 0);
-  padding: 1em;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  border-radius: 20px;
+  height: 45px;
+  border: 2px solid hsl(0, 0%, 82%);
+  border-radius: 50px;
   color: hsl(0, 0%, 100%);
 }
 
 .login-form .password input {
-  font-family: 'Poppins';
-  background: hsla(0, 0%, 100%, 0);
+  padding-left: 1em;
+  line-height: 40px;
+  font-family: 'Space Grotesk';
   outline: none;
   border: none;
 }
 
 .login-form .password input::placeholder {
-  font-family: 'Poppins';
+  font-family: 'Space Grotesk';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
 
-.login-form .password .show-hide {
-  margin-right: -5em;
-}
-
 .login-form .login {
-  font-family: 'Poppins';
+  font-family: 'Space Grotesk';
   padding: 1em;
   background: hsl(226, 97%, 62%);
   color: hsl(0 0 100);
@@ -91,7 +101,7 @@ body {
 }
 
 .login-form .footer {
-  font-family: 'Poppins';
+  font-family: 'Space Grotesk';
   display: flex;
   font-size: 0.7em;
   color: hsl(0, 0%, 100%);
