@@ -1,0 +1,367 @@
+@media screen and (min-width: 768px) {
+
+  :root {
+    --background-color: #1f1f1f;
+    --text-color: #f5f5f5;
+    --link-color: #6c63ff;
+    --accent-color: #60d1ab;
+    --button-text-color: #1f1f1f;
+  }
+
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+  }
+
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.2s ease-out;
+  }
+
+  a:hover {
+    color: var(--accent-color);
+  }
+
+  button {
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 4px;
+    color: var(--button-text-color);
+    cursor: pointer;
+    font-size: 16px;
+    height: 33px;
+    padding: 8px 8px;
+    font-weight: 600;
+    margin-right: 3px;
+    transition: background-color 0.2s ease-out;
+  }
+
+  button:hover {
+    background-color: #5df3c1;
+  }
+
+  ul li {
+    margin-bottom: 4px;
+  }
+
+  button:last-of-type {
+    margin-right: 0;
+  }
+
+  #register-form,
+  #login-form {
+    display: none;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  select {
+    background-color: #2e2e2e;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 16px;
+    padding: 0 8px;
+    height: 33px;
+  }
+
+  textarea {
+    background-color: #2e2e2e;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 16px;
+    padding: 10px;
+    resize: none;
+  }
+
+  /* Specific styles */
+
+  ul {
+    list-style-type: none;
+    max-width: calc(100vw - 120px);
+    margin: 0 20px;
+    padding: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .warning {
+    color: #ff4d4d;
+  }
+
+  .word-count-warning {
+    font-weight: bold;
+    color: orange;
+  }
+
+  #username-popup {
+    display: none;
+  }
+
+  #chat-window {
+    display: none;
+  }
+
+  #circlesettings-window {
+    display: none;
+  }
+
+  #roomnam {
+    margin-right: 8px;
+  }
+
+  #roomdesc {
+    padding-top: 3.5px;
+    flex: 1;
+  }
+
+  #deletebtnoriginal {
+    cursor: pointer;
+    display: none;
+  }
+
+  #replybtnoriginal {
+    cursor: pointer;
+    display: none;
+  }
+
+  #editbtnoriginal {
+    cursor: pointer;
+    display: none;
+  }
+
+  #editbtn {
+  }
+
+  .userpopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #423f3f;
+    border: 1px solid #000;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  #deletebtn {
+  }
+
+  #replybtn {
+  }
+
+  .showing {
+    display: inline-block;
+    transition: all 0.2s ease-out;
+  }
+
+  .notshowing {
+    display: none;
+    transition: all 0.2s ease-out;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  .highlight {
+    padding: 2.2px 5px;
+    border-radius: 3px;
+    background-color: #a0a074;
+    transition: all 0.2s ease-out;
+  }
+
+  .mention {
+    background-color: #51c2b3;
+  }
+
+  .highlight.remove {
+    padding: 0px;
+    background-color: transparent;
+  }
+
+  .circle-grid {
+    margin-top: 3.4em;
+    margin-bottom: 1em;
+    display: flex;
+    z-index: 7;
+  }
+
+  .circle-grid li img {
+    position: relative;
+    border-radius: 15px;
+    width: 3.5em;
+    height: 3.5em;
+    transition: all 0.18s ease-out;
+  }
+
+  .circle-grid li img:hover {
+    box-shadow: 0 0 15px gray;
+  }
+
+  .circle-grid li img.selected {
+    box-shadow: 0 0 15px #808080;
+  }
+
+  .circle-grid li .circle {
+    position: relative;
+  }
+
+  .circle-grid li .tooltip {
+    z-index: 999 !important;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    white-space: nowrap;
+    transform: translateX(-50%) translateZ(0);
+    padding: 5px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .circle-grid li .circle:hover .tooltip {
+    z-index: 999 !important;
+    opacity: 1;
+  }
+
+  .circle-grid li {
+    width: 3.5em;
+    height: 3.5em;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+  }
+
+  #message-form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    background-color: #272525;
+    padding: 10px 20px;
+
+  }
+
+  #message {
+    width: calc(100% - 100px);
+    border-radius: 4px;
+    border: none;
+    background-color: #2e2e2e;
+    color: var(--text-color);
+    font-size: 16px;
+    padding: 0 8px;
+    margin-right: 10px;
+  }
+
+
+  #room-settings-and-back {
+    z-index: 2;
+    position: fixed;
+    top: 8px;
+    left: 8px;
+  }
+
+  #circle-selector {
+    width: 100%;
+    z-index: 1;
+    background-color: var(--background-color);
+    height: 150px;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
+  #roomnameanddesc {
+    position: fixed;
+    top: 8px;
+    left: 26px;
+    z-index: 2;
+    margin-top: 5.3em;
+    display: flex;
+    width: 100%;
+  }
+
+  #messages {
+    margin-top: 10.5em;
+    width: 100vw;
+    margin-bottom: 4em;
+    margin-left: 20px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+
+  body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  #secret-experiments-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    padding: 20px;
+    background-color: #3b3b3b;
+    border-radius: 10px;
+  }
+
+  input[type=checkbox]{
+    height: 0;
+    width: 0;
+    visibility: hidden;
+  }
+  
+  label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 50px;
+    height: 25px;
+    background: grey;
+    display: block;
+    border-radius: 100px;
+    position: relative;
+  }
+  
+  label:after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 90px;
+    transition: 0.3s;
+  }
+  
+  input:checked + label {
+    background: #5994e2;
+  }
+  
+  input:checked + label:after {
+    left: calc(100% - 5px);
+    transform: translateX(-100%);
+  }
+  
+  label:active:after {
+    width: 25px;
+  }
+
+}

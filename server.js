@@ -8,17 +8,80 @@ require('dotenv').config();
 const { Configuration, OpenAIApi } = require("openai");
 const emojiRegex = require('emoji-regex');
 const emjregex = emojiRegex();
+const Discord = require('discord.js');
+const webhookClient = new Discord.WebhookClient({ id: process.env.DISCORD_WEBHOOK_ID, token: process.env.DISCORD_WEBHOOK_TOKEN });
+const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { token } = require('./config.json');
+const dcclient = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
+
+dcclient.once(Events.ClientReady, c => {
+	console.log(`Ready! Logged in as ${c.user.tag}`);
+    dcclient.user.setPresence({
+        activities: [{ name: 'Discord messages', type: 'WATCHING' }],
+        status: 'dnd'
+      });
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on('error', console.error.bind(console, 'Database connection error:'));
 
 const messageCount = {};
 let isowner = false;
 let roomsList = [];
 let roomSettings;
 
+// Define hubs schema
+const hubSchema = new mongoose.Schema({
+    hubname: {
+        type: String,
+        required: true
+    },
+    owner: {
+        type: String,
+        required: true
+    },
+    members: {
+        type: Array,
+        required: false
+    },
+    settings: {
+        type: Object,
+        required: false
+    },
+    rooms: {
+        type: Array,
+        required: false
+    }
+}, { timestamps: false });
+
+const userSchema = new mongoose.Schema({
+    userid: {
+        type: String,
+        required: true
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        maxlength: 32
+    },
+    rooms: {
+        type: Array,
+        required: false
+    },
+    hubs: {
+        type: Array,
+        required: false
+    }
+}, { timestamps: false });
 // Define message schema
 const messageSchema = new mongoose.Schema({
     message: {
@@ -69,19 +132,33 @@ const roomSchema = new mongoose.Schema({
     settings: {
         type: Object,
         required: false
+    },
+    members: {
+        type: Array,
+        required: false
+    },
+    hub: {
+        type: String,
+        required: true
     }
 }, { timestamps: false });
 
+const Hub = mongoose.model('Hub', hubSchema);
 const Message = mongoose.model('Message', messageSchema);
 const RoomData = mongoose.model('Room', roomSchema);
+const UserData = mongoose.model('User', userSchema);
 
-app.use(express.static('public'));
+app.use(express.static('horizon'));
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-async function moderate(textToModerate) {
+
+async function moderate(faketexttomoderate) {
+    return false;
+}
+async function moderatemsg(textToModerate) {
     const response = await openai.createModeration({
         input: textToModerate,
     });
@@ -105,8 +182,42 @@ io.on('connection', (socket) => {
         .catch((err) => {
             console.log(err);
         });
-    // Join room and load messages
+    socket.on('register user', (userid, username) => {
+        const sanitizeduserid = DOMPurify.sanitize(userid);
+        const sanitizedusername = DOMPurify.sanitize(username);
+        console.log(`Registering user ${sanitizedusername} with id ${sanitizeduserid}`);
+        const newUser = new UserData({
+            userid: sanitizeduserid,
+            username: sanitizedusername,
+            rooms: [],
+            hubs: []
+        });
+        newUser.save().then((savedUserData) => {
+            console.log(`User ${sanitizedusername} registered.`);
+            socket.emit('user data', savedUserData);
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
 
+    socket.on('user data', (usrid) => {
+        const sanitizedusrid = DOMPurify.sanitize(usrid);
+        console.log(`User id: ${sanitizedusrid}`);
+        // search for the user id on the users database and return the user data:
+        console.log('getting data...');
+        UserData.findOne({ userid: sanitizedusrid }).then((existingUser) => {
+            if (existingUser) {
+                console.log('User found.');
+                console.log(existingUser);
+                socket.emit('user data', existingUser);
+            } else {
+                console.log('User not found.');
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
+        
+    });
     socket.on('room renamed', (newroom, oldroom) => {
         const sanitizednewroom = DOMPurify.sanitize(newroom);
         const sanitizedoldroom = DOMPurify.sanitize(oldroom);
@@ -128,6 +239,17 @@ io.on('connection', (socket) => {
         socket.join(newroomname);
     });
 
+    socket.on('get room members', (room) => {
+        const sanitizedroom = DOMPurify.sanitize(room);
+        RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+            if (existingRoom) {
+                socket.emit('room members', existingRoom.members);
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+
     socket.on('join room', (room, usrname) => {
         const sanitizedroom = DOMPurify.sanitize(room);
         console.log(`${usrname} joined room ${sanitizedroom}`);
@@ -139,7 +261,9 @@ io.on('connection', (socket) => {
                 const newRoom = new RoomData({
                     room: sanitizedroom,
                     owner: usrname,
-                    settings: { "test": "test" }
+                    settings: { "wow": "easter egg!" },
+                    members: [usrname],
+                    hub: "Hangout"
                 });
                 newRoom.save().then(() => {
                     console.log(`Created room ${sanitizedroom} with owner ${usrname}`);
@@ -161,9 +285,18 @@ io.on('connection', (socket) => {
                 }
             }
         }).catch((err) => {
-            console.error(err);
+            console.error(err)
         });
-
+        RoomData.updateOne(
+            { room: sanitizedroom, members: { $ne: usrname } },
+            { $addToSet: { members: usrname } }
+          )
+          .then(result => {
+            console.log(result); // log the result of the update operation
+          })
+          .catch(error => {
+            console.error(error); // log any errors that occur during the update operation
+          });
         // Load messages for the room
         Message.find({ room: sanitizedroom }).then((messages) => {
             socket.emit('load messages', messages);
@@ -247,6 +380,7 @@ io.on('connection', (socket) => {
                         const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
                         message.save().then(() => {
                             RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+                                webhookClient.send(message.username + ": " + message.message);
                                 io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
                             });
                         }).catch((err) => {
@@ -301,9 +435,27 @@ io.on('connection', (socket) => {
     });
 });
 
-
+dcclient.on('messageCreate', message => {
+    if (message.channelId === '1100837765446377494') {
+        if (message.author.bot) return;
+        const sanitizeddcmsg = DOMPurify.sanitize(message.content);
+        RoomData.findOne({ room: "Main" }).then((existingRoom) => {
+            const dcmsg = new Message({ message: sanitizeddcmsg, username: message.author.username, room: "Main", roomowner: "justkoru", isresponse: false, edited: false });
+            dcmsg.save().then(() => {
+                RoomData.findOne({ room: "Main" }).then((existingRoom) => {
+                    console.log("New dc message saved to db and sent")
+                    io.in("Main").emit('chat message', dcmsg, "Main", "justkoru", false);
+                });
+            }).catch((err) => {
+                console.error(err);
+            });
+        });
+    }
+});
 
 // Start server
 http.listen(2345, () => {
     console.log('listening on *:2345');
 });
+
+dcclient.login(token);
