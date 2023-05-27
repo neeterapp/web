@@ -17,7 +17,7 @@ h1 {
   color: hsl(0, 0%, 100%);
 }
 
-.login-form p {
+#login-form p {
   font-family: 'Space Grotesk';
   font-size: 1em;
   color: hsl(0, 0%, 100%);
@@ -25,7 +25,7 @@ h1 {
   margin-bottom: 0;
 }
 
-.register-form p {
+#register-form p {
   font-family: 'Space Grotesk';
   font-size: 1em;
   color: hsl(0, 0%, 100%);
@@ -33,27 +33,28 @@ h1 {
   margin-bottom: -1em;
 }
 
- .login-form {
-  display: none;
+ #login-form {
+  width: 28em;
   background: hsla(0, 0%, 100%, 0);
   padding: 2em;
-  /*display: flex;*/
+  display: flex;
   flex-direction: column;
   border-radius: 30px;
   gap: 2em;
 } 
 
-.login-form .email {
+#login-form .email {
   font-family: 'Space Grotesk';
   background: hsla(0, 0%, 100%, 0);
   gap: 0.5em;
   height: 45px;
+  margin-bottom: -0.5em;
   border: 2px solid hsl(0, 0%, 82%);
   border-radius: 50px;
   color: hsl(0, 0%, 100%);
 }
 
-.login-form .email input {
+#login-form .email input {
   width: 96%;
   border-radius: 50px;
   line-height: 44px;
@@ -65,22 +66,23 @@ h1 {
   border: none;
 }
 
-.login-form .email input::placeholder {
+#login-form .email input::placeholder {
   font-family: 'Space Grotesk';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
 
-.login-form .password {
+#login-form .password {
   font-family: 'Space Grotesk';
   background: hsla(0, 0%, 100%, 0);
   height: 45px;
+  margin-bottom: -0.5em;
   border: 2px solid hsl(0, 0%, 82%);
   border-radius: 50px;
   color: hsl(0, 0%, 100%);
 }
 
-.login-form .password input {
+#login-form .password input {
   color: white;
   width: 96%;
   border-radius: 50px;
@@ -91,15 +93,16 @@ h1 {
   border: none;
 }
 
-.login-form .password input::placeholder {
+#login-form .password input::placeholder {
   font-family: 'Space Grotesk';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
 
-.login-form .login {
+#login-form .login {
   font-family: 'Space Grotesk';
   padding: 1em;
+  margin-bottom: -0.5em;
   background: hsl(226, 97%, 62%);
   color: hsl(0 0 100);
   border: none;
@@ -107,15 +110,15 @@ h1 {
   font-weight: 600;
 }
 
-.login-form .footer {
+#login-form .footer {
   font-family: 'Space Grotesk';
   display: flex;
   font-size: 0.7em;
   color: hsl(0, 0%, 100%);
-  gap: 14em;
+  gap: 21.3em;
 }
 
-.login-form .footer span {
+#login-form .footer span {
   cursor: pointer;
 }
 
@@ -124,18 +127,18 @@ button {
   cursor: pointer;
 }
 
-.register-form {
+#register-form {
   width: 28em;
-  /*display: none;*/
+  display: none;
   background: hsla(0, 0%, 100%, 0);
   padding: 2em;
-  display: flex;
+  /*display: flex;*/
   flex-direction: column;
   border-radius: 30px;
   gap: 2em;
 }
 
-.register-form .email {
+#register-form .email {
   font-family: 'Space Grotesk';
   background: hsla(0, 0%, 100%, 0);
   gap: 0.5em;
@@ -146,7 +149,7 @@ button {
   color: hsl(0, 0%, 100%);
 }
 
-.register-form .email input {
+#register-form .email input {
   width: 96%;
   border-radius: 50px;
   line-height: 44px;
@@ -158,13 +161,13 @@ button {
   border: none;
 }
 
-.register-form .email input::placeholder {
+#register-form .email input::placeholder {
   font-family: 'Space Grotesk';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
 
-.register-form .username {
+#register-form .username {
   font-family: 'Space Grotesk';
   background: hsla(0, 0%, 100%, 0);
   gap: 0.5em;
@@ -175,7 +178,7 @@ button {
   color: hsl(0, 0%, 100%);
 }
 
-.register-form .username input {
+#register-form .username input {
   width: 96%;
   border-radius: 50px;
   line-height: 44px;
@@ -187,13 +190,13 @@ button {
   border: none;
 }
 
-.register-form .username input::placeholder {
+#register-form .username input::placeholder {
   font-family: 'Space Grotesk';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
 
-.register-form .password {
+#register-form .password {
   font-family: 'Space Grotesk';
   background: hsla(0, 0%, 100%, 0);
   height: 45px;
@@ -203,7 +206,7 @@ button {
   color: hsl(0, 0%, 100%);
 }
 
-.register-form .password input {
+#register-form .password input {
   color: white;
   border-radius: 50px;
   padding-left: 1em;
@@ -213,13 +216,13 @@ button {
   border: none;
 }
 
-.register-form .password input::placeholder {
+#register-form .password input::placeholder {
   font-family: 'Space Grotesk';
   color: hsl(0, 0%, 100%);
   font-size: 0.9em;
 }
 
-.register-form .register {
+#register-form .register {
   font-family: 'Space Grotesk';
   padding: 1em;
   background: hsl(226, 97%, 62%);
@@ -230,7 +233,7 @@ button {
   margin-bottom: -0.5em;
 }
 
-.register-form .footer {
+#register-form .footer {
   font-family: 'Space Grotesk';
   display: flex;
   font-size: 0.8em;
@@ -238,7 +241,7 @@ button {
   gap: 16.2em;
 }
 
-.register-form .footer span {
+#register-form .footer span {
   cursor: pointer;
 }
 

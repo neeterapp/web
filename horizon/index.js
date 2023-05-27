@@ -5,7 +5,6 @@ $('#replyingtotext').hide();
 $('#editingmsgtext').hide();
 $('#cancelreplyoredit').hide();
 $('#circle-selector').hide();
-$('#username-popup').show();
 const socket = io();
 const notificationSound = document.getElementById('notification');
 let username = '';
@@ -174,6 +173,7 @@ getAuth().onAuthStateChanged((user) => {
     if (user) {
       socket.emit('user data', user.uid);
     } else {
+        window.location.href = '/login';
     }
   }, { once: true });
 

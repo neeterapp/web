@@ -12,10 +12,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-    <div class="login-form">
+    <div id="login-form">
         <h1>Welcome Back!</h1>
         <p>Log in with your email to access Neeter.</p>
         <div class="email">
@@ -34,11 +36,11 @@
         <button class="login" id="login-button">Login</button>
 
         <div class="footer">
-            <span>Sign up Instead</span>
+            <span id="sign-up-instead">Sign up Instead</span>
             <span>Forgot Your Password?</span>
         </div>
     </div>
-    <div class="register-form">
+    <div id="register-form">
         <h1>Hello There!</h1>
         <p>Welcome to Neeter! Please enter your details to create an account.</p>
         <div class="email">
@@ -62,10 +64,11 @@
         <button id="register-button" class="register">Register</button>
 
         <div class="footer">
-            <span>Sign up Instead</span>
+            <span id="sign-in-instead">Sign in Instead</span>
             <span>Forgot Your Password?</span>
         </div>
     </div>
+    <script type="module" src="/login/index.js"></script>
 </body>
 
 </html>
