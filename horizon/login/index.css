@@ -118,10 +118,6 @@ h1 {
   gap: 21.3em;
 }
 
-#login-form .footer span {
-  cursor: pointer;
-}
-
 button {
   color: white;
   cursor: pointer;
@@ -241,11 +237,17 @@ button {
   gap: 16.2em;
 }
 
-#register-form .footer span {
+#forgot-password {
+  color: white;
+  display: block;
+  cursor: not-allowed;
+  transition: all 0.3s ease;
+}
+
+.change-login-action {
   cursor: pointer;
 }
 
-button {
-  color: white;
-  cursor: pointer;
+#forgot-password:hover {
+  color: red;
 }
