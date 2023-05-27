@@ -17,7 +17,7 @@ h1 {
   color: hsl(0, 0%, 100%);
 }
 
-p {
+.login-form p {
   font-family: 'Space Grotesk';
   font-size: 1em;
   color: hsl(0, 0%, 100%);
@@ -25,22 +25,23 @@ p {
   margin-bottom: 0;
 }
 
-.login-form {
+.register-form p {
+  font-family: 'Space Grotesk';
+  font-size: 1em;
+  color: hsl(0, 0%, 100%);
+  margin-top: -3em;
+  margin-bottom: -1em;
+}
+
+ .login-form {
+  display: none;
   background: hsla(0, 0%, 100%, 0);
   padding: 2em;
-  display: flex;
+  /*display: flex;*/
   flex-direction: column;
   border-radius: 30px;
   gap: 2em;
-}
-
-.register-form {
-  display: none;
-}
-
-.login-form .logo {
-  margin-top: -3em;
-}
+} 
 
 .login-form .email {
   font-family: 'Space Grotesk';
@@ -53,8 +54,11 @@ p {
 }
 
 .login-form .email input {
-  line-height: 40px;
+  width: 96%;
+  border-radius: 50px;
+  line-height: 44px;
   padding-left: 1em;
+  color: white;
   background: hsla(0, 0%, 100%, 0);
   font-family: 'Space Grotesk';
   outline: none;
@@ -77,8 +81,11 @@ p {
 }
 
 .login-form .password input {
+  color: white;
+  width: 96%;
+  border-radius: 50px;
   padding-left: 1em;
-  line-height: 40px;
+  line-height: 60px;
   font-family: 'Space Grotesk';
   outline: none;
   border: none;
@@ -109,6 +116,129 @@ p {
 }
 
 .login-form .footer span {
+  cursor: pointer;
+}
+
+button {
+  color: white;
+  cursor: pointer;
+}
+
+.register-form {
+  width: 28em;
+  /*display: none;*/
+  background: hsla(0, 0%, 100%, 0);
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  border-radius: 30px;
+  gap: 2em;
+}
+
+.register-form .email {
+  font-family: 'Space Grotesk';
+  background: hsla(0, 0%, 100%, 0);
+  gap: 0.5em;
+  margin-bottom: -1em;
+  height: 45px;
+  border: 2px solid hsl(0, 0%, 82%);
+  border-radius: 50px;
+  color: hsl(0, 0%, 100%);
+}
+
+.register-form .email input {
+  width: 96%;
+  border-radius: 50px;
+  line-height: 44px;
+  padding-left: 1em;
+  color: white;
+  background: hsla(0, 0%, 100%, 0);
+  font-family: 'Space Grotesk';
+  outline: none;
+  border: none;
+}
+
+.register-form .email input::placeholder {
+  font-family: 'Space Grotesk';
+  color: hsl(0, 0%, 100%);
+  font-size: 0.9em;
+}
+
+.register-form .username {
+  font-family: 'Space Grotesk';
+  background: hsla(0, 0%, 100%, 0);
+  gap: 0.5em;
+  height: 45px;
+  margin-bottom: -1em;
+  border: 2px solid hsl(0, 0%, 82%);
+  border-radius: 50px;
+  color: hsl(0, 0%, 100%);
+}
+
+.register-form .username input {
+  width: 96%;
+  border-radius: 50px;
+  line-height: 44px;
+  padding-left: 1em;
+  color: white;
+  background: hsla(0, 0%, 100%, 0);
+  font-family: 'Space Grotesk';
+  outline: none;
+  border: none;
+}
+
+.register-form .username input::placeholder {
+  font-family: 'Space Grotesk';
+  color: hsl(0, 0%, 100%);
+  font-size: 0.9em;
+}
+
+.register-form .password {
+  font-family: 'Space Grotesk';
+  background: hsla(0, 0%, 100%, 0);
+  height: 45px;
+  margin-bottom: -1em;
+  border: 2px solid hsl(0, 0%, 82%);
+  border-radius: 50px;
+  color: hsl(0, 0%, 100%);
+}
+
+.register-form .password input {
+  color: white;
+  border-radius: 50px;
+  padding-left: 1em;
+  line-height: 60px;
+  font-family: 'Space Grotesk';
+  outline: none;
+  border: none;
+}
+
+.register-form .password input::placeholder {
+  font-family: 'Space Grotesk';
+  color: hsl(0, 0%, 100%);
+  font-size: 0.9em;
+}
+
+.register-form .register {
+  font-family: 'Space Grotesk';
+  padding: 1em;
+  background: hsl(226, 97%, 62%);
+  color: hsl(0 0 100);
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  margin-bottom: -0.5em;
+}
+
+.register-form .footer {
+  font-family: 'Space Grotesk';
+  display: flex;
+  font-size: 0.8em;
+  color: hsl(0, 0%, 100%);
+  gap: 16.2em;
+}
+
+.register-form .footer span {
   cursor: pointer;
 }
 
