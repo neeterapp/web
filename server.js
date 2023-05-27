@@ -8,7 +8,6 @@ require('dotenv').config();
 const { Configuration, OpenAIApi } = require("openai");
 const emojiRegex = require('emoji-regex');
 const emjregex = emojiRegex();
-const Discord = require('discord.js');
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 const dcclient = new Client({
