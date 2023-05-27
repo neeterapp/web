@@ -73,88 +73,6 @@ socket.on('user data', (userdata) => {
     selectedCircle.classList.add('selected');
 });
 
-const showRegisterformButton = document.getElementById('register-button');
-const showLoginformButton = document.getElementById('login-button');
-const cancelLoginButton = document.getElementById('cancel-login-button');
-const cancelRegisterButton = document.getElementById('cancel-register-button');
-
-cancelLoginButton.addEventListener('click', () => {
-    $('#login-form').hide();
-    $('#register-form').show();
-});
-
-cancelRegisterButton.addEventListener('click', () => {
-    $('#register-form').hide();
-    $('#login-form').show();
-});
-
-showRegisterformButton.addEventListener('click', () => {
-    $('#login-button').hide();
-    $('#register-button').hide();
-    $('#register-form').show();
-});
-
-showLoginformButton.addEventListener('click', () => {
-    $('#login-button').hide();
-    $('#register-button').hide();
-    $('#login-form').show();
-});
-
-const registerForm = document.getElementById('register-form');
-const loginForm = document.getElementById('login-form');
-registerForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const email = document.getElementById('reg-email-input').value;
-    const password = document.getElementById('reg-password-input').value;
-    const username = document.getElementById('reg-username-input').value;
-    const auth = getAuth();
-    setPersistence(auth, browserSessionPersistence)
-    .then(() => {
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            socket.emit('register user', user.uid, username);
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode);
-            console.log(errorMessage);
-        });
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-    });
-});
-loginForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const email = document.getElementById('login-email-input').value;
-    const password = document.getElementById('login-password-input').value;
-    const auth = getAuth();
-    setPersistence(auth, browserSessionPersistence)
-    .then(() => {
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            socket.emit('user data', user.uid);
-        }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode);
-            console.log(errorMessage);
-        });
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-    });
-});
-
 const backbutton = document.getElementById('back-button');
 backbutton.addEventListener('click', () => {
     const auth = getAuth();
@@ -292,9 +210,6 @@ $('#message').on('input', () => {
     }
 });
 
-socket.on('joined', () => {
-});
-
 socket.on('msgratelimit', (msg, senderusername, room) => {
     if (room === currentRoom) {
         if (senderusername === username) {
@@ -422,9 +337,6 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
     window.history.pushState({}, '', newUrl);
     document.title = `Neeter - ${currentRoom}`
     socket.emit('change room name from socket', currentRoom);
-});
-
-socket.on('room members', (roommembers) => {
 });
 
 function goToMsg(msgID) {

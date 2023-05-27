@@ -9,7 +9,6 @@ const { Configuration, OpenAIApi } = require("openai");
 const emojiRegex = require('emoji-regex');
 const emjregex = emojiRegex();
 const Discord = require('discord.js');
-const webhookClient = new Discord.WebhookClient({ id: process.env.DISCORD_WEBHOOK_ID, token: process.env.DISCORD_WEBHOOK_TOKEN });
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 const dcclient = new Client({
@@ -380,7 +379,6 @@ io.on('connection', (socket) => {
                         const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
                         message.save().then(() => {
                             RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
-                                webhookClient.send(message.username + ": " + message.message);
                                 io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
                             });
                         }).catch((err) => {

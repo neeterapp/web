@@ -31,8 +31,7 @@ socket.on('user data', (userdata) => {
 const registerFormSubmit = document.getElementById('register-button');
 const loginFormSubmit = document.getElementById('login-button');
 
-registerFormSubmit.addEventListener('submit', (event) => {
-    event.preventDefault();
+registerFormSubmit.addEventListener('click', () => {
     const email = document.getElementById('reg-email-input').value;
     const password = document.getElementById('reg-password-input').value;
     const username = document.getElementById('reg-username-input').value;
@@ -58,8 +57,7 @@ registerFormSubmit.addEventListener('submit', (event) => {
         console.log(errorMessage);
     });
 });
-loginFormSubmit.addEventListener('click', (event) => {
-    event.preventDefault();
+loginFormSubmit.addEventListener('click', () => {
     const email = document.getElementById('login-email-input').value;
     const password = document.getElementById('login-password-input').value;
     const auth = getAuth();
