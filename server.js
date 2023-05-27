@@ -364,10 +364,15 @@ io.on('connection', (socket) => {
                     socket.emit('msgratelimit', sanitizedmsg, sanitizedusername, sanitizedroom);
                 } else {
                     if (!messageCount[sanitizedusername]) {
-                        messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
+                        // wait 3s
+                        setTimeout(() => {
+                            messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
+                        }, 3000);
                     } else {
                         if (messageCount[sanitizedusername].count === 10) {
-                            messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
+                            setTimeout(() => {
+                                messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
+                            }, 3000);
                         } else {
                             messageCount[sanitizedusername].count++;
                             messageCount[sanitizedusername].timestamp = currentTime;
