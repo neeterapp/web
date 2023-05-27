@@ -226,7 +226,7 @@ socket.on('msgratelimit', (msg, senderusername, room) => {
             $('#ratelimitalert').show();
             setTimeout(() => {
                 $('#ratelimitalert').hide();
-            }, 1000);
+            }, 3000);
         }
     }
 });

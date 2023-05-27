@@ -360,7 +360,7 @@ io.on('connection', (socket) => {
                 const sanitizedresponseto = DOMPurify.sanitize(msgresponseto);
                 const sanitizedresponsetousername = DOMPurify.sanitize(msgresponsetousername);
                 const currentTime = new Date().getTime();
-                if (messageCount[sanitizedusername] && (currentTime - messageCount[sanitizedusername].timestamp) < 1000 && messageCount[sanitizedusername].count >= 10) {
+                if (messageCount[sanitizedusername] && (currentTime - messageCount[sanitizedusername].timestamp) < 1500 && messageCount[sanitizedusername].count >= 10) {
                     socket.emit('msgratelimit', sanitizedmsg, sanitizedusername, sanitizedroom);
                 } else {
                     if (!messageCount[sanitizedusername]) {
