@@ -77,7 +77,7 @@ const backbutton = document.getElementById('back-button');
 backbutton.addEventListener('click', () => {
     const auth = getAuth();
     auth.signOut().then(() => {
-        location.href = '/';
+        location.href = '/login';
     });
 });
 
