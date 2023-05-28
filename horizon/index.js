@@ -16,7 +16,6 @@ import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmai
 // grab the room name and username from the URL
 const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
-const urlusername = urlParams.get('username');
 let joined = false;
 let messagesloaded = false;
 const showexperimentspopup = urlParams.get('experimentsenabled');
@@ -36,13 +35,10 @@ function prepareMessage(message, username) {
     const linkRegex = /(https?:\/\/\S+)/g;
     const highlightClass = "highlight";
     const mentionClass = "mention";
-
-    // Wrap mentions in <span> tags with class="mention"
     const highlightedMessage = message.replace(mentionRegex, (match, mention) => {
         return `<span class="${mentionClass}">${mention}</span>`;
     });
 
-    // Highlight mentions that match the username
     const highlightRegex = new RegExp(`@(${username})\\b`, "gi");
     const highlightedAndHighlightedMessage = highlightedMessage.replace(highlightRegex, (match, username) => {
         console.log(`Matched highlight: ${username}`);
@@ -132,7 +128,6 @@ circleSettingsSaveButton.addEventListener('click', function (event) {
     }
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
-    urlParams.set('username', username);
     history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
     document.title = `Neeter - ${currentRoom}`
     if ($('#circle-name').val() !== '') {
@@ -338,7 +333,6 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
     }
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
-    urlParams.set('username', username);
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({}, '', newUrl);
     document.title = `Neeter - ${currentRoom}`
