@@ -382,7 +382,12 @@ io.on('connection', (socket) => {
                                 moderatemsg(message.message).then((flaggedmessage) => {
                                     console.log("Message flagging test completed. The flagged status is: " + flaggedmessage)
                                     if (flaggedmessage === true) {
+                                        console.log(`deleting message ${message._id}`);
+                                        Message.findByIdAndDelete(message._id).then(() => {
                                         socket.emit('message deleted', message._id);
+                                        }).catch((err) => {
+                                            console.error(err);
+                                        });
                                     }
                                 });
                             });
