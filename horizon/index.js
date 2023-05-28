@@ -20,7 +20,7 @@ const urlusername = urlParams.get('username');
 let joined = false;
 let messagesloaded = false;
 const showexperimentspopup = urlParams.get('experimentsenabled');
-  const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyCVqlFta6rULlWiiYu1yDDs9zsLH1fGddU",
     authDomain: "i3e-5d95a.firebaseapp.com",
     databaseURL: "https://i3e-5d95a.firebaseio.com",
@@ -28,10 +28,10 @@ const showexperimentspopup = urlParams.get('experimentsenabled');
     storageBucket: "i3e-5d95a.appspot.com",
     messagingSenderId: "229507724277",
     appId: "1:229507724277:web:deb1eea04d486f18f0e6bc"
-  };
-  const app = initializeApp(firebaseConfig);
+};
+const app = initializeApp(firebaseConfig);
 
-  function prepareMessage(message, username) {
+function prepareMessage(message, username) {
     const mentionRegex = `@(${username})\\b`;
     const linkRegex = /(https?:\/\/\S+)/g;
     const highlightClass = "highlight";
@@ -39,7 +39,7 @@ const showexperimentspopup = urlParams.get('experimentsenabled');
 
     // Wrap mentions in <span> tags with class="mention"
     const highlightedMessage = message.replace(mentionRegex, (match, mention) => {
-      return `<span class="${mentionClass}">${mention}</span>`;
+        return `<span class="${mentionClass}">${mention}</span>`;
     });
 
     // Highlight mentions that match the username
@@ -47,13 +47,13 @@ const showexperimentspopup = urlParams.get('experimentsenabled');
     const highlightedAndHighlightedMessage = highlightedMessage.replace(highlightRegex, (match, username) => {
         console.log(`Matched highlight: ${username}`);
         return `<span class="${highlightClass}">@${username}</span>`;
-      });
-      const finalMessage = highlightedAndHighlightedMessage.replace(linkRegex, (match, url) => {
+    });
+    const finalMessage = highlightedAndHighlightedMessage.replace(linkRegex, (match, url) => {
         console.log(`Matched link: ${url}`);
         return `<a class="userlink" href="${url}" target="_blank">${url}</a>`;
-      });    
+    });
     return finalMessage;
-  }
+}
 
 socket.on('user data', (userdata) => {
     if (urlroom) {
@@ -66,8 +66,8 @@ socket.on('user data', (userdata) => {
     $('#circle-selector').show();
     $('#chat-window').show();
     if (joined === false) {
-    socket.emit('join room', currentRoom, username);
-    joined = true;
+        socket.emit('join room', currentRoom, username);
+        joined = true;
     }
     $('#current-room').text(currentRoom);
     document.title = `Neeter - ${currentRoom}`
@@ -95,11 +95,11 @@ circlesettingsbutton.addEventListener('click', function (event) {
 
 getAuth().onAuthStateChanged((user) => {
     if (user) {
-      socket.emit('user data', user.uid);
+        socket.emit('user data', user.uid);
     } else {
         window.location.href = '/login';
     }
-  }, { once: true });
+}, { once: true });
 
 socket.on('room settings', (roomsettingsdata, roomsettingsname) => {
     $('#chat-window').hide();
@@ -348,7 +348,7 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
 function goToMsg(msgID) {
     const msg = document.getElementById(`msg-${msgID}`);
     msg.scrollIntoView({ behavior: 'smooth' });
-    msg.classList.add('highlight'); 
+    msg.classList.add('highlight');
     setTimeout(() => {
         msg.classList.add('remove');
         setTimeout(() => {
@@ -362,27 +362,27 @@ messagesParentElement.addEventListener("click", (event) => {
     if (event.target && event.target.id === "usernametext") {
         const popup = document.createElement("div");
         popup.classList.add("userpopup");
-    
+
         const h1 = document.createElement("h1");
         h1.textContent = event.target.textContent;
-    
+
         popup.appendChild(h1);
         document.body.appendChild(popup);
-      }
+    }
 });
 
 window.addEventListener('click', ({ target }) => {
     const popups = document.querySelectorAll('.userpopup');
     const popup = target.closest('.userpopup');
     const clickedOnClosedPopup = popup && popup.classList.contains('closed');
-    
+
     if (clickedOnClosedPopup) return;
-    
+
     popups.forEach(p => $('.userpopup').hide());
-    
-    if (popup) popup.classList.add('show');  
-  });
-  
+
+    if (popup) popup.classList.add('show');
+});
+
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
         const htmlmdmsg = convertMarkdownToHTML(msg.message);
@@ -392,7 +392,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
         }
         if (msg.username !== username) {
             if (msgisresponse === true) {
-                
+
                 const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
                 const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
@@ -615,7 +615,10 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
 });
 
 socket.on('load messages', (messages) => {
-    if (messagesloaded === false) {
+    const msgselement = document.getElementById("messages");
+    while (msgselement.firstChild) {
+        msgselement.removeChild(msgselement.firstChild);
+    }
     messages.forEach((msg) => {
         if (msg.room === currentRoom) {
             const htmlmdmsg = convertMarkdownToHTML(msg.message);
@@ -833,13 +836,11 @@ socket.on('load messages', (messages) => {
 
         }
     });
-    messagesloaded = true;
     window.scrollTo({
         top: document.body.scrollHeight,
         left: 0,
         behavior: 'smooth'
     });
-}
 });
 
 socket.on('message deleted', (msgId) => {
@@ -1005,24 +1006,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-document.addEventListener("click", function(event) {
+document.addEventListener("click", function (event) {
     if (event.target.tagName.toLowerCase() === "a" && event.target.classList.contains("userlink")) {
-      event.preventDefault();
-      const clickedUrl = new URL(event.target.href);
-      const isInternal = clickedUrl.hostname.includes("neeter.co");
-  
-      if (!isInternal) {
-        const confirmDialog = document.getElementById("confirmDialog");
-        confirmDialog.style.display = "block";
-        document.getElementById("confirmButton").addEventListener("click", function() {
-          window.open(event.target.href, "_blank");
-          confirmDialog.style.display = "none";
-        });
-        document.querySelector(".closemodal").addEventListener("click", function() {
-          confirmDialog.style.display = "none";
-        });
-      } else {
-        window.location.href = event.target.href;
-      }
+        event.preventDefault();
+        const clickedUrl = new URL(event.target.href);
+        const isInternal = clickedUrl.hostname.includes("neeter.co");
+
+        if (!isInternal) {
+            const confirmDialog = document.getElementById("confirmDialog");
+            confirmDialog.style.display = "block";
+            document.getElementById("confirmButton").addEventListener("click", function () {
+                window.open(event.target.href, "_blank");
+                confirmDialog.style.display = "none";
+            });
+            document.querySelector(".closemodal").addEventListener("click", function () {
+                confirmDialog.style.display = "none";
+            });
+        } else {
+            window.location.href = event.target.href;
+        }
     }
-  });
+});
