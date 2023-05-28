@@ -152,16 +152,14 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-
-async function moderate(faketexttomoderate) {
-    return false;
-}
 async function moderatemsg(textToModerate) {
     const response = await openai.createModeration({
         input: textToModerate,
     });
     const moderationresults = response.data.results;
     const flaggedmessage = moderationresults[0].flagged;
+    console.log(textToModerate);
+    console.log(flaggedmessage);
     return flaggedmessage;
 }
 
@@ -351,9 +349,6 @@ io.on('connection', (socket) => {
 
     // Handle chat message
     socket.on('chat message', (msg, username, room, isaresponse, msgresponseto, msgresponsetousername) => {
-        moderate(msg).then(messageisflagged => {
-            console.log(messageisflagged)
-            if (messageisflagged === false) {
                 const sanitizedmsg = DOMPurify.sanitize(msg);
                 const sanitizedusername = DOMPurify.sanitize(username);
                 const sanitizedroom = DOMPurify.sanitize(room);
@@ -384,16 +379,18 @@ io.on('connection', (socket) => {
                         message.save().then(() => {
                             RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
                                 io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
+                                moderatemsg(message.message).then((flaggedmessage) => {
+                                    console.log("Message flagging test completed. The flagged status is: " + flaggedmessage)
+                                    if (flaggedmessage === true) {
+                                        socket.emit('message deleted', message._id);
+                                    }
+                                });
                             });
                         }).catch((err) => {
                             console.error(err);
                         });
                     });
-                }
             }
-        }).catch(error => {
-            console.error(error);
-        });
     });
 
     socket.on('edit message', (editingmessageid, editingmsg, sanitizedroom) => {
