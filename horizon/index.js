@@ -999,6 +999,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (showexperimentspopup) {
         experimentsPopup.style.display = "block";
     }
+    var localize = function (string, fallback) {
+        var localized = string.toLocaleString();
+        if (localized !== string) {
+            return localized;
+        } else {
+            return fallback;
+        }
+    };
+    titledoc = document.getElementById("title").firstChild;
+    document.title = titledoc.nodeValue = localize("%title", titledoc.nodeValue);
+    document.documentElement.lang = String.locale || document.documentElement.lang;
 }, {once: true});
 
 document.addEventListener("click", function (event) {
