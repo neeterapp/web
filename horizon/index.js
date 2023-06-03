@@ -1007,7 +1007,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return fallback;
         }
     };
-    titledoc = document.getElementById("title").firstChild;
+    const titledoc = document.getElementById("title");
+    console.log(localize("%title", $("title").text()))
+    $("title").innerHtml(localize("%title", $("title").text()));
     document.title = titledoc.nodeValue = localize("%title", titledoc.nodeValue);
     document.documentElement.lang = String.locale || document.documentElement.lang;
 }, {once: true});
