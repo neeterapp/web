@@ -56,7 +56,7 @@ registerFormSubmit.addEventListener('click', () => {
         console.log(errorCode);
         console.log(errorMessage);
     });
-});
+}, {once: true});
 loginFormSubmit.addEventListener('click', () => {
     const email = document.getElementById('login-email-input').value;
     const password = document.getElementById('login-password-input').value;
@@ -80,7 +80,7 @@ loginFormSubmit.addEventListener('click', () => {
         console.log(errorCode);
         console.log(errorMessage);
     });
-});
+}, {once: true});
 
 getAuth().onAuthStateChanged((user) => {
     if (user) {

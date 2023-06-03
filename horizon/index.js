@@ -81,7 +81,7 @@ backbutton.addEventListener('click', () => {
     auth.signOut().then(() => {
         location.href = '/login';
     });
-});
+},{once: true});
 
 const circlesettingsbutton = document.getElementById('room-settings');
 circlesettingsbutton.addEventListener('click', function (event) {
@@ -349,6 +349,7 @@ function goToMsg(msgID) {
             msg.classList.remove('highlight', 'remove');
         }, 250);
     }, 1000);
+    return;
 }
 
 const messagesParentElement = document.getElementById("messages");
@@ -998,7 +999,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (showexperimentspopup) {
         experimentsPopup.style.display = "block";
     }
-});
+}, {once: true});
 
 document.addEventListener("click", function (event) {
     if (event.target.tagName.toLowerCase() === "a" && event.target.classList.contains("userlink")) {
