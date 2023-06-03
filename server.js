@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const fetch = require('node-fetch');
 const mongoose = require('mongoose');
 const DOMPurify = require('isomorphic-dompurify');
 require('dotenv').config();
@@ -19,11 +20,11 @@ const dcclient = new Client({
 });
 
 dcclient.once(Events.ClientReady, c => {
-	console.log(`Ready! Logged in as ${c.user.tag}`);
+    console.log(`Ready! Logged in as ${c.user.tag}`);
     dcclient.user.setPresence({
         activities: [{ name: 'Discord messages', type: 'WATCHING' }],
         status: 'dnd'
-      });
+    });
 });
 
 // Connect to MongoDB
@@ -212,7 +213,7 @@ io.on('connection', (socket) => {
         }).catch((err) => {
             console.error(err);
         });
-        
+
     });
     socket.on('room renamed', (newroom, oldroom) => {
         const sanitizednewroom = DOMPurify.sanitize(newroom);
@@ -286,13 +287,13 @@ io.on('connection', (socket) => {
         RoomData.updateOne(
             { room: sanitizedroom, members: { $ne: usrname } },
             { $addToSet: { members: usrname } }
-          )
-          .then(result => {
-            console.log(result); // log the result of the update operation
-          })
-          .catch(error => {
-            console.error(error); // log any errors that occur during the update operation
-          });
+        )
+            .then(result => {
+                console.log(result); // log the result of the update operation
+            })
+            .catch(error => {
+                console.error(error); // log any errors that occur during the update operation
+            });
         // Load messages for the room
         Message.find({ room: sanitizedroom }).then((messages) => {
             socket.emit('load messages', messages);
@@ -347,55 +348,80 @@ io.on('connection', (socket) => {
         });
     });
 
+    socket.on('message to ai', (msg, username, room, date) => {
+        const sanitizedmsg = DOMPurify.sanitize(msg);
+        const sanitizedusername = DOMPurify.sanitize(username);
+        const sanitizedroom = DOMPurify.sanitize(room);
+        const sanitizeddate = DOMPurify.sanitize(date);
+        console.log(`message: ${sanitizedmsg}, username: ${sanitizedusername}, room: ${sanitizedroom}, date: ${sanitizeddate}`);
+        fetch('https://nixapi.hop.sh/api/chat-model', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: msg,
+                username: username,
+                messagesleft: '1',
+                currentcircle: room,
+                extrauserinfo: 'nothing',
+                currentdate: date
+            })
+        }).then(response => response.json())
+            .then(data => {
+                socket.emit('ai response', data.response);
+            });
+    });
+
     // Handle chat message
     socket.on('chat message', (msg, username, room, isaresponse, msgresponseto, msgresponsetousername) => {
-                const sanitizedmsg = DOMPurify.sanitize(msg);
-                const sanitizedusername = DOMPurify.sanitize(username);
-                const sanitizedroom = DOMPurify.sanitize(room);
-                const sanitizedresponseto = DOMPurify.sanitize(msgresponseto);
-                const sanitizedresponsetousername = DOMPurify.sanitize(msgresponsetousername);
-                const currentTime = new Date().getTime();
-                if (messageCount[sanitizedusername] && (currentTime - messageCount[sanitizedusername].timestamp) < 1000 && messageCount[sanitizedusername].count >= 10) {
-                    socket.emit('msgratelimit', sanitizedmsg, sanitizedusername, sanitizedroom);
+        const sanitizedmsg = DOMPurify.sanitize(msg);
+        const sanitizedusername = DOMPurify.sanitize(username);
+        const sanitizedroom = DOMPurify.sanitize(room);
+        const sanitizedresponseto = DOMPurify.sanitize(msgresponseto);
+        const sanitizedresponsetousername = DOMPurify.sanitize(msgresponsetousername);
+        const currentTime = new Date().getTime();
+        if (messageCount[sanitizedusername] && (currentTime - messageCount[sanitizedusername].timestamp) < 1000 && messageCount[sanitizedusername].count >= 10) {
+            socket.emit('msgratelimit', sanitizedmsg, sanitizedusername, sanitizedroom);
+        } else {
+            if (!messageCount[sanitizedusername]) {
+                // wait 3s
+                setTimeout(() => {
+                    messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
+                }, 3000);
+            } else {
+                if (messageCount[sanitizedusername].count === 10) {
+                    setTimeout(() => {
+                        messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
+                    }, 3000);
                 } else {
-                    if (!messageCount[sanitizedusername]) {
-                        // wait 3s
-                        setTimeout(() => {
-                            messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
-                        }, 3000);
-                    } else {
-                        if (messageCount[sanitizedusername].count === 10) {
-                            setTimeout(() => {
-                                messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
-                            }, 3000);
-                        } else {
-                            messageCount[sanitizedusername].count++;
-                            messageCount[sanitizedusername].timestamp = currentTime;
-                        }
-                    }
-                    console.log(`message: ${sanitizedmsg}, username: ${sanitizedusername}, room: ${sanitizedroom}, isresponse: ${isaresponse}, responsetomessage: ${sanitizedresponseto}, responsetousername: ${sanitizedresponsetousername}`);
+                    messageCount[sanitizedusername].count++;
+                    messageCount[sanitizedusername].timestamp = currentTime;
+                }
+            }
+            console.log(`message: ${sanitizedmsg}, username: ${sanitizedusername}, room: ${sanitizedroom}, isresponse: ${isaresponse}, responsetomessage: ${sanitizedresponseto}, responsetousername: ${sanitizedresponsetousername}`);
+            RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+                const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
+                message.save().then(() => {
                     RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
-                        const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
-                        message.save().then(() => {
-                            RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
-                                io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
-                                moderatemsg(message.message).then((flaggedmessage) => {
-                                    console.log("Message flagging test completed. The flagged status is: " + flaggedmessage)
-                                    if (flaggedmessage === true) {
-                                        console.log(`deleting message ${message._id}`);
-                                        Message.findByIdAndDelete(message._id).then(() => {
-                                        socket.emit('message deleted', message._id);
-                                        }).catch((err) => {
-                                            console.error(err);
-                                        });
-                                    }
+                        io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
+                        moderatemsg(message.message).then((flaggedmessage) => {
+                            console.log("Message flagging test completed. The flagged status is: " + flaggedmessage)
+                            if (flaggedmessage === true) {
+                                console.log(`deleting message ${message._id}`);
+                                Message.findByIdAndDelete(message._id).then(() => {
+                                    socket.emit('message deleted', message._id);
+                                }).catch((err) => {
+                                    console.error(err);
                                 });
-                            });
-                        }).catch((err) => {
-                            console.error(err);
+                            }
                         });
                     });
-            }
+                }).catch((err) => {
+                    console.error(err);
+                });
+            });
+        }
     });
 
     socket.on('edit message', (editingmessageid, editingmsg, sanitizedroom) => {

@@ -32,11 +32,16 @@ const app = initializeApp(firebaseConfig);
 
 function prepareMessage(message, username) {
     const mentionRegex = `@(${username})\\b`;
+    const earthyRegex = `@(Earthy)\\b`;
     const linkRegex = /(https?:\/\/\S+)/g;
     const highlightClass = "highlight";
+    const earthyClass = "earthymention";
     const mentionClass = "mention";
-    const highlightedMessage = message.replace(mentionRegex, (match, mention) => {
+    const mentionhighlightedMessage = message.replace(mentionRegex, (match, mention) => {
         return `<span class="${mentionClass}">${mention}</span>`;
+    });
+    const highlightedMessage = mentionhighlightedMessage.replace(earthyRegex, (match, mention) => {
+        return `<span class="${earthyClass}">${mention}</span>`;
     });
 
     const highlightRegex = new RegExp(`@(${username})\\b`, "gi");
@@ -177,7 +182,19 @@ $('#message-form').submit(() => {
     if (editingmsg === true) {
         socket.emit('edit message', editingmessageid, message);
     } else {
-        socket.emit('chat message', message, username, currentRoom, isaresponse, responsetomsg, msgresponsetousername);
+        if (message.startsWith('@Earthy ')) {
+            const earthyRegex = `@(Earthy)\\b`;
+            const earthyClass = "earthymention";
+            let li;
+            message.replace(earthyRegex, (match, mention) => {
+                li = $('<li>').attr('id', `msg-ai-${message}`).html(prepareMessage(`<b id="usernametext">${username}</b><b>:</b> <span class="${earthyClass}">${mention}</span>`));
+            });
+            $('#messages').append(li);
+            const date = new Date();
+            socket.emit('message to ai', message, username, currentRoom, date);
+        } else {
+            socket.emit('chat message', message, username, currentRoom, isaresponse, responsetomsg, msgresponsetousername);
+        }
     }
     $('#message').val('');
     $('#char-count').text(``);
@@ -999,7 +1016,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (showexperimentspopup) {
         experimentsPopup.style.display = "block";
     }
-    var localize = function (string, fallback) {
+    /*var localize = function (string, fallback) {
         var localized = string.toLocaleString();
         if (localized !== string) {
             return localized;
@@ -1011,9 +1028,13 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log(localize("%title", $("title").text()))
     $("title").innerHtml(localize("%title", $("title").text()));
     document.title = titledoc.nodeValue = localize("%title", titledoc.nodeValue);
-    document.documentElement.lang = String.locale || document.documentElement.lang;
+    document.documentElement.lang = String.locale || document.documentElement.lang;*/
 }, {once: true});
 
+socket.on('ai response', (response) => {
+    const li = $('<li>').attr('id', `msg-${response._id}`).html(prepareMessage(`<b id="usernametext" class="earthymention">Earthy</b><b>:</b> ${response} (AI - Message only visible to you) `));
+    $('#messages').append(li);
+});
 document.addEventListener("click", function (event) {
     if (event.target.tagName.toLowerCase() === "a" && event.target.classList.contains("userlink")) {
         event.preventDefault();

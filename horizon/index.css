@@ -179,6 +179,13 @@
     background-color: #51c2b3;
   }
 
+  .earthymention {
+    border-radius: 2px;
+    padding-right: 2px;
+    padding-left: 2px;
+    background-color: #c28851;
+  }
+
   .highlight.remove {
     padding: 0px;
     background-color: transparent;
