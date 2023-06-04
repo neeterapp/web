@@ -62,6 +62,7 @@ socket.on('user data', (userdata) => {
     } else {
         currentRoom = "Main";
     }
+    messagesleft = userdata.earthymessagesleft;
     username = userdata.username;
     $('#username-popup').hide();
     $('#circle-selector').show();
@@ -70,7 +71,15 @@ socket.on('user data', (userdata) => {
         socket.emit('join room', currentRoom, username);
         joined = true;
     }
-    $('#current-room').text(currentRoom);
+    if (currentRoom === "Earthy") {
+        if (messagesleft >= 2) {
+            $('#current-room').text(`Earthy - ${messagesleft} message/s left`);
+        } else {
+            $('#current-room').text(`Earthy - ${messagesleft} message left`);
+        }
+    } else {
+        $('#current-room').text(currentRoom);
+    }
     document.title = `Neeter - ${currentRoom}`
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
@@ -182,13 +191,8 @@ $('#message-form').submit(() => {
     if (editingmsg === true) {
         socket.emit('edit message', editingmessageid, message);
     } else {
-        if (message.startsWith('@Earthy ')) {
-            const earthyRegex = `@(Earthy)\\b`;
-            const earthyClass = "earthymention";
-            let li;
-            message.replace(earthyRegex, (match, mention) => {
-                li = $('<li>').attr('id', `msg-ai-${message}`).html(prepareMessage(`<b id="usernametext">${username}</b><b>:</b> <span class="${earthyClass}">${mention}</span>`));
-            });
+        if (currentRoom === "Earthy") {
+            const li = $('<li>').attr('id', `msg-ai-${message}`).html(prepareMessage(`<b id="usernametext">${username}</b><b>:</b> ${message} (Message only visible to you)`));
             $('#messages').append(li);
             const date = new Date();
             socket.emit('message to ai', message, username, currentRoom, date);
@@ -260,7 +264,9 @@ socket.on('rooms list', (roomslist) => {
         const img = document.createElement('img');
         truncatedroomname = truncateText(roomname, 40);
         if (roomname === "Main") {
-            img.src = `https://i.postimg.cc/4nkSssfh/Neeter-Logo-2305.png`;
+            img.src = `https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png`;
+        } else if (roomname === "Earthy") {
+            img.src = `https://i.postimg.cc/prRpL1Ds/earthy-icon.png`
         } else {
             img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
         }
