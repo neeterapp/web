@@ -9,17 +9,14 @@ const socket = io();
 const notificationSound = document.getElementById('notification');
 let username = '';
 let currentRoom = '';
-let allroomsList = [];
 let truncatedroomname
 let earthymsgtimeout;
 let earthyenabled = false;
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
-import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
-// grab the room name and username from the URL
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
 const urlParams = new URLSearchParams(window.location.search);
 const urlroom = urlParams.get('room');
 let joined = false;
-let messagesloaded = false;
 const showexperimentspopup = urlParams.get('experimentsenabled');
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
