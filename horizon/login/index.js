@@ -1,5 +1,4 @@
 const socket = io();
-let username = '';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
 import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
 const firebaseConfig = {
