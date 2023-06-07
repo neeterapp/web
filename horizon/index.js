@@ -11,6 +11,7 @@ let username = '';
 let currentRoom = '';
 let allroomsList = [];
 let truncatedroomname
+let earthymsgtimeout;
 let earthyenabled = false;
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
 import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
@@ -199,6 +200,9 @@ $('#message-form').submit(() => {
             socket.emit('message to ai', message, username, currentRoom, date, airesponseid);
             const aili = $('<li>').attr('id', `msg-ai-${airesponseid}`).html(prepareMessage(`Earthy is writing... (Message only visible to you)`));
             $('#messages').append(aili);
+            earthymsgtimeout = setTimeout(() => {
+                $(`#msg-ai-${airesponseid}`).html(prepareMessage(`Error on Earthy message (Message only visible to you)`));
+            }, 10000);
         } else {
             socket.emit('chat message', message, username, currentRoom, isaresponse, responsetomsg, msgresponsetousername);
         }
@@ -1045,6 +1049,9 @@ socket.on('ai response', (response, airesponseid) => {
     $(`#msg-ai-${airesponseid}`).remove();
     const li = $('<li>').attr('id', `msg-${response._id}`).html(prepareMessage(`<b id="usernametext" class="earthymention">Earthy</b><b>:</b> ${response} (AI - Message only visible to you) `));
     $('#messages').append(li);
+    if (earthymsgtimeout !== null) {
+    clearTimeout(earthymsgtimeout);
+    }
 });
 document.addEventListener("click", function (event) {
     if (event.target.tagName.toLowerCase() === "a" && event.target.classList.contains("userlink")) {
