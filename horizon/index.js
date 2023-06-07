@@ -201,7 +201,7 @@ $('#message-form').submit(() => {
             const aili = $('<li>').attr('id', `msg-ai-${airesponseid}`).html(prepareMessage(`Earthy is writing... (Message only visible to you)`));
             $('#messages').append(aili);
             earthymsgtimeout = setTimeout(() => {
-                $(`#msg-ai-${airesponseid}`).html(prepareMessage(`Error on Earthy message (Message only visible to you)`));
+                $(`#msg-ai-${airesponseid}`).html(prepareMessage(`<b>Error on Earthy message</b> - Do you have Earthy access? (Message only visible to you)`));
             }, 10000);
         } else {
             socket.emit('chat message', message, username, currentRoom, isaresponse, responsetomsg, msgresponsetousername);
@@ -290,7 +290,6 @@ socket.on('rooms list', (roomslist) => {
                     $('#current-room').text(currentRoom);
                     const urlParams = new URLSearchParams(window.location.search);
                     urlParams.set('room', currentRoom);
-                    urlParams.set('username', username);
                     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
                     window.history.pushState({}, '', newUrl);
                     socket.emit('join room', currentRoom, username);
