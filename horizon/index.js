@@ -262,49 +262,49 @@ socket.on('rooms list', (roomslist) => {
     grid.innerHTML = '';
     const tippyInstances = [];
     roomslist.forEach(roomname => {
-                const li = document.createElement('li');
-                const div = document.createElement('div');
-                const img = document.createElement('img');
-                truncatedroomname = truncateText(roomname, 40);
-                if (roomname === "Main") {
-                    img.src = `https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png`;
-                } else if (roomname === "Earthy") {
-                    img.src = `https://i.postimg.cc/prRpL1Ds/earthy-icon.png`
-                } else {
-                    img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
-                }
-                img.alt = roomname;
-                img.id = roomname;
-                div.classList.add('circle');
-                div.id = `roomname-${roomname}`;
-                div.appendChild(img);
-                li.appendChild(div);
-                grid.appendChild(li);
-                img.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    $('#messages').empty();
-                    currentRoom = roomname;
-                    $('#current-room').text(currentRoom);
-                    const urlParams = new URLSearchParams(window.location.search);
-                    urlParams.set('room', currentRoom);
-                    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-                    window.history.pushState({}, '', newUrl);
-                    socket.emit('join room', currentRoom, username);
-                    document.title = `Neeter - ${currentRoom}`;
-                    // select the image and deselect all other image in the grid
-                    const selected = document.querySelector('.selected');
-                    if (selected) {
-                        selected.classList.remove('selected');
-                    }
-                    img.classList.add('selected');
-                });
-                const instance = tippy(div, {
-                    content: truncateText(roomname, 40),
-                    theme: 'light',
-                    placement: 'bottom',
-                    arrow: false,
-                });
-                tippyInstances.push(instance);
+        const li = document.createElement('li');
+        const div = document.createElement('div');
+        const img = document.createElement('img');
+        truncatedroomname = truncateText(roomname, 40);
+        if (roomname === "Main") {
+            img.src = `https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png`;
+        } else if (roomname === "Earthy") {
+            img.src = `https://i.postimg.cc/prRpL1Ds/earthy-icon.png`
+        } else {
+            img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
+        }
+        img.alt = roomname;
+        img.id = roomname;
+        div.classList.add('circle');
+        div.id = `roomname-${roomname}`;
+        div.appendChild(img);
+        li.appendChild(div);
+        grid.appendChild(li);
+        img.addEventListener('click', (event) => {
+            event.preventDefault();
+            $('#messages').empty();
+            currentRoom = roomname;
+            $('#current-room').text(currentRoom);
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('room', currentRoom);
+            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+            window.history.pushState({}, '', newUrl);
+            socket.emit('join room', currentRoom, username);
+            document.title = `Neeter - ${currentRoom}`;
+            // select the image and deselect all other image in the grid
+            const selected = document.querySelector('.selected');
+            if (selected) {
+                selected.classList.remove('selected');
+            }
+            img.classList.add('selected');
+        });
+        const instance = tippy(div, {
+            content: truncateText(roomname, 40),
+            theme: 'light',
+            placement: 'bottom',
+            arrow: false,
+        });
+        tippyInstances.push(instance);
     });
     tippy.createSingleton(tippyInstances, {
         placement: 'bottom',
@@ -1046,7 +1046,7 @@ socket.on('ai response', (response, airesponseid) => {
     const li = $('<li>').attr('id', `msg-${response._id}`).html(prepareMessage(`<b id="usernametext" class="earthymention">Earthy</b><b>:</b> ${response} (AI - Message only visible to you) `));
     $('#messages').append(li);
     if (earthymsgtimeout !== null) {
-    clearTimeout(earthymsgtimeout);
+        clearTimeout(earthymsgtimeout);
     }
 });
 document.addEventListener("click", function (event) {

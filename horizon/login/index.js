@@ -9,15 +9,15 @@ const firebaseConfig = {
     storageBucket: "i3e-5d95a.appspot.com",
     messagingSenderId: "229507724277",
     appId: "1:229507724277:web:deb1eea04d486f18f0e6bc"
-  };
-  const app = initializeApp(firebaseConfig);
+};
+const app = initializeApp(firebaseConfig);
 
-document.getElementById('sign-up-instead').addEventListener('click', function() {
+document.getElementById('sign-up-instead').addEventListener('click', function () {
     document.getElementById('login-form').style.display = 'none';
     document.getElementById('register-form').style.display = 'flex';
 });
 
-document.getElementById('sign-in-instead').addEventListener('click', function() {
+document.getElementById('sign-in-instead').addEventListener('click', function () {
     document.getElementById('register-form').style.display = 'none';
     document.getElementById('login-form').style.display = 'flex';
 });
@@ -35,11 +35,18 @@ registerFormSubmit.addEventListener('click', () => {
     const username = document.getElementById('reg-username-input').value;
     const auth = getAuth();
     setPersistence(auth, browserSessionPersistence)
-    .then(() => {
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            socket.emit('register user', user.uid, username);
+        .then(() => {
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    socket.emit('register user', user.uid, username);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log(errorCode);
+                    console.log(errorMessage);
+                });
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -47,42 +54,35 @@ registerFormSubmit.addEventListener('click', () => {
             console.log(errorCode);
             console.log(errorMessage);
         });
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-    });
-}, {once: true});
+}, { once: true });
 loginFormSubmit.addEventListener('click', () => {
     const email = document.getElementById('login-email-input').value;
     const password = document.getElementById('login-password-input').value;
     const auth = getAuth();
     setPersistence(auth, browserSessionPersistence)
-    .then(() => {
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            socket.emit('user data', user.uid);
-        }).catch((error) => {
+        .then(() => {
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    socket.emit('user data', user.uid);
+                }).catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log(errorCode);
+                    console.log(errorMessage);
+                });
+        })
+        .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode);
             console.log(errorMessage);
         });
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-    });
-}, {once: true});
+}, { once: true });
 
 getAuth().onAuthStateChanged((user) => {
     if (user) {
-      socket.emit('user data', user.uid);
+        socket.emit('user data', user.uid);
     } else {
     }
-  }, { once: true });
+}, { once: true });

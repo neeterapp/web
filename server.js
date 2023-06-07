@@ -176,15 +176,15 @@ async function moderatemsg(textToModerate) {
 io.on('connection', (socket) => {
     roomsList = [];
     RoomData.find({})
-                    .then((rooms) => {
-                        rooms.forEach((room) => {
-                            roomsList.push(room.room);
-                        });
-                        socket.emit('rooms list', roomsList)
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
+        .then((rooms) => {
+            rooms.forEach((room) => {
+                roomsList.push(room.room);
+            });
+            socket.emit('rooms list', roomsList)
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     console.log('a user connected');
     socket.on('register user', (userid, username) => {
         const sanitizeduserid = DOMPurify.sanitize(userid);
