@@ -11,6 +11,7 @@ let username = '';
 let currentRoom = '';
 let allroomsList = [];
 let truncatedroomname
+let earthyenabled = false;
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
 import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
 // grab the room name and username from the URL
@@ -19,6 +20,9 @@ const urlroom = urlParams.get('room');
 let joined = false;
 let messagesloaded = false;
 const showexperimentspopup = urlParams.get('experimentsenabled');
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
 const firebaseConfig = {
     apiKey: "AIzaSyCVqlFta6rULlWiiYu1yDDs9zsLH1fGddU",
     authDomain: "i3e-5d95a.firebaseapp.com",
@@ -62,7 +66,10 @@ socket.on('user data', (userdata) => {
     } else {
         currentRoom = "Main";
     }
-    messagesleft = userdata.earthymessagesleft;
+    earthyenabled = userdata.earthyenabled;
+    if (earthyenabled === true) {
+        $('#roomname-Earthy').show();
+    }
     username = userdata.username;
     $('#username-popup').hide();
     $('#circle-selector').show();
@@ -71,15 +78,7 @@ socket.on('user data', (userdata) => {
         socket.emit('join room', currentRoom, username);
         joined = true;
     }
-    if (currentRoom === "Earthy") {
-        if (messagesleft >= 2) {
-            $('#current-room').text(`Earthy - ${messagesleft} message/s left`);
-        } else {
-            $('#current-room').text(`Earthy - ${messagesleft} message left`);
-        }
-    } else {
-        $('#current-room').text(currentRoom);
-    }
+    $('#current-room').text(currentRoom);
     document.title = `Neeter - ${currentRoom}`
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
@@ -95,7 +94,7 @@ backbutton.addEventListener('click', () => {
     auth.signOut().then(() => {
         location.href = '/login';
     });
-},{once: true});
+}, { once: true });
 
 const circlesettingsbutton = document.getElementById('room-settings');
 circlesettingsbutton.addEventListener('click', function (event) {
@@ -192,10 +191,14 @@ $('#message-form').submit(() => {
         socket.emit('edit message', editingmessageid, message);
     } else {
         if (currentRoom === "Earthy") {
-            const li = $('<li>').attr('id', `msg-ai-${message}`).html(prepareMessage(`<b id="usernametext">${username}</b><b>:</b> ${message} (Message only visible to you)`));
+            const aimessageid = getRandomInt(99999);
+            const li = $('<li>').attr('id', `msg-ai-${aimessageid}`).html(prepareMessage(`<b id="usernametext">${username}</b><b>:</b> ${message} (Message only visible to you)`));
             $('#messages').append(li);
             const date = new Date();
-            socket.emit('message to ai', message, username, currentRoom, date);
+            const airesponseid = getRandomInt(9999);
+            socket.emit('message to ai', message, username, currentRoom, date, airesponseid);
+            const aili = $('<li>').attr('id', `msg-ai-${airesponseid}`).html(prepareMessage(`Earthy is writing... (Message only visible to you)`));
+            $('#messages').append(aili);
         } else {
             socket.emit('chat message', message, username, currentRoom, isaresponse, responsetomsg, msgresponsetousername);
         }
@@ -254,54 +257,54 @@ socket.on('msgratelimit', (msg, senderusername, room) => {
 });
 
 socket.on('rooms list', (roomslist) => {
-    allroomsList = roomslist;
     const grid = document.querySelector('.circle-grid');
     grid.innerHTML = '';
     const tippyInstances = [];
-    allroomsList.forEach(roomname => {
-        const li = document.createElement('li');
-        const div = document.createElement('div');
-        const img = document.createElement('img');
-        truncatedroomname = truncateText(roomname, 40);
-        if (roomname === "Main") {
-            img.src = `https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png`;
-        } else if (roomname === "Earthy") {
-            img.src = `https://i.postimg.cc/prRpL1Ds/earthy-icon.png`
-        } else {
-            img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
-        }
-        img.alt = roomname;
-        img.id = roomname;
-        div.classList.add('circle');
-        div.appendChild(img);
-        li.appendChild(div);
-        grid.appendChild(li);
-        img.addEventListener('click', (event) => {
-            event.preventDefault();
-            $('#messages').empty();
-            currentRoom = roomname;
-            $('#current-room').text(currentRoom);
-            const urlParams = new URLSearchParams(window.location.search);
-            urlParams.set('room', currentRoom);
-            urlParams.set('username', username);
-            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-            window.history.pushState({}, '', newUrl);
-            socket.emit('join room', currentRoom, username);
-            document.title = `Neeter - ${currentRoom}`;
-            // select the image and deselect all other image in the grid
-            const selected = document.querySelector('.selected');
-            if (selected) {
-                selected.classList.remove('selected');
-            }
-            img.classList.add('selected');
-        });
-        const instance = tippy(div, {
-            content: truncateText(roomname, 40),
-            theme: 'light',
-            placement: 'bottom',
-            arrow: false,
-        });
-        tippyInstances.push(instance);
+    roomslist.forEach(roomname => {
+                const li = document.createElement('li');
+                const div = document.createElement('div');
+                const img = document.createElement('img');
+                truncatedroomname = truncateText(roomname, 40);
+                if (roomname === "Main") {
+                    img.src = `https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png`;
+                } else if (roomname === "Earthy") {
+                    img.src = `https://i.postimg.cc/prRpL1Ds/earthy-icon.png`
+                } else {
+                    img.src = `https://api.dicebear.com/6.x/initials/svg?seed=${truncatedroomname}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400`;
+                }
+                img.alt = roomname;
+                img.id = roomname;
+                div.classList.add('circle');
+                div.id = `roomname-${roomname}`;
+                div.appendChild(img);
+                li.appendChild(div);
+                grid.appendChild(li);
+                img.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    $('#messages').empty();
+                    currentRoom = roomname;
+                    $('#current-room').text(currentRoom);
+                    const urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('room', currentRoom);
+                    urlParams.set('username', username);
+                    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+                    window.history.pushState({}, '', newUrl);
+                    socket.emit('join room', currentRoom, username);
+                    document.title = `Neeter - ${currentRoom}`;
+                    // select the image and deselect all other image in the grid
+                    const selected = document.querySelector('.selected');
+                    if (selected) {
+                        selected.classList.remove('selected');
+                    }
+                    img.classList.add('selected');
+                });
+                const instance = tippy(div, {
+                    content: truncateText(roomname, 40),
+                    theme: 'light',
+                    placement: 'bottom',
+                    arrow: false,
+                });
+                tippyInstances.push(instance);
     });
     tippy.createSingleton(tippyInstances, {
         placement: 'bottom',
@@ -314,6 +317,7 @@ socket.on('rooms list', (roomslist) => {
         const selectedCircle = document.getElementById(currentRoom);
         selectedCircle.classList.add('selected');
     }
+    $('#roomname-Earthy').hide();
 });
 
 function convertMarkdownToHTML(markdown) {
@@ -1035,9 +1039,10 @@ document.addEventListener("DOMContentLoaded", function () {
     $("title").innerHtml(localize("%title", $("title").text()));
     document.title = titledoc.nodeValue = localize("%title", titledoc.nodeValue);
     document.documentElement.lang = String.locale || document.documentElement.lang;*/
-}, {once: true});
+}, { once: true });
 
-socket.on('ai response', (response) => {
+socket.on('ai response', (response, airesponseid) => {
+    $(`#msg-ai-${airesponseid}`).remove();
     const li = $('<li>').attr('id', `msg-${response._id}`).html(prepareMessage(`<b id="usernametext" class="earthymention">Earthy</b><b>:</b> ${response} (AI - Message only visible to you) `));
     $('#messages').append(li);
 });

@@ -23,8 +23,7 @@ document.getElementById('sign-in-instead').addEventListener('click', function() 
     document.getElementById('login-form').style.display = 'flex';
 });
 
-socket.on('user data', (userdata) => {
-    username = userdata.username;
+socket.on('user data', () => {
     window.location.href = '/';
 });
 

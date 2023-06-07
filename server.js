@@ -9,7 +9,7 @@ require('dotenv').config();
 const { Configuration, OpenAIApi } = require("openai");
 const emojiRegex = require('emoji-regex');
 const emjregex = emojiRegex();
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Events, GatewayIntentBits, User } = require('discord.js');
 const { token } = require('./config.json');
 const dcclient = new Client({
     intents: [
@@ -78,6 +78,10 @@ const userSchema = new mongoose.Schema({
     },
     hubs: {
         type: Array,
+        required: false
+    },
+    earthyenabled: {
+        type: Boolean,
         required: false
     }
 }, { timestamps: false });
@@ -167,18 +171,17 @@ async function moderatemsg(textToModerate) {
 // Handle socket connection
 io.on('connection', (socket) => {
     roomsList = [];
-    console.log('a user connected');
     RoomData.find({})
-        .then((rooms) => {
-            rooms.forEach((room) => {
-                roomsList.push(room.room);
-            });
-            socket.emit('rooms list', roomsList)
-            console.log('Rooms list:', roomsList);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+                    .then((rooms) => {
+                        rooms.forEach((room) => {
+                            roomsList.push(room.room);
+                        });
+                        socket.emit('rooms list', roomsList)
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+    console.log('a user connected');
     socket.on('register user', (userid, username) => {
         const sanitizeduserid = DOMPurify.sanitize(userid);
         const sanitizedusername = DOMPurify.sanitize(username);
@@ -348,33 +351,47 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on('message to ai', (msg, username, room, date) => {
-        const sanitizedmsg = DOMPurify.sanitize(msg);
-        const sanitizedusername = DOMPurify.sanitize(username);
-        const sanitizedroom = DOMPurify.sanitize(room);
-        const sanitizeddate = DOMPurify.sanitize(date);
-        console.log(`message: ${sanitizedmsg}, username: ${sanitizedusername}, room: ${sanitizedroom}, date: ${sanitizeddate}`);
-        fetch('https://nixapi.hop.sh/api/chat-model', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: msg,
-                username: username,
-                messagesleft: '1',
-                currentcircle: room,
-                extrauserinfo: 'nothing',
-                currentdate: date
-            })
-        }).then(response => response.json())
-            .then(data => {
-                socket.emit('ai response', data.response);
-            });
+    socket.on('message to ai', (msg, username, room, date, airesponseid) => {
+        UserData.findOne({ username: username }).then((existingUser) => {
+            if (existingUser) {
+                const earthyenabled = existingUser.earthyenabled;
+                if (earthyenabled) {
+                    const sanitizedmsg = DOMPurify.sanitize(msg);
+                    const sanitizedusername = DOMPurify.sanitize(username);
+                    const sanitizedroom = DOMPurify.sanitize(room);
+                    const sanitizeddate = DOMPurify.sanitize(date);
+                    console.log(`message: ${sanitizedmsg}, username: ${sanitizedusername}, room: ${sanitizedroom}, date: ${sanitizeddate}`);
+                    fetch('https://nixapi.hop.sh/api/chat-model', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: msg,
+                            username: username,
+                            messagesleft: '1',
+                            currentcircle: room,
+                            extrauserinfo: 'nothing',
+                            currentdate: date
+                        })
+                    }).then(response => response.json())
+                        .then(data => {
+                            socket.emit('ai response', data.response, airesponseid);
+                        });
+                } else {
+                    console.log('Earthy is not enabled for this user.');
+                }
+            }
+        }).catch((err) => {
+            console.error(err);
+        });
     });
 
     // Handle chat message
     socket.on('chat message', (msg, username, room, isaresponse, msgresponseto, msgresponsetousername) => {
+        if (room === "Earthy") {
+            return;
+        }
         const sanitizedmsg = DOMPurify.sanitize(msg);
         const sanitizedusername = DOMPurify.sanitize(username);
         const sanitizedroom = DOMPurify.sanitize(room);
