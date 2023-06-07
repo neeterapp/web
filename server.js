@@ -83,6 +83,10 @@ const userSchema = new mongoose.Schema({
     earthyenabled: {
         type: Boolean,
         required: false
+    },
+    popupsdismissed: {
+        type: Array,
+        required: false
     }
 }, { timestamps: false });
 // Define message schema
