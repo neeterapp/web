@@ -368,12 +368,13 @@ io.on('connection', (socket) => {
                     fetch('https://nixapi.hop.sh/api/chat-model', {
                         method: 'POST',
                         headers: {
+                            'Authorization': 'Bearer ' + process.env.NIX_API_KEY,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             message: msg,
                             username: username,
-                            messagesleft: '1',
+                            messagesleft: 'None (Unlimited due to private early access)',
                             currentcircle: room,
                             extrauserinfo: 'nothing',
                             currentdate: date
