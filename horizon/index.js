@@ -292,7 +292,7 @@ socket.on('rooms list', (roomslist) => {
             if (currentRoom === "Earthy") {
                 $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
-            $('#current-room').text(currentRoom);
+                $('#current-room').text(currentRoom);
             }
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('room', currentRoom);
@@ -359,7 +359,7 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
             if (currentRoom === 'Earthy') {
                 $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
-            $('#current-room').text(currentRoom);
+                $('#current-room').text(currentRoom);
             }
         }
     } else {
@@ -371,7 +371,7 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
             if (currentRoom === 'Earthy') {
                 $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
-            $('#current-room').text(currentRoom);
+                $('#current-room').text(currentRoom);
             }
         }
     }
@@ -879,8 +879,13 @@ socket.on('load messages', (messages) => {
         }
     });
     if (messages.length === 0) {
-        const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
-        $('#messages').append(li);
+        if (currentRoom === 'Earthy') {
+            const li = $('<li>').attr('id', 'nomsgs').html("<b>Looks like you have no messages with Earthy yet... Why not send one and see what he answers?</b> Also remember that Earthy doesn't has a chat history yet.");
+            $('#messages').append(li);
+        } else {
+            const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
+            $('#messages').append(li);
+        }
     }
     window.scrollTo({
         top: document.body.scrollHeight,
@@ -892,8 +897,13 @@ socket.on('load messages', (messages) => {
 socket.on('message deleted', (msgId) => {
     $(`#msg-${msgId}`).remove();
     if ($('#messages').children().length === 0) {
-        const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
-        $('#messages').append(li);
+        if (currentRoom === 'Earthy') {
+            const li = $('<li>').attr('id', 'nomsgs').html("<b>Looks like you have no messages with Earthy yet... Why not send one and see what he answers?</b> Also remember that Earthy doesn't has a chat history yet.");
+            $('#messages').append(li);
+        } else {
+            const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
+            $('#messages').append(li);
+        }
     }
 });
 
@@ -916,7 +926,7 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
             if (currentRoom === 'Earthy') {
                 $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
-            $('#current-room').text(currentRoom);
+                $('#current-room').text(currentRoom);
             }
         }
     } else {
@@ -928,7 +938,7 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
             if (currentRoom === 'Earthy') {
                 $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
-            $('#current-room').text(currentRoom);
+                $('#current-room').text(currentRoom);
             }
         }
     }
