@@ -76,7 +76,11 @@ socket.on('user data', (userdata) => {
         socket.emit('join room', currentRoom, username);
         joined = true;
     }
-    $('#current-room').text(currentRoom);
+    if (currentRoom === "Earthy") {
+        $('#current-room').text("Ask Earthy");
+    } else {
+        $('#current-room').text(currentRoom);
+    }
     document.title = `Neeter - ${currentRoom}`
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('room', currentRoom);
@@ -189,6 +193,7 @@ $('#message-form').submit(() => {
         socket.emit('edit message', editingmessageid, message);
     } else {
         if (currentRoom === "Earthy") {
+            $('#messages').empty();
             const aimessageid = getRandomInt(99999);
             const li = $('<li>').attr('id', `msg-ai-${aimessageid}`).html(prepareMessage(`<b id="usernametext">${username}</b><b>:</b> ${message} (Message only visible to you)`));
             $('#messages').append(li);

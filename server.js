@@ -162,15 +162,20 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 async function moderatemsg(textToModerate) {
-    const response = await openai.createModeration({
-        input: textToModerate,
-    });
-    const moderationresults = response.data.results;
-    const flaggedmessage = moderationresults[0].flagged;
-    console.log(textToModerate);
-    console.log(flaggedmessage);
-    return flaggedmessage;
-}
+    try {
+      const response = await openai.createModeration({
+          input: textToModerate,
+      });
+      const moderationresults = response.data.results;
+      const flaggedmessage = moderationresults[0].flagged;
+      console.log(textToModerate);
+      console.log(flaggedmessage);
+      return flaggedmessage;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 
 // Handle socket connection
 io.on('connection', (socket) => {
