@@ -289,7 +289,11 @@ socket.on('rooms list', (roomslist) => {
             event.preventDefault();
             $('#messages').empty();
             currentRoom = roomname;
+            if (currentRoom === "Earthy") {
+                $('#current-room').text("Ask Earthy");
+            } else {
             $('#current-room').text(currentRoom);
+            }
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('room', currentRoom);
             const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
@@ -352,7 +356,11 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
         } else {
             $('#current-room-description').show();
             $('#current-room-description').text(newroomsettings.description);
+            if (currentRoom === 'Earthy') {
+                $('#current-room').text("Ask Earthy");
+            } else {
             $('#current-room').text(currentRoom);
+            }
         }
     } else {
         if (newroomsettings.emoji) {
@@ -360,7 +368,11 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
             $('#current-room').text(newroomsettings.emoji + currentRoom);
         } else {
             $('#current-room-description').hide();
+            if (currentRoom === 'Earthy') {
+                $('#current-room').text("Ask Earthy");
+            } else {
             $('#current-room').text(currentRoom);
+            }
         }
     }
     const urlParams = new URLSearchParams(window.location.search);
@@ -876,7 +888,11 @@ socket.on('message deleted', (msgId) => {
 
 socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
     if (isowner) {
-        $('#room-settings').show();
+        if (currentRoom === 'Earthy') {
+            $('#room-settings').hide();
+        } else {
+            $('#room-settings').show();
+        }
     }
     if (roomsettingsdata.description) {
         if (roomsettingsdata.emoji) {
@@ -886,7 +902,11 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
         } else {
             $('#current-room-description').show();
             $('#current-room-description').text(roomsettingsdata.description);
+            if (currentRoom === 'Earthy') {
+                $('#current-room').text("Ask Earthy");
+            } else {
             $('#current-room').text(currentRoom);
+            }
         }
     } else {
         if (roomsettingsdata.emoji) {
@@ -894,7 +914,11 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
             $('#current-room').text(roomsettingsdata.emoji + currentRoom);
         } else {
             $('#current-room-description').hide()
+            if (currentRoom === 'Earthy') {
+                $('#current-room').text("Ask Earthy");
+            } else {
             $('#current-room').text(currentRoom);
+            }
         }
     }
 });
