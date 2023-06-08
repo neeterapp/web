@@ -77,7 +77,7 @@ socket.on('user data', (userdata) => {
         joined = true;
     }
     if (currentRoom === "Earthy") {
-        $('#current-room').text("Ask Earthy");
+        $('#current-room').text("Ask Earthy (Private Chat)");
     } else {
         $('#current-room').text(currentRoom);
     }
@@ -290,7 +290,7 @@ socket.on('rooms list', (roomslist) => {
             $('#messages').empty();
             currentRoom = roomname;
             if (currentRoom === "Earthy") {
-                $('#current-room').text("Ask Earthy");
+                $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
             $('#current-room').text(currentRoom);
             }
@@ -357,7 +357,7 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
             $('#current-room-description').show();
             $('#current-room-description').text(newroomsettings.description);
             if (currentRoom === 'Earthy') {
-                $('#current-room').text("Ask Earthy");
+                $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
             $('#current-room').text(currentRoom);
             }
@@ -369,7 +369,7 @@ socket.on('room name changed', (newchangedroomname, newroomsettings) => {
         } else {
             $('#current-room-description').hide();
             if (currentRoom === 'Earthy') {
-                $('#current-room').text("Ask Earthy");
+                $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
             $('#current-room').text(currentRoom);
             }
@@ -424,6 +424,9 @@ window.addEventListener('click', ({ target }) => {
 
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
+        if (document.getElementById('nomsgs')) {
+            document.getElementById('nomsgs').remove();
+        }
         const htmlmdmsg = convertMarkdownToHTML(msg.message);
         editedtext = '';
         if (msg.edited === true) {
@@ -875,6 +878,10 @@ socket.on('load messages', (messages) => {
 
         }
     });
+    if (messages.length === 0) {
+        const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
+        $('#messages').append(li);
+    }
     window.scrollTo({
         top: document.body.scrollHeight,
         left: 0,
@@ -884,6 +891,10 @@ socket.on('load messages', (messages) => {
 
 socket.on('message deleted', (msgId) => {
     $(`#msg-${msgId}`).remove();
+    if ($('#messages').children().length === 0) {
+        const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
+        $('#messages').append(li);
+    }
 });
 
 socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
@@ -903,7 +914,7 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
             $('#current-room-description').show();
             $('#current-room-description').text(roomsettingsdata.description);
             if (currentRoom === 'Earthy') {
-                $('#current-room').text("Ask Earthy");
+                $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
             $('#current-room').text(currentRoom);
             }
@@ -915,7 +926,7 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
         } else {
             $('#current-room-description').hide()
             if (currentRoom === 'Earthy') {
-                $('#current-room').text("Ask Earthy");
+                $('#current-room').text("Ask Earthy (Private Chat)");
             } else {
             $('#current-room').text(currentRoom);
             }
