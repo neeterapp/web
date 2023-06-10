@@ -48,11 +48,9 @@ function prepareMessage(message, username) {
 
     const highlightRegex = new RegExp(`@(${username})\\b`, "gi");
     const highlightedAndHighlightedMessage = highlightedMessage.replace(highlightRegex, (match, username) => {
-        console.log(`Matched highlight: ${username}`);
         return `<span class="${highlightClass}">@${username}</span>`;
     });
     const finalMessage = highlightedAndHighlightedMessage.replace(linkRegex, (match, url) => {
-        console.log(`Matched link: ${url}`);
         return `<a class="userlink" href="${url}" target="_blank">${url}</a>`;
     });
     return finalMessage;
@@ -1076,7 +1074,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (showexperimentspopup) {
         experimentsPopup.style.display = "block";
     }
-    /*var localize = function (string, fallback) {
+    var localize = function (string, fallback) {
         var localized = string.toLocaleString();
         if (localized !== string) {
             return localized;
@@ -1084,11 +1082,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return fallback;
         }
     };
-    const titledoc = document.getElementById("title");
-    console.log(localize("%title", $("title").text()))
-    $("title").innerHtml(localize("%title", $("title").text()));
-    document.title = titledoc.nodeValue = localize("%title", titledoc.nodeValue);
-    document.documentElement.lang = String.locale || document.documentElement.lang;*/
+    console.log(localize("%leavingmodal", $("leavingmodal").text()))
 }, { once: true });
 
 socket.on('ai response', (response, airesponseid) => {
