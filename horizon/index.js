@@ -1108,11 +1108,11 @@ document.addEventListener("click", function (event) {
         if (!isInternal) {
             const confirmDialog = document.getElementById("confirmDialog");
             confirmDialog.style.display = "block";
-            document.getElementById("confirmButton").addEventListener("click", function () {
+            document.getElementById("confirmLeaveNeeterButton").addEventListener("click", function () {
                 window.open(event.target.href, "_blank");
                 confirmDialog.style.display = "none";
             });
-            document.querySelector(".closemodal").addEventListener("click", function () {
+            document.querySelector(".closeLeaveNeeterModal").addEventListener("click", function () {
                 confirmDialog.style.display = "none";
             });
         } else {

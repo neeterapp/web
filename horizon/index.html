@@ -82,7 +82,7 @@
   </div>
   <div id="circlesettings-window">
     <button id="circlesettings-back-button">Close Settings</button>
-    <h2>Circle Settings</h2>
+    <h2 id="circlesettings-title">Circle Settings</h2>
     <form id="circle-settings-form">
       <input id="circle-name" autocomplete="off" type="text" placeholder="Circle Name"></input>
       <input id="circle-description" type="text" autocomplete="off" placeholder="Circle Description"></input>
@@ -123,9 +123,9 @@
   </div>
   <div id="confirmDialog" class="modal">
     <div class="modal-content">
-      <p>You are about to leave Neeter and go to an external website. Are you sure you want to continue?</p>
-      <button id="confirmButton" class="modal-button">Confirm</button>
-      <button id="closemodal" class="closemodal">Cancel</button>
+      <p id="leavingmodal">You are about to leave Neeter and go to an external website. Are you sure you want to continue?</p>
+      <button id="confirmLeaveNeeterButton" class="modal-button">Confirm</button>
+      <button id="closeLeaveNeeterModal" class="closeLeaveNeeterModal">Cancel</button>
     </div>
   </div>
 </body>

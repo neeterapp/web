@@ -394,7 +394,7 @@
   }
   
   /* Close button */
-  .closemodal {
+  .closeLeaveNeeterModal {
     background-color: #cf3b3b;
     color: #000;
     text-align: center;
@@ -407,8 +407,8 @@
     transition: all 0.2s ease-out;
   }
   
-  .closemodal:hover,
-  .closemodal:focus {
+  .closeLeaveNeeterModal:hover,
+  .closeLeaveNeeterModal:focus {
     background-color: rgb(241, 84, 84);
   }
   
