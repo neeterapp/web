@@ -1082,7 +1082,18 @@ document.addEventListener("DOMContentLoaded", function () {
             return fallback;
         }
     };
-    console.log(localize("%leavingmodal", $("leavingmodal").text()))
+    $("#leavingmodal").html(`<p>${localize("%leavingmodal", $("leavingmodal").text())}</p>`);
+    const confirmLeaveNeeterButton = document.getElementById("confirmLeaveNeeterButton");
+    confirmLeaveNeeterButton.innerHTML = localize("%confirmLeaveNeeterButton", confirmLeaveNeeterButton.innerHTML);
+    const closeLeaveNeeterModal = document.getElementById("closeLeaveNeeterModal");
+    closeLeaveNeeterModal.innerHTML = localize("%closeLeaveNeeterModal", closeLeaveNeeterModal.innerHTML);
+    const logoutAccountButtonTransl  = document.getElementById("back-button");
+    logoutAccountButtonTransl.innerHTML = localize("%logoutbutton", logoutAccountButtonTransl.innerHTML);
+    const circleSettingsButtonTransl = document.getElementById("room-settings");
+    circleSettingsButtonTransl.innerHTML = localize("%circlesettings", circleSettingsButtonTransl.innerHTML);
+    // translate the span element with replyingtotext id
+    const replyingToTextTransl = document.getElementById("replyingtotext");
+    replyingToTextTransl.innerHTML = localize("%replyingtext", replyingToTextTransl.innerHTML);
 }, { once: true });
 
 socket.on('ai response', (response, airesponseid) => {
