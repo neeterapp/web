@@ -1103,12 +1103,10 @@ document.addEventListener("DOMContentLoaded", function () {
     circleSettingsTitleTransl.innerHTML = localize("%circlesettingstitle", circleSettingsTitleTransl.innerHTML);
     const saveCircleSettingsButtonTransl = document.getElementById("circlesettings-save-button");
     saveCircleSettingsButtonTransl.innerHTML = localize("%savecirclesettings", saveCircleSettingsButtonTransl.innerHTML);
-    const circleNameInputTransl = document.getElementById("circle-name");
-    circleNameInputTransl.placeholder = localize("%circlename", circleNameInputTransl.placeholder);
-    const circleDescriptionInputTransl = document.getElementById("circle-description");
-    circleDescriptionInputTransl.placeholder = localize("%circledescription", circleDescriptionInputTransl.placeholder);
-    const circleIconInputTransl = document.getElementById("circle-emoji");
-    circleIconInputTransl.placeholder = localize("%circleicon", circleIconInputTransl.placeholder);
+    document.getElementsByName('messageinput')[0].placeholder=`${localize("%typeamessage", document.getElementsByName('messageinput')[0].placeholder)}`;
+    document.getElementsByName('circlename')[0].placeholder=`${localize("%circlename", document.getElementsByName('circlename')[0].placeholder)}`;
+    document.getElementsByName('circledescription')[0].placeholder=`${localize("%circledescription", document.getElementsByName('circledescription')[0].placeholder)}`;
+    document.getElementsByName('circleicon')[0].placeholder=`${localize("%circleicon", document.getElementsByName('circleicon')[0].placeholder)}`;
 }, { once: true });
 
 socket.on('ai response', (response, airesponseid) => {

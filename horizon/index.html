@@ -41,7 +41,7 @@
       <span id="replyingtotext">Replying</span>
       <span id="editingmsgtext">Editing a message </span>
       <button type="button" id="cancelreplyoredit">Cancel</button>
-      <input id="message" type="text" placeholder="Type a message..." maxlength="2000">
+      <input id="message" type="text" name="messageinput" placeholder="Type a message..." maxlength="2000">
       <span id="char-count"></span>
       <span id="ratelimitalert">Whoa! You're going too fast! Slow down a bit and try again.</span>
       <button type="submit" id="sendbtn">
@@ -84,9 +84,9 @@
     <button id="circlesettings-back-button">Close Settings</button>
     <h2 id="circlesettings-title">Circle Settings</h2>
     <form id="circle-settings-form">
-      <input id="circle-name" autocomplete="off" type="text" placeholder="Circle Name"></input>
-      <input id="circle-description" type="text" autocomplete="off" placeholder="Circle Description"></input>
-      <input id="circle-emoji" type="text" autocomplete="off" placeholder="Circle Icon (Emoji)"></input>
+      <input id="circle-name" autocomplete="off" name="circlename" type="text" placeholder="Circle Name"></input>
+      <input id="circle-description" type="text" name="circledescription" autocomplete="off" placeholder="Circle Description"></input>
+      <input id="circle-emoji" type="text" name="circleemoji" autocomplete="off" placeholder="Circle Icon (Emoji)"></input>
       <button type="button" id="circlesettings-save-button">Save</button>
     </form>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
