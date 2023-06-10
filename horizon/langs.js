@@ -88,5 +88,23 @@ String.toLocaleString({
 		"%leavingmodal": "आप नीटर छोड़ने वाले हैं और एक बाहरी वेबसाइट पर जा रहे हैं। क्या आप जारी रखना चाहते हैं?",
 		"%confirmLeaveNeeterButton": "पुष्टि करें",
 		"%closeLeaveNeeterModal": "रद्द करना"
+	},
+	"te": {
+		"%logoutbutton": "లాగ్ అవుట్",
+		"%circlesettings": "సర్కిల్ సెట్టింగ్స్",
+		"%replyingtext": "సమాధానం",
+		"%editingmsg": "సందేశం సవరిస్తోంది ",
+		"%cancelreplyoredit": "రద్దు చేయండి",
+		"%typeamessage": "ఒక సందేశం టైప్ చేయండి...",
+		"%ratelimit": "అయ్యో! మీరు చాలా వేగంగా వెలుగుతున్నారు! కొంచెం నిండి మరియు మళ్ళీ ప్రయత్నించండి.",
+		"%closecirclesettings": "సెట్టింగ్స్ క్లోజ్ చేయండి",
+		"%circlesettingstitle": "సర్కిల్ సెట్టింగ్స్",
+		"%circlename": "సర్కిల్ పేరు",
+		"%circledescription": "సర్కిల్ వివరణ",
+		"%circleicon": "సర్కిల్ ఐకాన్ (ఇమోజీ)",
+		"%savecirclesettings": "సేవ్ చేయండి",
+		"%leavingmodal": "మీరు నీటర్ ను విడిచి బయటకు వెళ్లి బహిరంగ వెబ్‌సైట్‌కు వెళ్లిపోతున్నారు. మీరు కొనసాగించాలనుకుంటే మీరు కొంత సమయం ప్రయత్నించండి.",
+		"%confirmLeaveNeeterButton": "నిర్ధారించండి",
+		"%closeLeaveNeeterModal": "రద్దు చేయండి"
 	}
 });
