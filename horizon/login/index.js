@@ -86,3 +86,40 @@ getAuth().onAuthStateChanged((user) => {
     } else {
     }
 }, { once: true });
+
+document.addEventListener('DOMContentLoaded', () => {
+    var localize = function (string, fallback) {
+        var localized = string.toLocaleString();
+        if (localized !== string) {
+            return localized;
+        } else {
+            return fallback;
+        }
+    };
+    var welcomeback = document.getElementById('welcomeback');
+    welcomeback.innerHTML = localize('%welcomeback', welcomeback.innerHTML);
+    var loginwithyouremailtext = document.getElementById('loginwithyouremailtext');
+    loginwithyouremailtext.innerHTML = localize('%loginwithyouremailtext', loginwithyouremailtext.innerHTML);
+    var loginbutton = document.getElementById('login-button');
+    loginbutton.innerHTML = localize('%login-button', loginbutton.innerHTML);
+    var signupinstead = document.getElementById('sign-up-instead');
+    signupinstead.innerHTML = localize('%sign-up-instead', signupinstead.innerHTML);
+    var forgotpassword = document.getElementById('forgot-password-login');
+    forgotpassword.innerHTML = localize('%forgot-password', forgotpassword.innerHTML);
+    var hellothere = document.getElementById('hellothere');
+    hellothere.innerHTML = localize('%hellothere', hellothere.innerHTML);
+    var welcometoneeter = document.getElementById('welcometoneeter');
+    welcometoneeter.innerHTML = localize('%welcometoneeter', welcometoneeter.innerHTML);
+    var registerbutton = document.getElementById('register-button');
+    registerbutton.innerHTML = localize('%register-button', registerbutton.innerHTML);
+    var logininstead = document.getElementById('sign-in-instead');
+    logininstead.innerHTML = localize('%login-instead', logininstead.innerHTML);
+    var forgotpasswordreg = document.getElementById('forgot-password-register');
+    forgotpasswordreg.innerHTML = localize('%forgot-password', forgotpassword.innerHTML);
+    document.getElementsByName('email')[0].placeholder=`${localize('%login-email-input', 'Email')}`;
+    document.getElementsByName('password')[0].placeholder=`${localize('%login-password-input', 'Password')}`;
+    document.getElementsByName('email')[1].placeholder= `${localize('%reg-email-input', 'Email')}`;
+    document.getElementsByName('password')[1].placeholder=`${localize('%reg-password-input', 'Password')}`;
+    document.getElementsByName('username')[0].placeholder=`${localize('%reg-username-input', 'Username')}`;
+
+});

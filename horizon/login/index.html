@@ -15,12 +15,15 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <script type="text/javascript" src="/js-tools/json2.js"></script>
+    <script type="text/javascript" src="/js-tools/l10n.js"></script>
+    <script type="text/javascript" src="langs.js"></script>
 </head>
 
 <body>
     <div id="login-form">
-        <h1>Welcome Back!</h1>
-        <p>Log in with your email to access Neeter.</p>
+        <h1 id="welcomeback">Welcome Back!</h1>
+        <p id="loginwithyouremailtext">Log in with your email to access Neeter.</p>
         <div class="email">
             <div class="sec-2">
                 <input id="login-email-input" type="email" name="email" placeholder="Email / Username" />
@@ -38,12 +41,12 @@
 
         <div class="footer">
             <span id="sign-up-instead" class="change-login-action">Sign up Instead</span>
-            <span id="forgot-password">Forgot Your Password?</span>
+            <span id="forgot-password-login">Forgot Your Password?</span>
         </div>
     </div>
     <div id="register-form">
-        <h1>Hello There!</h1>
-        <p>Welcome to Neeter! Please enter your details to create an account.</p>
+        <h1 id="hellothere">Hello There!</h1>
+        <p id="welcometoneeter">Welcome to Neeter! Please enter your details to create an account.</p>
         <div class="email">
             <div class="sec-2">
                 <input id="reg-email-input" type="email" name="email" placeholder="Email Address" />
@@ -58,7 +61,8 @@
 
         <div class="password">
             <div class="sec-2">
-                <input id="reg-password-input" type="password" name="password" class="password" placeholder="Password" />
+                <input id="reg-password-input" type="password" name="password" class="password"
+                    placeholder="Password" />
             </div>
         </div>
 
@@ -66,7 +70,7 @@
 
         <div class="footer">
             <span id="sign-in-instead" class="change-login-action">Sign in Instead</span>
-            <span id="forgot-password">Forgot Your Password?</span>
+            <span id="forgot-password-register">Forgot Your Password?</span>
         </div>
     </div>
     <script type="module" src="/login/index.js"></script>

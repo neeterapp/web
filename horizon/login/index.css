@@ -237,7 +237,14 @@ button {
   gap: 16.2em;
 }
 
-#forgot-password {
+#forgot-password-login {
+  color: white;
+  display: block;
+  cursor: not-allowed;
+  transition: all 0.3s ease;
+}
+
+#forgot-password-register {
   color: white;
   display: block;
   cursor: not-allowed;
@@ -248,6 +255,10 @@ button {
   cursor: pointer;
 }
 
-#forgot-password:hover {
+#forgot-password-login:hover {
+  color: red;
+}
+
+#forgot-password-register:hover {
   color: red;
 }
