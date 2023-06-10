@@ -1091,9 +1091,24 @@ document.addEventListener("DOMContentLoaded", function () {
     logoutAccountButtonTransl.innerHTML = localize("%logoutbutton", logoutAccountButtonTransl.innerHTML);
     const circleSettingsButtonTransl = document.getElementById("room-settings");
     circleSettingsButtonTransl.innerHTML = localize("%circlesettings", circleSettingsButtonTransl.innerHTML);
-    // translate the span element with replyingtotext id
     const replyingToTextTransl = document.getElementById("replyingtotext");
     replyingToTextTransl.innerHTML = localize("%replyingtext", replyingToTextTransl.innerHTML);
+    const editingMsgTextTransl = document.getElementById("editingmsgtext");
+    editingMsgTextTransl.innerHTML = localize("%editingmsgtext", editingMsgTextTransl.innerHTML);
+    const cancelReplyOrEditButtonTransl = document.getElementById("cancelreplyoredit");
+    cancelReplyOrEditButtonTransl.innerHTML = localize("%cancelreplyoredit", cancelReplyOrEditButtonTransl.innerHTML);
+    const closeCircleSettingsButtonTransl = document.getElementById("circlesettings-back-button");
+    closeCircleSettingsButtonTransl.innerHTML = localize("%closecirclesettings", closeCircleSettingsButtonTransl.innerHTML);
+    const circleSettingsTitleTransl = document.getElementById("circlesettings-title");
+    circleSettingsTitleTransl.innerHTML = localize("%circlesettingstitle", circleSettingsTitleTransl.innerHTML);
+    const saveCircleSettingsButtonTransl = document.getElementById("circlesettings-save-button");
+    saveCircleSettingsButtonTransl.innerHTML = localize("%savecirclesettings", saveCircleSettingsButtonTransl.innerHTML);
+    const circleNameInputTransl = document.getElementById("circle-name");
+    circleNameInputTransl.placeholder = localize("%circlename", circleNameInputTransl.placeholder);
+    const circleDescriptionInputTransl = document.getElementById("circle-description");
+    circleDescriptionInputTransl.placeholder = localize("%circledescription", circleDescriptionInputTransl.placeholder);
+    const circleIconInputTransl = document.getElementById("circle-emoji");
+    circleIconInputTransl.placeholder = localize("%circleicon", circleIconInputTransl.placeholder);
 }, { once: true });
 
 socket.on('ai response', (response, airesponseid) => {
