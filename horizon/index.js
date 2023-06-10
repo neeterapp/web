@@ -1106,7 +1106,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementsByName('messageinput')[0].placeholder=`${localize("%typeamessage", document.getElementsByName('messageinput')[0].placeholder)}`;
     document.getElementsByName('circlename')[0].placeholder=`${localize("%circlename", document.getElementsByName('circlename')[0].placeholder)}`;
     document.getElementsByName('circledescription')[0].placeholder=`${localize("%circledescription", document.getElementsByName('circledescription')[0].placeholder)}`;
-    document.getElementsByName('circleicon')[0].placeholder=`${localize("%circleicon", document.getElementsByName('circleicon')[0].placeholder)}`;
+    document.getElementsByName('circleemoji')[0].placeholder=`${localize("%circleicon", document.getElementsByName('circleemoji')[0].placeholder)}`;
 }, { once: true });
 
 socket.on('ai response', (response, airesponseid) => {
