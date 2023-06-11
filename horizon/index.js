@@ -193,7 +193,7 @@ $('#message-form').submit(() => {
         if (currentRoom === "Earthy") {
             $('#messages').empty();
             const aimessageid = getRandomInt(99999);
-            const li = $('<li>').attr('id', `msg-ai-${aimessageid}`).html(prepareMessage(`<b id="usernametext">${username}</b><b>:</b> ${message} (Message only visible to you)`));
+            const li = $('<li>').attr('id', `msg-ai-${aimessageid}`).html(prepareMessage(`<b class="usernametext">${username}</b><b>:</b> ${message} (Message only visible to you)`));
             $('#messages').append(li);
             const date = new Date();
             const airesponseid = getRandomInt(9999);
@@ -433,7 +433,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
         if (msg.username !== username) {
             if (msgisresponse === true) {
 
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
                 const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
@@ -475,7 +475,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
                 });
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
                 const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
@@ -521,7 +521,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
             }
         } else if (msg.username === username || roominfo === username) {
             if (msgisresponse === true) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
                 const originalDelButton = document.getElementById('deletebtnoriginal');
                 const delButton = originalDelButton.cloneNode(true);
                 delButton.setAttribute('id', 'deletebtn');
@@ -582,7 +582,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     }
                 );
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`));
                 const originalDelButton = document.getElementById('deletebtnoriginal');
                 const delButton = originalDelButton.cloneNode(true);
                 delButton.setAttribute('id', 'deletebtn');
@@ -669,7 +669,7 @@ socket.on('load messages', (messages) => {
             };
             if (msg.username !== username) {
                 if (msg.isresponse === true) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
                     let delButton = null;
@@ -712,7 +712,7 @@ socket.on('load messages', (messages) => {
                         $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
                     });
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
                     let delButton = null;
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
@@ -758,7 +758,7 @@ socket.on('load messages', (messages) => {
                 }
             } else if (msg.username === username) {
                 if (msg.isresponse === true) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
                     const originalDelButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalDelButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
@@ -815,7 +815,7 @@ socket.on('load messages', (messages) => {
                         $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
                     });
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b id="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
                     const originalDelButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalDelButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
@@ -944,7 +944,7 @@ socket.on('user connected', (usrname, isowner, roomsettingsdata) => {
 
 socket.on('message edited', (messageEditingID, newMessage) => {
     if (newMessage.isresponse === true) {
-        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(prepareMessage(`<b id="usernametext">${newMessage.username}</b><b> (in response to <a onclick="goToMsg('${newMessage.responsetomessage}')">${newMessage.responsetousername}</a>):</b> ${newMessage.message} (edited) `, username));
+        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(prepareMessage(`<b class="usernametext">${newMessage.username}</b><b> (in response to <a onclick="goToMsg('${newMessage.responsetomessage}')">${newMessage.responsetousername}</a>):</b> ${newMessage.message} (edited) `, username));
         const originalDelButton = document.getElementById('deletebtnoriginal');
         const delButton = originalDelButton.cloneNode(true);
         delButton.setAttribute('id', 'deletebtn');
@@ -1004,7 +1004,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             $(`#msg-${newMessage._id} #editbtn`).addClass('notshowing');
         });
     } else if (newMessage.isresponse === false) {
-        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(prepareMessage(`<b id="usernametext">${newMessage.username}</b><b>:</b> ${newMessage.message} (edited) `));
+        const li = $('<li>').attr('id', `msg-${newMessage._id}`).html(prepareMessage(`<b class="usernametext">${newMessage.username}</b><b>:</b> ${newMessage.message} (edited) `));
         const originalDelButton = document.getElementById('deletebtnoriginal');
         const delButton = originalDelButton.cloneNode(true);
         delButton.setAttribute('id', 'deletebtn');
@@ -1111,7 +1111,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 socket.on('ai response', (response, airesponseid) => {
     $(`#msg-ai-${airesponseid}`).remove();
-    const li = $('<li>').attr('id', `msg-${response._id}`).html(prepareMessage(`<b id="usernametext" class="earthymention">Earthy</b><b>:</b> ${response} (AI - Message only visible to you) `));
+    const li = $('<li>').attr('id', `msg-${response._id}`).html(prepareMessage(`<b class="usernametext" class="earthymention">Earthy</b><b>:</b> ${response} (AI - Message only visible to you) `));
     $('#messages').append(li);
     if (earthymsgtimeout !== null) {
         clearTimeout(earthymsgtimeout);
@@ -1136,5 +1136,9 @@ document.addEventListener("click", function (event) {
         } else {
             window.location.href = event.target.href;
         }
+    }
+    if (event.target.tagName.toLowerCase() === "b" && event.target.classList.contains("usernametext")) {
+        const usernameclicked = event.target.innerText;
+        socket.emit('username clicked', usernameclicked);
     }
 });
