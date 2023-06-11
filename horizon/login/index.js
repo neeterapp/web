@@ -1,6 +1,6 @@
 const socket = io();
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
-import { getAuth, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
+import { getAuth, sendPasswordResetEmail, createUserWithEmailAndPassword, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
 const firebaseConfig = {
     apiKey: "AIzaSyCVqlFta6rULlWiiYu1yDDs9zsLH1fGddU",
     authDomain: "i3e-5d95a.firebaseapp.com",
@@ -28,6 +28,21 @@ socket.on('user data', () => {
 
 const registerFormSubmit = document.getElementById('register-button');
 const loginFormSubmit = document.getElementById('login-button');
+const forgotPasswordLogin = document.getElementById('forgot-password-login');
+forgotPasswordLogin.addEventListener('click', () => {
+    const email = document.getElementById('login-email-input').value;
+    const auth = getAuth();
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            console.log(`email sent to ${email}`);
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode);
+            console.log(errorMessage);
+        });
+}, { once: true });
 
 registerFormSubmit.addEventListener('click', () => {
     const email = document.getElementById('reg-email-input').value;
@@ -114,8 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     registerbutton.innerHTML = localize('%register-button', registerbutton.innerHTML);
     var logininstead = document.getElementById('sign-in-instead');
     logininstead.innerHTML = localize('%login-instead', logininstead.innerHTML);
-    var forgotpasswordreg = document.getElementById('forgot-password-register');
-    forgotpasswordreg.innerHTML = localize('%forgot-password', forgotpassword.innerHTML);
     document.getElementsByName('email')[0].placeholder=`${localize('%login-email-input', 'Email')}`;
     document.getElementsByName('password')[0].placeholder=`${localize('%login-password-input', 'Password')}`;
     document.getElementsByName('email')[1].placeholder= `${localize('%reg-email-input', 'Email')}`;
