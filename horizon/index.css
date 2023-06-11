@@ -134,8 +134,7 @@
     display: none;
   }
 
-  #editbtn {
-  }
+  #editbtn {}
 
   .userpopup {
     position: fixed;
@@ -148,11 +147,9 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
-  #deletebtn {
-  }
+  #deletebtn {}
 
-  #replybtn {
-  }
+  #replybtn {}
 
   .showing {
     display: inline-block;
@@ -329,12 +326,12 @@
     border-radius: 10px;
   }
 
-  input[type=checkbox]{
+  input[type=checkbox] {
     height: 0;
     width: 0;
     visibility: hidden;
   }
-  
+
   label {
     cursor: pointer;
     text-indent: -9999px;
@@ -345,7 +342,7 @@
     border-radius: 100px;
     position: relative;
   }
-  
+
   label:after {
     content: '';
     position: absolute;
@@ -357,16 +354,16 @@
     border-radius: 90px;
     transition: 0.3s;
   }
-  
-  input:checked + label {
+
+  input:checked+label {
     background: #5994e2;
   }
-  
-  input:checked + label:after {
+
+  input:checked+label:after {
     left: calc(100% - 5px);
     transform: translateX(-100%);
   }
-  
+
   label:active:after {
     width: 25px;
   }
@@ -383,7 +380,7 @@
     z-index: 99999;
     background-color: rgba(0, 0, 0, 0.767);
   }
-  
+
   .modal-content {
     border-radius: 20px;
     background-color: #5a5a5a;
@@ -392,7 +389,7 @@
     border: 2px solid #888;
     width: 55%;
   }
-  
+
   /* Close button */
   .closeLeaveNeeterModal {
     background-color: #cf3b3b;
@@ -406,12 +403,12 @@
     cursor: pointer;
     transition: all 0.2s ease-out;
   }
-  
+
   .closeLeaveNeeterModal:hover,
   .closeLeaveNeeterModal:focus {
     background-color: rgb(241, 84, 84);
   }
-  
+
   .modal-button {
     background-color: var(--accent-color);
     border: none;
@@ -430,4 +427,22 @@
     background-color: #8ef8d5;
   }
 
+  .userprofilepopupinfo {
+    display: flex;
+  }
+  .userprofilepicture {
+    margin-right: 10px;
+    height: 30px;
+    width: 30px;
+    border-radius: 13%;
+  }
+  .userprofilepopupusername {
+    white-space: nowrap;
+  }
+  .userprofilepopupbio {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    margin-top: 60px;
+  }
 }

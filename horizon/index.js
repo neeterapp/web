@@ -422,6 +422,27 @@ window.addEventListener('click', ({ target }) => {
 
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
+        var userLang = navigator.language || navigator.userLanguage;
+        const toLang = userLang;
+        const translateurl = `https://api.neeter.co/api/gtranslate`;
+        fetch(translateurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: msg.message,
+                language: toLang
+            })
+        }).then(response => response.json()).then(data => {
+            if (data.translatedMessage) {
+                const msgElement = document.getElementById(`msg-${msg._id}`);
+                const messageContent = msgElement.querySelector('.messagecontent');
+                messageContent.textContent = data.translatedMessage;
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
         if (document.getElementById('nomsgs')) {
             document.getElementById('nomsgs').remove();
         }
@@ -432,8 +453,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
         }
         if (msg.username !== username) {
             if (msgisresponse === true) {
-
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`, username));
                 const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
@@ -475,7 +495,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
                 });
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`, username));
                 const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
@@ -521,7 +541,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
             }
         } else if (msg.username === username || roominfo === username) {
             if (msgisresponse === true) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`, username));
                 const originalDelButton = document.getElementById('deletebtnoriginal');
                 const delButton = originalDelButton.cloneNode(true);
                 delButton.setAttribute('id', 'deletebtn');
@@ -582,7 +602,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     }
                 );
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`));
+                const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`));
                 const originalDelButton = document.getElementById('deletebtnoriginal');
                 const delButton = originalDelButton.cloneNode(true);
                 delButton.setAttribute('id', 'deletebtn');
@@ -661,6 +681,29 @@ socket.on('load messages', (messages) => {
     }
     messages.forEach((msg) => {
         if (msg.room === currentRoom) {
+            /*var userLang = navigator.language || navigator.userLanguage;
+            const toLang = userLang;
+            const translateurl = `https://api.neeter.co/api/gtranslate`;
+            fetch(translateurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: msg.message,
+                    language: toLang
+                })
+            }).then(response => response.json()).then(data => {
+                if (data.translatedMessage) {
+                    setTimeout(() => {
+                    }, 1000);
+                    const msgElement = document.getElementById(`msg-${msg._id}`);
+                    const messageContent = msgElement.querySelector('.messagecontent');
+                    messageContent.textContent = data.translatedMessage;
+                }
+            }).catch((error) => {
+                console.error('Error:', error);
+            });*/
             const htmlmdmsg = convertMarkdownToHTML(msg.message);
             if (msg.edited === true) {
                 editedtext = '(edited) ';
@@ -669,7 +712,7 @@ socket.on('load messages', (messages) => {
             };
             if (msg.username !== username) {
                 if (msg.isresponse === true) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`, username));
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
                     let delButton = null;
@@ -712,7 +755,7 @@ socket.on('load messages', (messages) => {
                         $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
                     });
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`, username));
                     let delButton = null;
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
@@ -758,7 +801,7 @@ socket.on('load messages', (messages) => {
                 }
             } else if (msg.username === username) {
                 if (msg.isresponse === true) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b> (in response to <a onclick="goToMsg('${msg.responsetomessage}')">${msg.responsetousername}</a>):</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`, username));
                     const originalDelButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalDelButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
@@ -815,7 +858,7 @@ socket.on('load messages', (messages) => {
                         $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
                     });
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> ${htmlmdmsg} ${editedtext}`, username));
+                    const li = $('<li>').attr('id', `msg-${msg._id}`).html(prepareMessage(`<b class="usernametext">${msg.username}</b><b>:</b> <span class="messagecontent">${htmlmdmsg}</span> ${editedtext}`, username));
                     const originalDelButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalDelButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
@@ -1087,7 +1130,7 @@ document.addEventListener("DOMContentLoaded", function () {
     confirmLeaveNeeterButton.innerHTML = localize("%confirmLeaveNeeterButton", confirmLeaveNeeterButton.innerHTML);
     const closeLeaveNeeterModal = document.getElementById("closeLeaveNeeterModal");
     closeLeaveNeeterModal.innerHTML = localize("%closeLeaveNeeterModal", closeLeaveNeeterModal.innerHTML);
-    const logoutAccountButtonTransl  = document.getElementById("back-button");
+    const logoutAccountButtonTransl = document.getElementById("back-button");
     logoutAccountButtonTransl.innerHTML = localize("%logoutbutton", logoutAccountButtonTransl.innerHTML);
     const circleSettingsButtonTransl = document.getElementById("room-settings");
     circleSettingsButtonTransl.innerHTML = localize("%circlesettings", circleSettingsButtonTransl.innerHTML);
@@ -1103,10 +1146,10 @@ document.addEventListener("DOMContentLoaded", function () {
     circleSettingsTitleTransl.innerHTML = localize("%circlesettingstitle", circleSettingsTitleTransl.innerHTML);
     const saveCircleSettingsButtonTransl = document.getElementById("circlesettings-save-button");
     saveCircleSettingsButtonTransl.innerHTML = localize("%savecirclesettings", saveCircleSettingsButtonTransl.innerHTML);
-    document.getElementsByName('messageinput')[0].placeholder=`${localize("%typeamessage", document.getElementsByName('messageinput')[0].placeholder)}`;
-    document.getElementsByName('circlename')[0].placeholder=`${localize("%circlename", document.getElementsByName('circlename')[0].placeholder)}`;
-    document.getElementsByName('circledescription')[0].placeholder=`${localize("%circledescription", document.getElementsByName('circledescription')[0].placeholder)}`;
-    document.getElementsByName('circleemoji')[0].placeholder=`${localize("%circleicon", document.getElementsByName('circleemoji')[0].placeholder)}`;
+    document.getElementsByName('messageinput')[0].placeholder = `${localize("%typeamessage", document.getElementsByName('messageinput')[0].placeholder)}`;
+    document.getElementsByName('circlename')[0].placeholder = `${localize("%circlename", document.getElementsByName('circlename')[0].placeholder)}`;
+    document.getElementsByName('circledescription')[0].placeholder = `${localize("%circledescription", document.getElementsByName('circledescription')[0].placeholder)}`;
+    document.getElementsByName('circleemoji')[0].placeholder = `${localize("%circleicon", document.getElementsByName('circleemoji')[0].placeholder)}`;
 }, { once: true });
 
 socket.on('ai response', (response, airesponseid) => {
@@ -1137,8 +1180,20 @@ document.addEventListener("click", function (event) {
             window.location.href = event.target.href;
         }
     }
-    if (event.target.tagName.toLowerCase() === "b" && event.target.classList.contains("usernametext")) {
-        const usernameclicked = event.target.innerText;
-        socket.emit('username clicked', usernameclicked);
+    if (event.target.classList.contains('usernametext')) {
+        // create an element with content <img src="https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png" class="userprofilepicture"><div class="userprofilepopupinfo"><h1 class="userprofilepopupusername">${event.target.textContent}</h1><p class="userprofilepopupbio">test</p></div> that is hidden and show its content as the tooltip
+        const element = document.createElement('div');
+        element.style.display = 'none';
+        element.innerHTML = `<img src="https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png" class="userprofilepicture"><div class="userprofilepopupinfo"><h1 class="userprofilepopupusername">${event.target.textContent}</h1><p class="userprofilepopupbio">test</p></div>`;
+        const tooltip = tippy(event.target, {
+            content: element.innerHTML,
+            trigger: 'click',
+            arrow: false,
+            allowHTML: true,
+            placement: 'right',
+            hideOnClick: true,
+            interactive: true
+        });
+        tooltip.show();
     }
 });
