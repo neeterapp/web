@@ -8,6 +8,7 @@ $('#circle-selector').hide();
 const socket = io();
 const notificationSound = document.getElementById('notification');
 let username = '';
+let translatemessages = false;
 let currentRoom = '';
 let truncatedroomname
 let earthymsgtimeout;
@@ -57,6 +58,7 @@ function prepareMessage(message, username) {
 }
 
 socket.on('user data', (userdata) => {
+    translatemessages = userdata.translatemessages;
     if (urlroom) {
         currentRoom = urlroom;
     } else {
@@ -422,27 +424,29 @@ window.addEventListener('click', ({ target }) => {
 
 socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) => {
     if (msg.room === currentRoom) {
-        var userLang = navigator.language || navigator.userLanguage;
-        const toLang = userLang;
-        const translateurl = `https://api.neeter.co/api/gtranslate`;
-        fetch(translateurl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: msg.message,
-                language: toLang
-            })
-        }).then(response => response.json()).then(data => {
-            if (data.translatedMessage) {
-                const msgElement = document.getElementById(`msg-${msg._id}`);
-                const messageContent = msgElement.querySelector('.messagecontent');
-                messageContent.textContent = data.translatedMessage;
-            }
-        }).catch((error) => {
-            console.error('Error:', error);
-        });
+        if (translatemessages === true) {
+            var userLang = navigator.language || navigator.userLanguage;
+            const toLang = userLang;
+            const translateurl = `https://api.neeter.co/api/gtranslate`;
+            fetch(translateurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: msg.message,
+                    language: toLang
+                })
+            }).then(response => response.json()).then(data => {
+                if (data.translatedMessage) {
+                    const msgElement = document.getElementById(`msg-${msg._id}`);
+                    const messageContent = msgElement.querySelector('.messagecontent');
+                    messageContent.textContent = data.translatedMessage;
+                }
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        }
         if (document.getElementById('nomsgs')) {
             document.getElementById('nomsgs').remove();
         }
@@ -681,29 +685,6 @@ socket.on('load messages', (messages) => {
     }
     messages.forEach((msg) => {
         if (msg.room === currentRoom) {
-            /*var userLang = navigator.language || navigator.userLanguage;
-            const toLang = userLang;
-            const translateurl = `https://api.neeter.co/api/gtranslate`;
-            fetch(translateurl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: msg.message,
-                    language: toLang
-                })
-            }).then(response => response.json()).then(data => {
-                if (data.translatedMessage) {
-                    setTimeout(() => {
-                    }, 1000);
-                    const msgElement = document.getElementById(`msg-${msg._id}`);
-                    const messageContent = msgElement.querySelector('.messagecontent');
-                    messageContent.textContent = data.translatedMessage;
-                }
-            }).catch((error) => {
-                console.error('Error:', error);
-            });*/
             const htmlmdmsg = convertMarkdownToHTML(msg.message);
             if (msg.edited === true) {
                 editedtext = '(edited) ';
@@ -927,6 +908,36 @@ socket.on('load messages', (messages) => {
             const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
             $('#messages').append(li);
         }
+    }
+    if (translatemessages === true) {
+        const last15messages = messages.slice(Math.max(messages.length - 15, 0));
+        last15messages.forEach((msg) => {
+            var userLang = navigator.language || navigator.userLanguage;
+            const toLang = userLang;
+            const translateurl = `https://api.neeter.co/api/gtranslate`;
+            fetch(translateurl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: msg.message,
+                    language: toLang
+                })
+            }).then(response => response.json()).then(data => {
+                if (data.translatedMessage) {
+                    setTimeout(() => {
+                    }, 1000);
+                    const msgElement = document.getElementById(`msg-${msg._id}`);
+                    const messageContent = msgElement.querySelector('.messagecontent');
+                    messageContent.innerHTML = prepareMessage(data.translatedMessage, username);
+                }
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+            setTimeout(() => {
+            }, 1000);
+        });
     }
     window.scrollTo({
         top: document.body.scrollHeight,

@@ -87,6 +87,10 @@ const userSchema = new mongoose.Schema({
     popupsdismissed: {
         type: Array,
         required: false
+    },
+    translatemessages: {
+        type: Boolean,
+        required: false
     }
 }, { timestamps: false });
 // Define message schema
@@ -199,7 +203,8 @@ io.on('connection', (socket) => {
             userid: sanitizeduserid,
             username: sanitizedusername,
             rooms: [],
-            hubs: []
+            hubs: [],
+            translatemessages: false,
         });
         newUser.save().then((savedUserData) => {
             console.log(`User ${sanitizedusername} registered.`);
@@ -301,12 +306,11 @@ io.on('connection', (socket) => {
             { $addToSet: { members: usrname } }
         )
             .then(result => {
-                console.log(result); // log the result of the update operation
+                console.log(result);
             })
             .catch(error => {
-                console.error(error); // log any errors that occur during the update operation
+                console.error(error);
             });
-        // Load messages for the room
         Message.find({ room: sanitizedroom }).then((messages) => {
             socket.emit('load messages', messages);
         }).catch((err) => {
