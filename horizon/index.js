@@ -1192,10 +1192,9 @@ document.addEventListener("click", function (event) {
         }
     }
     if (event.target.classList.contains('usernametext')) {
-        // create an element with content <img src="https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png" class="userprofilepicture"><div class="userprofilepopupinfo"><h1 class="userprofilepopupusername">${event.target.textContent}</h1><p class="userprofilepopupbio">test</p></div> that is hidden and show its content as the tooltip
         const element = document.createElement('div');
         element.style.display = 'none';
-        element.innerHTML = `<img src="https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png" class="userprofilepicture"><div class="userprofilepopupinfo"><h1 class="userprofilepopupusername">${event.target.textContent}</h1><p class="userprofilepopupbio">test</p></div>`;
+        element.innerHTML = `<img src="https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png" class="userprofilepicture"><div class="userprofilepopupinfo"><h1 class="userprofilepopupusername">${event.target.textContent}</h1><div class="popupbio"><p class="userprofilepopupbio">test</p></div></div>`;
         const tooltip = tippy(event.target, {
             content: element.innerHTML,
             trigger: 'click',
