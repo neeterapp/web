@@ -422,8 +422,13 @@
     display: flex;
     max-width: 17em;
     justify-content: left;
-    margin-top: -1.18em;
+    margin-top: -1.25em;
     margin-right: 0.15em;
+  }
+
+  .popupbioinfotext {
+    margin-top: -1.3em;
+    margin-bottom: 1.2em;
   }
 
   .circle-grid {
