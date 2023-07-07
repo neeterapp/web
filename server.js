@@ -55,7 +55,7 @@ const hubSchema = new mongoose.Schema({
         type: Object,
         required: false
     },
-    rooms: {
+    circles: {
         type: Array,
         required: false
     }
@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         maxlength: 32
     },
-    rooms: {
+    circes: {
         type: Array,
         required: false
     },
