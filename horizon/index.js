@@ -1199,7 +1199,7 @@ document.addEventListener("click", function (event) {
             trigger: 'click',
             arrow: false,
             allowHTML: true,
-            placement: 'right',
+            placement: 'right-start',
             hideOnClick: true,
             interactive: true,
             maxWidth: 1000,
