@@ -401,6 +401,7 @@
   }
 
   .userprofilepopupinfo {
+    margin-top: 0.3em;
     display: flex;
   }
 
@@ -412,14 +413,17 @@
   }
 
   .userprofilepopupusername {
+    margin-top: -0.15em;
     white-space: nowrap;
+    margin-right: 0.15em;
   }
 
   .userprofilepopupbio {
     display: flex;
-    flex-direction: column;
+    max-width: 17em;
     justify-content: left;
-    margin-top: 60px;
+    margin-top: -1.18em;
+    margin-right: 0.15em;
   }
 
   .circle-grid {

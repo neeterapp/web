@@ -300,7 +300,6 @@ socket.on('rooms list', (roomslist) => {
             window.history.pushState({}, '', newUrl);
             socket.emit('join room', currentRoom, username);
             document.title = `Neeter - ${currentRoom}`;
-            // select the image and deselect all other image in the grid
             const selected = document.querySelector('.selected');
             if (selected) {
                 selected.classList.remove('selected');
@@ -1194,7 +1193,7 @@ document.addEventListener("click", function (event) {
     if (event.target.classList.contains('usernametext')) {
         const element = document.createElement('div');
         element.style.display = 'none';
-        element.innerHTML = `<img src="https://i.postimg.cc/LXf1X1G8/A6-D8-FA76-5-BB0-4302-82-FC-90070062-C9-DA.png" class="userprofilepicture"><div class="userprofilepopupinfo"><h1 class="userprofilepopupusername">${event.target.textContent}</h1><div class="popupbio"><p class="userprofilepopupbio">test</p></div></div>`;
+        element.innerHTML = `<div class="userprofilepopup"><div class="userprofilepopupinfo"><img src="https://api.dicebear.com/6.x/initials/svg?seed=${event.target.textContent}&scale=80&backgroundType=gradientLinear&backgroundColor=49d3a9&fontWeight=400&textColor=2e2e2e" class="userprofilepicture"><h1 class="userprofilepopupusername">${event.target.textContent}</h1></div><div class="popupbio"><p class="userprofilepopupbio">Sample user profile bio. This feature is not implemented yet.</p></div></div>`;
         const tooltip = tippy(event.target, {
             content: element.innerHTML,
             trigger: 'click',
@@ -1202,7 +1201,8 @@ document.addEventListener("click", function (event) {
             allowHTML: true,
             placement: 'right',
             hideOnClick: true,
-            interactive: true
+            interactive: true,
+            maxWidth: 1000,
         });
         tooltip.show();
     }

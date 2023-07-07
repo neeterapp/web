@@ -26,8 +26,6 @@ dcclient.once(Events.ClientReady, c => {
         status: 'dnd'
     });
 });
-
-// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Database connection error:'));
@@ -36,8 +34,6 @@ const messageCount = {};
 let isowner = false;
 let roomsList = [];
 let roomSettings;
-
-// Define hubs schema
 const hubSchema = new mongoose.Schema({
     hubname: {
         type: String,
@@ -93,7 +89,6 @@ const userSchema = new mongoose.Schema({
         required: false
     }
 }, { timestamps: false });
-// Define message schema
 const messageSchema = new mongoose.Schema({
     message: {
         type: String,
@@ -180,8 +175,6 @@ async function moderatemsg(textToModerate) {
       return false;
     }
   }
-
-// Handle socket connection
 io.on('connection', (socket) => {
     roomsList = [];
     RoomData.find({})
@@ -217,7 +210,6 @@ io.on('connection', (socket) => {
     socket.on('user data', (usrid) => {
         const sanitizedusrid = DOMPurify.sanitize(usrid);
         console.log(`User id: ${sanitizedusrid}`);
-        // search for the user id on the users database and return the user data:
         console.log('getting data...');
         UserData.findOne({ userid: sanitizedusrid }).then((existingUser) => {
             if (existingUser) {
@@ -237,7 +229,6 @@ io.on('connection', (socket) => {
         const sanitizedoldroom = DOMPurify.sanitize(oldroom);
         socket.leave(sanitizedoldroom);
         socket.join(sanitizednewroom);
-        // Find the new room name and get its settings
         RoomData.findOne({ room: sanitizednewroom }).then((existingRoom) => {
             if (existingRoom) {
                 newroomsettings = existingRoom.settings;
@@ -271,7 +262,6 @@ io.on('connection', (socket) => {
         io.in(sanitizedroom).emit('joined');
         RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
             if (!existingRoom) {
-                // If room doesn't exist, create it and make the user the owner
                 const newRoom = new RoomData({
                     room: sanitizedroom,
                     owner: usrname,
@@ -287,7 +277,6 @@ io.on('connection', (socket) => {
                     console.error(err);
                 });
             } else if (existingRoom) {
-                // If room exists, check if the user is the owner
                 if (existingRoom.owner === usrname) {
                     console.log(`${usrname} is the owner of room ${sanitizedroom}`);
                     isowner = true;
@@ -400,8 +389,6 @@ io.on('connection', (socket) => {
             console.error(err);
         });
     });
-
-    // Handle chat message
     socket.on('chat message', (msg, username, room, isaresponse, msgresponseto, msgresponsetousername) => {
         if (room === "Earthy") {
             return;
@@ -416,7 +403,6 @@ io.on('connection', (socket) => {
             socket.emit('msgratelimit', sanitizedmsg, sanitizedusername, sanitizedroom);
         } else {
             if (!messageCount[sanitizedusername]) {
-                // wait 3s
                 setTimeout(() => {
                     messageCount[sanitizedusername] = { count: 1, timestamp: currentTime };
                 }, 3000);
@@ -465,8 +451,6 @@ io.on('connection', (socket) => {
             });
         });
     });
-
-    // Handle delete message
     socket.on('delete message', (msg, deleterusername) => {
         const sanitizeddeleterusername = DOMPurify.sanitize(deleterusername);
         if (sanitizeddeleterusername == msg.username) {
@@ -489,8 +473,6 @@ io.on('connection', (socket) => {
             console.log("you cant delete that message");
         }
     });
-
-    // Handle disconnections
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
@@ -513,8 +495,6 @@ dcclient.on('messageCreate', message => {
         });
     }
 });
-
-// Start server
 http.listen(2345, () => {
     console.log('listening on *:2345');
 });
