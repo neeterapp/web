@@ -78,7 +78,6 @@
 
   ul {
     list-style-type: none;
-    max-width: calc(100vw - 120px);
     margin: 0 20px;
     padding: 0;
     word-wrap: break-word;
@@ -272,9 +271,10 @@
 
   #messages {
     margin-top: 10.5em;
-    width: 100vw;
+    max-width: 100vw;
     margin-bottom: 4em;
     margin-left: 20px;
+    max-width: calc(100vw - 120px);
   }
 
   ::-webkit-scrollbar {
@@ -460,6 +460,30 @@
 
   .circle-grid li:last-child {
     margin-right: 3em;
+  }
+
+  .msgelement {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    background-color: #3c4b49;
+    border-radius: 10px;
+    width: -moz-fit-content;
+    width: fit-content;
+    margin-bottom: 0.5em;
+    margin-top: 0.65em;
+  }
+
+  .usernametextplacement {
+    font-weight: 600;
+    float: left;
+  }
+
+  .messagecontent {
+    float: left;
   }
 
   @media screen and (min-width: 768px) {
