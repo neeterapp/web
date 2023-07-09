@@ -486,6 +486,12 @@
     float: left;
   }
 
+  .replyingtocontent {
+    font-style: italic;
+    font-size: 0.8em;
+    color: paleturquoise
+  }
+
   @media screen and (min-width: 768px) {
   }
 
