@@ -195,7 +195,7 @@ $('#message-form').submit(() => {
         if (currentRoom === "Earthy") {
             $('#messages').empty();
             const aimessageid = getRandomInt(99999);
-            const li = $('<li>').attr('id', `msg-ai-${aimessageid}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${username}</b></div><span class="messagecontent">${message}</span> (Message only visible to you)`));
+            let li = $('<li>').attr('id', `msg-ai-${aimessageid}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${username}</b></div><span class="messagecontent">${message}</span> (Message only visible to you)`));
             $('#messages').append(li);
             const date = new Date();
             const airesponseid = getRandomInt(9999);
@@ -267,7 +267,7 @@ socket.on('rooms list', (roomslist) => {
     grid.innerHTML = '';
     const tippyInstances = [];
     roomslist.forEach(roomname => {
-        const li = document.createElement('li');
+        let li = document.createElement('li');
         const div = document.createElement('div');
         const img = document.createElement('img');
         truncatedroomname = truncateText(roomname, 40);
@@ -309,13 +309,13 @@ socket.on('rooms list', (roomslist) => {
         const instance = tippy(div, {
             content: truncateText(roomname, 40),
             theme: 'light',
-            placement: 'bottom',
+            placement: 'top',
             arrow: false,
         });
         tippyInstances.push(instance);
     });
     tippy.createSingleton(tippyInstances, {
-        placement: 'bottom',
+        placement: 'top',
         theme: 'light',
         moveTransition: 'transform 0.2s ease-out',
         arrow: false,
@@ -448,8 +448,8 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                 if (messagereplyingto.length > 60) {
                     finalmessagereplyingto = finalmessagereplyingto + '...';
                 }
-                const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                const originalButton = document.getElementById('replybtnoriginal');
+                let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                /* const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
                 replyButton.addEventListener('click', () => {
@@ -461,37 +461,32 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
                 });
-                li.append(replyButton);
+                li.append(replyButton); */
 
                 if (msg.roomowner === username) {
-                    const originalButton = document.getElementById('deletebtnoriginal');
+                    /* const originalButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
                     delButton.addEventListener('click', () => {
                         socket.emit('delete message', msg, username);
                         li.remove();
                     });
-                    li.append(delButton);
+                    li.append(delButton); */
                 }
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
-                notificationSound.play();
-                $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                $(`#msg-${msg._id}`).hover(function () {
-                    $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
-                    $(`#msg-${msg._id} #replybtn`).addClass('showing');
-                    $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('showing');
-                }, function () {
-                    $(`#msg-${msg._id} #replybtn`).removeClass('showing');
-                    $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).removeClass('showing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
+                li = document.getElementById(`msg-${msg._id}`);
+                const instance = tippy(li, {
+                    content: 'Reply to this message',
+                    theme: 'light',
+                    placement: 'top',
+                    arrow: false,
                 });
+                
+                notificationSound.play();
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                const originalButton = document.getElementById('replybtnoriginal');
+                let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                /* const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
                 replyButton.addEventListener('click', () => {
@@ -503,36 +498,29 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
                 });
-                li.append(replyButton);
+                li.append(replyButton); */
 
                 if (msg.roomowner === username) {
-                    const originalButton = document.getElementById('deletebtnoriginal');
+                    /* const originalButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
                     delButton.addEventListener('click', () => {
                         socket.emit('delete message', msg, username);
                         li.remove();
                     });
-                    li.append(delButton);
+                    li.append(delButton); */
                 }
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
+                li = document.getElementById(`msg-${msg._id}`);
+                const instance = tippy(li, {
+                    content: 'Reply to this message',
+                    theme: 'light',
+                    placement: 'top',
+                    arrow: false,
+                });
+                
                 notificationSound.play();
-                $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                $(`#msg-${msg._id}`).hover(function () {
-                    $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
-                    $(`#msg-${msg._id} #replybtn`).addClass('showing');
-                    $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('showing');
-                }
-                    , function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    }
-                );
             }
         } else if (msg.username === username || roominfo === username) {
             if (msgisresponse === true) {
@@ -541,7 +529,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                 if (messagereplyingto.length > 60) {
                     finalmessagereplyingto = finalmessagereplyingto + '...';
                 }
-                const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                 const originalDelButton = document.getElementById('deletebtnoriginal');
                 const delButton = originalDelButton.cloneNode(true);
                 delButton.setAttribute('id', 'deletebtn');
@@ -549,7 +537,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     socket.emit('delete message', msg, username);
                     li.remove();
                 });
-                const originalButton = document.getElementById('replybtnoriginal');
+                /* const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
                 replyButton.addEventListener('click', () => {
@@ -560,10 +548,10 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
                 });
-                li.append(replyButton);
+                li.append(replyButton); */
 
                 if (msg.username === username) {
-                    const originalEditButton = document.getElementById('editbtnoriginal');
+                    /* const originalEditButton = document.getElementById('editbtnoriginal');
                     const editButton = originalEditButton.cloneNode(true);
                     editButton.setAttribute('id', 'editbtn');
                     editButton.addEventListener('click', () => {
@@ -575,16 +563,21 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                         $('#cancelreplyoredit').show();
                         $('#message').val(msg.message);
                     });
-                    li.append(editButton);
+                    li.append(editButton); */
                 }
-                li.append(delButton);
+                // li.append(delButton);
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
+                li = document.getElementById(`msg-${msg._id}`);
+                const instance = tippy(li, {
+                    content: 'Reply to this message',
+                    theme: 'light',
+                    placement: 'top',
+                    arrow: false,
+                });
+                
                 $('#ratelimitalert').hide();
-                $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
-                $(`#msg-${msg._id}`).hover(function () {
+                /* $(`#msg-${msg._id}`).hover(function () {
                     $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
                     $(`#msg-${msg._id} #replybtn`).addClass('showing');
                     $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
@@ -600,9 +593,9 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                         $(`#msg-${msg._id} #editbtn`).removeClass('showing');
                         $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
                     }
-                );
+                ); */
             } else if (msgisresponse === false) {
-                const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                 const originalDelButton = document.getElementById('deletebtnoriginal');
                 const delButton = originalDelButton.cloneNode(true);
                 delButton.setAttribute('id', 'deletebtn');
@@ -610,7 +603,7 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     socket.emit('delete message', msg, username);
                     li.remove();
                 });
-                const originalButton = document.getElementById('replybtnoriginal');
+                /* const originalButton = document.getElementById('replybtnoriginal');
                 const replyButton = originalButton.cloneNode(true);
                 replyButton.setAttribute('id', 'replybtn');
                 replyButton.addEventListener('click', () => {
@@ -622,10 +615,10 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     $('#replyingtotext').text(`Replying to ${msg.username}`);
                     $('#cancelreplyoredit').show();
                 });
-                li.append(replyButton);
+                li.append(replyButton); */
 
                 if (msg.username === username) {
-                    const originalEditButton = document.getElementById('editbtnoriginal');
+                    /* const originalEditButton = document.getElementById('editbtnoriginal');
                     const editButton = originalEditButton.cloneNode(true);
                     editButton.setAttribute('id', 'editbtn');
                     editButton.addEventListener('click', () => {
@@ -637,30 +630,20 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                         $('#cancelreplyoredit').show();
                         $('#message').val(msg.message);
                     });
-                    li.append(editButton);
+                    li.append(editButton); */
                 }
-                li.append(delButton);
+                // li.append(delButton);
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
-                $('#ratelimitalert').hide();
-                $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
-                $(`#msg-${msg._id}`).hover(function () {
-                    $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
-                    $(`#msg-${msg._id} #replybtn`).addClass('showing');
-                    $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('showing');
-                    $(`#msg-${msg._id} #editbtn`).removeClass('notshowing');
-                    $(`#msg-${msg._id} #editbtn`).addClass('showing');
-                }, function () {
-                    $(`#msg-${msg._id} #replybtn`).removeClass('showing');
-                    $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).removeClass('showing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #editbtn`).removeClass('showing');
-                    $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
+                li = document.getElementById(`msg-${msg._id}`);
+                const instance = tippy(li, {
+                    content: 'Reply to this message',
+                    theme: 'light',
+                    placement: 'top',
+                    arrow: false,
                 });
+                
+                $('#ratelimitalert').hide();
             }
         }
         const isScrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
@@ -694,9 +677,17 @@ socket.on('load messages', (messages) => {
                     if (messagereplyingto.length > 60) {
                         finalmessagereplyingto = finalmessagereplyingto + '...';
                     }
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><b class="usernametext">${msg.username}</b> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                    let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><b class="usernametext">${msg.username}</b> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
+                    li = document.getElementById(`msg-${msg._id}`);
+                    const instance = tippy(li, {
+                        content: 'Reply to this message',
+                        theme: 'light',
+                        placement: 'top',
+                        arrow: false,
+                    });
+                    
                     let delButton = null;
                     if (msg.roomowner === username) {
                         const originalDelButton = document.getElementById('deletebtnoriginal');
@@ -707,7 +698,7 @@ socket.on('load messages', (messages) => {
                             li.remove();
                         });
                     }
-                    const originalButton = document.getElementById('replybtnoriginal');
+                    /* const originalButton = document.getElementById('replybtnoriginal');
                     const replyButton = originalButton.cloneNode(true);
                     replyButton.setAttribute('id', 'replybtn');
                     replyButton.addEventListener('click', () => {
@@ -718,29 +709,24 @@ socket.on('load messages', (messages) => {
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
                         $('#cancelreplyoredit').show();
                     });
-                    li.append(replyButton);
+                    li.append(replyButton); */
 
                     if (delButton !== null) {
-                        li.append(delButton);
+                        // li.append(delButton);
                     }
-                    $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    $(`#msg-${msg._id}`).hover(function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('showing');
-                    }, function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    });
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                    let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                     let delButton = null;
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
+                    li = document.getElementById(`msg-${msg._id}`);
+                    const instance = tippy(li, {
+                        content: 'Reply to this message',
+                        theme: 'light',
+                        placement: 'top',
+                        arrow: false,
+                    });
+                    
                     if (msg.roomowner === username) {
                         const originalDelButton = document.getElementById('deletebtnoriginal');
                         delButton = originalDelButton.cloneNode(true);
@@ -750,7 +736,7 @@ socket.on('load messages', (messages) => {
                             li.remove();
                         });
                     }
-                    const originalButton = document.getElementById('replybtnoriginal');
+                    /* const originalButton = document.getElementById('replybtnoriginal');
                     const replyButton = originalButton.cloneNode(true);
                     replyButton.setAttribute('id', 'replybtn');
                     replyButton.addEventListener('click', () => {
@@ -762,24 +748,11 @@ socket.on('load messages', (messages) => {
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
                         $('#cancelreplyoredit').show();
                     });
-                    li.append(replyButton);
+                    li.append(replyButton); */
 
                     if (delButton !== null) {
-                        li.append(delButton);
+                        // li.append(delButton);
                     }
-                    $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    $(`#msg-${msg._id}`).hover(function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('showing');
-                    }, function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    });
                 }
             } else if (msg.username === username) {
                 if (msg.isresponse === true) {
@@ -788,7 +761,7 @@ socket.on('load messages', (messages) => {
                     if (messagereplyingto.length > 60) {
                         finalmessagereplyingto = finalmessagereplyingto + '...';
                     }
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><b class="usernametext">${msg.username}</b> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                    let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><b class="usernametext">${msg.username}</b> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                     const originalDelButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalDelButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
@@ -796,7 +769,7 @@ socket.on('load messages', (messages) => {
                         socket.emit('delete message', msg, username);
                         li.remove();
                     });
-                    const originalButton = document.getElementById('replybtnoriginal');
+                    /* const originalButton = document.getElementById('replybtnoriginal');
                     const replyButton = originalButton.cloneNode(true);
                     replyButton.setAttribute('id', 'replybtn');
                     replyButton.addEventListener('click', () => {
@@ -808,9 +781,9 @@ socket.on('load messages', (messages) => {
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
                         $('#cancelreplyoredit').show();
                     });
-                    li.append(replyButton);
+                    li.append(replyButton); */
 
-                    const originalEditButton = document.getElementById('editbtnoriginal');
+                    /* const originalEditButton = document.getElementById('editbtnoriginal');
                     const editButton = originalEditButton.cloneNode(true);
                     editButton.setAttribute('id', 'editbtn');
                     editButton.addEventListener('click', () => {
@@ -823,29 +796,19 @@ socket.on('load messages', (messages) => {
                         $('#message').val(msg.message);
                     });
                     li.append(editButton);
-                    li.append(delButton);
+                    li.append(delButton); */
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
-                    $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
-                    $(`#msg-${msg._id}`).hover(function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('showing');
-                        $(`#msg-${msg._id} #editbtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #editbtn`).addClass('showing');
-                    }, function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                        $(`#msg-${msg._id} #editbtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
+                    li = document.getElementById(`msg-${msg._id}`);
+                    const instance = tippy(li, {
+                        content: 'Reply to this message',
+                        theme: 'light',
+                        placement: 'top',
+                        arrow: false,
                     });
+                    
                 } else if (msg.isresponse === false) {
-                    const li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
+                    let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                     const originalDelButton = document.getElementById('deletebtnoriginal');
                     const delButton = originalDelButton.cloneNode(true);
                     delButton.setAttribute('id', 'deletebtn');
@@ -853,7 +816,7 @@ socket.on('load messages', (messages) => {
                         socket.emit('delete message', msg, username);
                         li.remove();
                     });
-                    const originalButton = document.getElementById('replybtnoriginal');
+                    /* const originalButton = document.getElementById('replybtnoriginal');
                     const replyButton = originalButton.cloneNode(true);
                     replyButton.setAttribute('id', 'replybtn');
                     replyButton.addEventListener('click', () => {
@@ -865,9 +828,9 @@ socket.on('load messages', (messages) => {
                         $('#replyingtotext').text(`Replying to ${msg.username}`);
                         $('#cancelreplyoredit').show();
                     });
-                    li.append(replyButton);
+                    li.append(replyButton); */
 
-                    const originalEditButton = document.getElementById('editbtnoriginal');
+                    /* const originalEditButton = document.getElementById('editbtnoriginal');
                     const editButton = originalEditButton.cloneNode(true);
                     editButton.setAttribute('id', 'editbtn');
                     editButton.addEventListener('click', () => {
@@ -880,27 +843,17 @@ socket.on('load messages', (messages) => {
                         $('#message').val(msg.message);
                     });
                     li.append(editButton);
-                    li.append(delButton);
+                    li.append(delButton); */
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
-                    $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                    $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
-                    $(`#msg-${msg._id}`).hover(function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('showing');
-                        $(`#msg-${msg._id} #editbtn`).removeClass('notshowing');
-                        $(`#msg-${msg._id} #editbtn`).addClass('showing');
-                    }, function () {
-                        $(`#msg-${msg._id} #replybtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #replybtn`).addClass('notshowing');
-                        $(`#msg-${msg._id} #deletebtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #deletebtn`).addClass('notshowing');
-                        $(`#msg-${msg._id} #editbtn`).removeClass('showing');
-                        $(`#msg-${msg._id} #editbtn`).addClass('notshowing');
+                    li = document.getElementById(`msg-${msg._id}`);
+                    const instance = tippy(li, {
+                        content: 'Reply to this message',
+                        theme: 'light',
+                        placement: 'top',
+                        arrow: false,
                     });
+                    
                 }
             }
 
@@ -908,10 +861,10 @@ socket.on('load messages', (messages) => {
     });
     if (messages.length === 0) {
         if (currentRoom === 'Earthy') {
-            const li = $('<li>').attr('id', 'nomsgs').html("<b>Looks like you have no messages with Earthy yet... Why not send one and see what he answers?</b> Also remember that Earthy doesn't has a chat history yet.");
+            let li = $('<li>').attr('id', 'nomsgs').html("<b>Looks like you have no messages with Earthy yet... Why not send one and see what he answers?</b> Also remember that Earthy doesn't has a chat history yet.");
             $('#messages').append(li);
         } else {
-            const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
+            let li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
             $('#messages').append(li);
         }
     }
@@ -956,10 +909,10 @@ socket.on('message deleted', (msgId) => {
     $(`#msg-${msgId}`).remove();
     if ($('#messages').children().length === 0) {
         if (currentRoom === 'Earthy') {
-            const li = $('<li>').attr('id', 'nomsgs').html("<b>Looks like you have no messages with Earthy yet... Why not send one and see what he answers?</b> Also remember that Earthy doesn't has a chat history yet.");
+            let li = $('<li>').attr('id', 'nomsgs').html("<b>Looks like you have no messages with Earthy yet... Why not send one and see what he answers?</b> Also remember that Earthy doesn't has a chat history yet.");
             $('#messages').append(li);
         } else {
-            const li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
+            let li = $('<li>').attr('id', 'nomsgs').html('<b>This circle looks empty... Why not send a message to spice things up?</b>');
             $('#messages').append(li);
         }
     }
@@ -1009,7 +962,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
         if (messagereplyingto.length > 60) {
             finalmessagereplyingto = finalmessagereplyingto + '...';
         }
-        const li = $('<li>').attr('id', `msg-${newMessage._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${newMessage.username}</b></div> <span class="messagecontent>${newMessage.message} (edited) </span>`, username));
+        let li = $('<li>').attr('id', `msg-${newMessage._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${newMessage.username}</b></div> <span class="messagecontent>${newMessage.message} (edited) </span>`, username));
         const originalDelButton = document.getElementById('deletebtnoriginal');
         const delButton = originalDelButton.cloneNode(true);
         delButton.setAttribute('id', 'deletebtn');
@@ -1017,7 +970,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             socket.emit('delete message', newMessage, newMessage.username);
             li.remove();
         });
-        const originalButton = document.getElementById('replybtnoriginal');
+        /* const originalButton = document.getElementById('replybtnoriginal');
         const replyButton = originalButton.cloneNode(true);
         replyButton.setAttribute('id', 'replybtn');
         replyButton.addEventListener('click', () => {
@@ -1028,10 +981,10 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             $('#replyingtotext').text(`Replying to ${newMessage.username}`);
             $('#cancelreplyoredit').show();
         });
-        li.append(replyButton);
+        li.append(replyButton); */
 
         if (newMessage.username === username) {
-            const originalEditButton = document.getElementById('editbtnoriginal');
+            /* const originalEditButton = document.getElementById('editbtnoriginal');
             const editButton = originalEditButton.cloneNode(true);
             editButton.setAttribute('id', 'editbtn');
             editButton.addEventListener('click', () => {
@@ -1043,33 +996,23 @@ socket.on('message edited', (messageEditingID, newMessage) => {
                 $('#cancelreplyoredit').show();
                 $('#message').val(msg.message);
             });
-            li.append(editButton);
+            li.append(editButton); */
         }
         $(`#msg-${messageEditingID}`).replaceWith(li);
         $('#ratelimitalert').hide();
-        li.append(delButton);
+        // li.append(delButton);
         li.innerHTML = prepareMessage(newMessage.message, username);
         $('#messages').append(li);
-        $(`#msg-${newMessage._id} #replybtn`).addClass('notshowing');
-        $(`#msg-${newMessage._id} #deletebtn`).addClass('notshowing');
-        $(`#msg-${newMessage._id} #editbtn`).addClass('notshowing');
-        $(`#msg-${newMessage._id}`).hover(function () {
-            $(`#msg-${newMessage._id} #replybtn`).removeClass('notshowing');
-            $(`#msg-${newMessage._id} #replybtn`).addClass('showing');
-            $(`#msg-${newMessage._id} #deletebtn`).removeClass('notshowing');
-            $(`#msg-${newMessage._id} #deletebtn`).addClass('showing');
-            $(`#msg-${newMessage._id} #editbtn`).removeClass('notshowing');
-            $(`#msg-${newMessage._id} #editbtn`).addClass('showing');
-        }, function () {
-            $(`#msg-${newMessage._id} #replybtn`).removeClass('showing');
-            $(`#msg-${newMessage._id} #replybtn`).addClass('notshowing');
-            $(`#msg-${newMessage._id} #deletebtn`).removeClass('showing');
-            $(`#msg-${newMessage._id} #deletebtn`).addClass('notshowing');
-            $(`#msg-${newMessage._id} #editbtn`).removeClass('showing');
-            $(`#msg-${newMessage._id} #editbtn`).addClass('notshowing');
+        li = document.getElementById(`msg-${newMessage._id}`);
+        const instance = tippy(li, {
+            content: 'Reply to this message',
+            theme: 'light',
+            placement: 'top',
+            arrow: false,
         });
+        
     } else if (newMessage.isresponse === false) {
-        const li = $('<li>').attr('id', `msg-${newMessage._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${newMessage.username}</b></div><span class="messagecontent"><span class="messagecontent">${newMessage.message} (edited) </span>`, username));
+        let li = $('<li>').attr('id', `msg-${newMessage._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${newMessage.username}</b></div><span class="messagecontent"><span class="messagecontent">${newMessage.message} (edited) </span>`, username));
         const originalDelButton = document.getElementById('deletebtnoriginal');
         const delButton = originalDelButton.cloneNode(true);
         delButton.setAttribute('id', 'deletebtn');
@@ -1077,7 +1020,7 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             socket.emit('delete message', newMessage, newMessage.username);
             li.remove();
         });
-        const originalButton = document.getElementById('replybtnoriginal');
+        /* const originalButton = document.getElementById('replybtnoriginal');
         const replyButton = originalButton.cloneNode(true);
         replyButton.setAttribute('id', 'replybtn');
         replyButton.addEventListener('click', () => {
@@ -1089,9 +1032,9 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             $('#replyingtotext').text(`Replying to ${newMessage.username}`);
             $('#cancelreplyoredit').show();
         });
-        li.append(replyButton);
+        li.append(replyButton); */
         if (newMessage.username === username) {
-            const originalEditButton = document.getElementById('editbtnoriginal');
+            /* const originalEditButton = document.getElementById('editbtnoriginal');
             const editButton = originalEditButton.cloneNode(true);
             editButton.setAttribute('id', 'editbtn');
             editButton.addEventListener('click', () => {
@@ -1103,29 +1046,11 @@ socket.on('message edited', (messageEditingID, newMessage) => {
                 $('#cancelreplyoredit').show();
                 $('#message').val(msg.message);
             });
-            li.append(editButton);
+            li.append(editButton); */
         }
-        li.append(delButton);
+        // li.append(delButton);
         $(`#msg-${messageEditingID}`).replaceWith(li);
         $('#ratelimitalert').hide();
-        $(`#msg-${newMessage._id} #replybtn`).addClass('notshowing');
-        $(`#msg-${newMessage._id} #deletebtn`).addClass('notshowing');
-        $(`#msg-${newMessage._id} #editbtn`).addClass('notshowing');
-        $(`#msg-${newMessage._id}`).hover(function () {
-            $(`#msg-${newMessage._id} #replybtn`).removeClass('notshowing');
-            $(`#msg-${newMessage._id} #replybtn`).addClass('showing');
-            $(`#msg-${newMessage._id} #deletebtn`).removeClass('notshowing');
-            $(`#msg-${newMessage._id} #deletebtn`).addClass('showing');
-            $(`#msg-${newMessage._id} #editbtn`).removeClass('notshowing');
-            $(`#msg-${newMessage._id} #editbtn`).addClass('showing');
-        }, function () {
-            $(`#msg-${newMessage._id} #replybtn`).removeClass('showing');
-            $(`#msg-${newMessage._id} #replybtn`).addClass('notshowing');
-            $(`#msg-${newMessage._id} #deletebtn`).removeClass('showing');
-            $(`#msg-${newMessage._id} #deletebtn`).addClass('notshowing');
-            $(`#msg-${newMessage._id} #editbtn`).removeClass('showing');
-            $(`#msg-${newMessage._id} #editbtn`).addClass('notshowing');
-        });
     }
 
 });
@@ -1176,7 +1101,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 socket.on('ai response', (response, airesponseid) => {
     $(`#msg-ai-${airesponseid}`).remove();
-    const li = $('<li>').attr('id', `msg-${response._id}`).attr('class', 'msgelement').html(prepareMessage(`<div id="usernametextplacement"><b class="usernametext" class="earthymention">Earthy</b></div><span class="messagecontent">${response}</span> (AI - Message only visible to you) `));
+    let li = $('<li>').attr('id', `msg-${response._id}`).attr('class', 'msgelement').html(prepareMessage(`<div id="usernametextplacement"><b class="usernametext" class="earthymention">Earthy</b></div><span class="messagecontent">${response}</span> (AI - Message only visible to you) `));
     $('#messages').append(li);
     if (earthymsgtimeout !== null) {
         clearTimeout(earthymsgtimeout);
