@@ -892,6 +892,5 @@ document.addEventListener("click", function (event) {
         console.log('deletebtn clicked');
     }
     console.log(event.target.id);
-    console.log(event.target);
     console.log(event.target.class);
 });
