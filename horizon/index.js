@@ -37,25 +37,16 @@ function messagesTooltip(element, allowreply, allowedit, allowdelete) {
     const tooltipelement = document.createElement('div');
     tooltipelement.classList.add('messageoptions');
     if (allowreply === true) {
-        const originalButton = document.getElementById('replybtnoriginal');
-        const replyButton = originalButton.cloneNode(true);
-        replyButton.setAttribute('id', `replybtn-${element.id}`);
-        replyButton.setAttribute('class', `replybtn-${element.id}`);
-        tooltipelement.appendChild(replyButton);
+        const replyButton = $('<button>').attr('id', `replybtn-${element.id}`).html(`<svg xmlns="http://www.w3.org/2000/svg" id="replybtn-${element.id}" viewBox="0 0 512 512" width="18" height="13"><path id="replybtn-${element.id}" d="M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z" /></svg>`)
+        $(tooltipelement).append(replyButton);
     }
     if (allowedit === true) {
-        const originalButton = document.getElementById('editbtnoriginal');
-        const editButton = originalButton.cloneNode(true);
-        editButton.setAttribute('id', `editbtn-${element.id}`);
-        editButton.setAttribute('class', `editbtn-${element.id}`);
-        tooltipelement.appendChild(editButton);
+        const editButton = $('<button>').attr('id', `editbtn-${element.id}`).html(`<svg fill="#000000" version="1.1" id="editbtn-${element.id}" xmlns="http://www.w3.org/2000/svg" width="18" height="13" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px" viewBox="0 0 528.899 528.899" xml:space="preserve"><g><path id="editbtn-${element.id}" d="M328.883,89.125l107.59,107.589l-272.34,272.34L56.604,361.465L328.883,89.125z M518.113,63.177l-47.981-47.981 c-18.543-18.543-48.653-18.543-67.259,0l-45.961,45.961l107.59,107.59l53.611-53.611 C532.495,100.753,532.495,77.559,518.113,63.177z M0.3,512.69c-1.958,8.812,5.998,16.708,14.811,14.565l119.891-29.069 L27.473,390.597L0.3,512.69z" /></g></svg>`)
+        $(tooltipelement).append(editButton);
     }
     if (allowdelete === true) {
-        const originalButton = document.getElementById('deletebtnoriginal');
-        const delButton = originalButton.cloneNode(true);
-        delButton.setAttribute('id', `deletebtn-${element.id}`);
-        delButton.setAttribute('class', `deletebtn-${element.id}`);
-        tooltipelement.appendChild(delButton);
+        const delButton = $('<button>').attr('id', `delbtn-${element.id}`).html(`<svg width="18" height="13" id="delbtn-${element.id}" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path id="delbtn-${element.id}" d="M11.681 2.41458C11.7194 2.55015 11.874 2.66 12.0286 2.66H15.0175C15.5603 2.66 16 3.05682 16 3.54666C16 3.95141 15.6996 4.29181 15.2906 4.39869L14.7774 17.1327C14.7358 18.1687 13.7807 19 12.6294 19H3.37062C2.22147 19 1.26424 18.1678 1.22258 17.1327L0.709425 4.39869C0.300438 4.29181 0 3.95141 0 3.54666C0 3.05682 0.439696 2.66 0.982467 2.66H3.97141C4.12602 2.66 4.28173 2.54817 4.31901 2.41458L4.52844 1.65557C4.78831 0.717461 5.80587 0 6.87606 0H9.12388C10.1952 0 11.2116 0.717436 11.4715 1.65557L11.681 2.41458ZM7.29835 6.71337V15.3267C7.29835 15.676 7.61305 15.96 8.00011 15.96C8.38718 15.96 8.70187 15.676 8.70187 15.3267V6.71337C8.70187 6.36405 8.38718 6.08004 8.00011 6.08004C7.61305 6.08004 7.29835 6.36405 7.29835 6.71337ZM4.07025 6.73217L4.35095 15.3455C4.36301 15.6948 4.68648 15.9699 5.07354 15.96C5.46061 15.9491 5.76542 15.6572 5.75448 15.3079L5.47377 6.69458C5.46171 6.34526 5.13824 6.07016 4.75118 6.08004C4.36412 6.09093 4.0593 6.38285 4.07025 6.73217ZM10.5265 6.69457L10.2458 15.3078C10.2348 15.6572 10.5396 15.9491 10.9267 15.96C11.3137 15.9699 11.6372 15.6948 11.6493 15.3454L11.93 6.73216C11.9409 6.38284 11.6361 6.09093 11.249 6.08003C10.862 6.07014 10.5385 6.34525 10.5265 6.69457ZM6.41553 2.66H9.58441C9.66117 2.66 9.70941 2.60558 9.69077 2.53829L9.56467 2.08505C9.5241 1.93661 9.29274 1.77332 9.12388 1.77332H6.87606C6.7072 1.77332 6.47583 1.93661 6.43527 2.08505L6.30917 2.53829C6.29053 2.60657 6.33877 2.66 6.41553 2.66H6.41553Z" fill="#000000" /></svg>`)
+        $(tooltipelement).append(delButton);
     }
     const instance = tippy(element, {
         content: tooltipelement.innerHTML,
@@ -619,7 +610,7 @@ socket.on('load messages', (messages) => {
                     allowreply = true;
                     if (msg.roomowner === username) {
                         allowdelete = true;
-                    } 
+                    }
                     messagesTooltip(li, allowreply, allowedit, allowdelete);
                 }
             } else if (msg.username === username) {
@@ -891,6 +882,6 @@ document.addEventListener("click", function (event) {
     } else if (event.target.id.startsWith('deletebtn-')) {
         console.log('deletebtn clicked');
     }
-    console.log(event.target.id);
-    console.log(event.target.class);
+    console.log(event.target)
+    console.log(event.target.id)
 });
