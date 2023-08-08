@@ -19,7 +19,7 @@ let isowner = false;
 let roomsList = [];
 let roomSettings;
 const hubSchema = new mongoose.Schema({
-    hubname: {
+    name: {
         type: String,
         required: true
     },
@@ -108,7 +108,6 @@ const messageSchema = new mongoose.Schema({
         required: true
     }
 }, { timestamps: true });
-
 const roomSchema = new mongoose.Schema({
     room: {
         type: String,
