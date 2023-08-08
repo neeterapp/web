@@ -40,18 +40,21 @@ function messagesTooltip(element, allowreply, allowedit, allowdelete) {
         const originalButton = document.getElementById('replybtnoriginal');
         const replyButton = originalButton.cloneNode(true);
         replyButton.setAttribute('id', `replybtn-${element.id}`);
+        replyButton.setAttribute('class', `replybtn-${element.id}`);
         tooltipelement.appendChild(replyButton);
     }
     if (allowedit === true) {
         const originalButton = document.getElementById('editbtnoriginal');
         const editButton = originalButton.cloneNode(true);
         editButton.setAttribute('id', `editbtn-${element.id}`);
+        editButton.setAttribute('class', `editbtn-${element.id}`);
         tooltipelement.appendChild(editButton);
     }
     if (allowdelete === true) {
         const originalButton = document.getElementById('deletebtnoriginal');
         const delButton = originalButton.cloneNode(true);
         delButton.setAttribute('id', `deletebtn-${element.id}`);
+        delButton.setAttribute('class', `deletebtn-${element.id}`);
         tooltipelement.appendChild(delButton);
     }
     const instance = tippy(element, {
@@ -63,9 +66,6 @@ function messagesTooltip(element, allowreply, allowedit, allowdelete) {
         allowHTML: true,
     });
 }
-setTimeout(() => {
-    messagesTooltip(document.getElementById('msg-64aecd0c4cbab47d249d85e9'), true, true, true);
-}, 5000);
 function prepareMessage(message, username) {
     const mentionRegex = `@(${username})\\b`;
     const earthyRegex = `@(Earthy)\\b`;
@@ -433,11 +433,8 @@ window.addEventListener('click', ({ target }) => {
     const popups = document.querySelectorAll('.userpopup');
     const popup = target.closest('.userpopup');
     const clickedOnClosedPopup = popup && popup.classList.contains('closed');
-
     if (clickedOnClosedPopup) return;
-
     popups.forEach(p => $('.userpopup').hide());
-
     if (popup) popup.classList.add('show');
 });
 
@@ -887,4 +884,12 @@ document.addEventListener("click", function (event) {
         });
         tooltip.show();
     }
+    if (event.target.id.startsWith('replybtn-')) {
+        console.log('replybtn clicked');
+    } else if (event.target.id.startsWith('editbtn-')) {
+        console.log('editbtn clicked');
+    } else if (event.target.id.startsWith('deletebtn-')) {
+        console.log('deletebtn clicked');
+    }
+    console.log(event.target.id);
 });
