@@ -481,8 +481,12 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     theme: 'light',
                     placement: 'top',
                     arrow: false,
+                    interactive: true,
+                    
+                    
+                    allowHTML: true,
                 });
-                
+
                 notificationSound.play();
             } else if (msgisresponse === false) {
                 let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
@@ -518,8 +522,12 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     theme: 'light',
                     placement: 'top',
                     arrow: false,
+                    interactive: true,
+                    
+                    
+                    allowHTML: true,
                 });
-                
+
                 notificationSound.play();
             }
         } else if (msg.username === username || roominfo === username) {
@@ -574,8 +582,12 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     theme: 'light',
                     placement: 'top',
                     arrow: false,
+                    interactive: true,
+                    
+                    
+                    allowHTML: true,
                 });
-                
+
                 $('#ratelimitalert').hide();
                 /* $(`#msg-${msg._id}`).hover(function () {
                     $(`#msg-${msg._id} #replybtn`).removeClass('notshowing');
@@ -641,8 +653,12 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     theme: 'light',
                     placement: 'top',
                     arrow: false,
+                    interactive: true,
+                    
+                    
+                    allowHTML: true,
                 });
-                
+
                 $('#ratelimitalert').hide();
             }
         }
@@ -686,8 +702,12 @@ socket.on('load messages', (messages) => {
                         theme: 'light',
                         placement: 'top',
                         arrow: false,
+                        interactive: true,
+                        
+                        
+                        allowHTML: true,
                     });
-                    
+
                     let delButton = null;
                     if (msg.roomowner === username) {
                         const originalDelButton = document.getElementById('deletebtnoriginal');
@@ -725,8 +745,12 @@ socket.on('load messages', (messages) => {
                         theme: 'light',
                         placement: 'top',
                         arrow: false,
+                        interactive: true,
+                        
+                        
+                        allowHTML: true,
                     });
-                    
+
                     if (msg.roomowner === username) {
                         const originalDelButton = document.getElementById('deletebtnoriginal');
                         delButton = originalDelButton.cloneNode(true);
@@ -805,8 +829,12 @@ socket.on('load messages', (messages) => {
                         theme: 'light',
                         placement: 'top',
                         arrow: false,
+                        interactive: true,
+                        
+                        
+                        allowHTML: true,
                     });
-                    
+
                 } else if (msg.isresponse === false) {
                     let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                     const originalDelButton = document.getElementById('deletebtnoriginal');
@@ -852,8 +880,12 @@ socket.on('load messages', (messages) => {
                         theme: 'light',
                         placement: 'top',
                         arrow: false,
+                        interactive: true,
+                        
+                        
+                        allowHTML: true,
                     });
-                    
+
                 }
             }
 
@@ -1009,8 +1041,14 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             theme: 'light',
             placement: 'top',
             arrow: false,
+            content: 'Reply to this message',
+            theme: 'light',
+            placement: 'top',
+            arrow: false,
+            interactive: true,
+            allowHTML: true,
         });
-        
+
     } else if (newMessage.isresponse === false) {
         let li = $('<li>').attr('id', `msg-${newMessage._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${newMessage.username}</b></div><span class="messagecontent"><span class="messagecontent">${newMessage.message} (edited) </span>`, username));
         const originalDelButton = document.getElementById('deletebtnoriginal');
