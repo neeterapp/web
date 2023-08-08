@@ -9,23 +9,7 @@ require('dotenv').config();
 const { Configuration, OpenAIApi } = require("openai");
 const emojiRegex = require('emoji-regex');
 const emjregex = emojiRegex();
-const { Client, Events, GatewayIntentBits, User } = require('discord.js');
-const { token } = require('./config.json');
-const dcclient = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-    ]
-});
 
-dcclient.once(Events.ClientReady, c => {
-    console.log(`Ready! Logged in as ${c.user.tag}`);
-    dcclient.user.setPresence({
-        activities: [{ name: 'Discord messages', type: 'WATCHING' }],
-        status: 'dnd'
-    });
-});
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Database connection error:'));
@@ -478,25 +462,6 @@ io.on('connection', (socket) => {
     });
 });
 
-dcclient.on('messageCreate', message => {
-    if (message.channelId === '1100837765446377494') {
-        if (message.author.bot) return;
-        const sanitizeddcmsg = DOMPurify.sanitize(message.content);
-        RoomData.findOne({ room: "Main" }).then((existingRoom) => {
-            const dcmsg = new Message({ message: sanitizeddcmsg, username: message.author.username, room: "Main", roomowner: "justkoru", isresponse: false, edited: false });
-            dcmsg.save().then(() => {
-                RoomData.findOne({ room: "Main" }).then((existingRoom) => {
-                    console.log("New dc message saved to db and sent")
-                    io.in("Main").emit('chat message', dcmsg, "Main", "justkoru", false);
-                });
-            }).catch((err) => {
-                console.error(err);
-            });
-        });
-    }
-});
 http.listen(2345, () => {
     console.log('listening on *:2345');
 });
-
-dcclient.login(token);
