@@ -33,6 +33,39 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 
+function messagesTooltip(element, allowreply, allowedit, allowdelete) {
+    const tooltipelement = document.createElement('div');
+    tooltipelement.classList.add('messageoptions');
+    if (allowreply === true) {
+        const originalButton = document.getElementById('replybtnoriginal');
+        const replyButton = originalButton.cloneNode(true);
+        replyButton.setAttribute('id', `replybtn-${element.id}`);
+        tooltipelement.appendChild(replyButton);
+    }
+    if (allowedit === true) {
+        const originalButton = document.getElementById('editbtnoriginal');
+        const editButton = originalButton.cloneNode(true);
+        editButton.setAttribute('id', `editbtn-${element.id}`);
+        tooltipelement.appendChild(editButton);
+    }
+    if (allowdelete === true) {
+        const originalButton = document.getElementById('deletebtnoriginal');
+        const delButton = originalButton.cloneNode(true);
+        delButton.setAttribute('id', `deletebtn-${element.id}`);
+        tooltipelement.appendChild(delButton);
+    }
+    const instance = tippy(element, {
+        content: tooltipelement.innerHTML,
+        theme: 'light',
+        placement: 'top',
+        arrow: false,
+        interactive: true,
+        allowHTML: true,
+    });
+}
+setTimeout(() => {
+    messagesTooltip(document.getElementById('msg-64aecd0c4cbab47d249d85e9'), true, true, true);
+}, 5000);
 function prepareMessage(message, username) {
     const mentionRegex = `@(${username})\\b`;
     const earthyRegex = `@(Earthy)\\b`;
@@ -449,81 +482,32 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     finalmessagereplyingto = finalmessagereplyingto + '...';
                 }
                 let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                /* const originalButton = document.getElementById('replybtnoriginal');
-                const replyButton = originalButton.cloneNode(true);
-                replyButton.setAttribute('id', 'replybtn');
-                replyButton.addEventListener('click', () => {
-                    isaresponse = true;
-                    responsetomsg = `${msg._id}`;
-                    msgresponsetousername = msg.username;
-
-                    $('#replyingtotext').show();
-                    $('#replyingtotext').text(`Replying to ${msg.username}`);
-                    $('#cancelreplyoredit').show();
-                });
-                li.append(replyButton); */
-
+                let allowreply = false;
+                let allowedit = false;
+                let allowdelete = false;
+                allowreply = true;
                 if (msg.roomowner === username) {
-                    /* const originalButton = document.getElementById('deletebtnoriginal');
-                    const delButton = originalButton.cloneNode(true);
-                    delButton.setAttribute('id', 'deletebtn');
-                    delButton.addEventListener('click', () => {
-                        socket.emit('delete message', msg, username);
-                        li.remove();
-                    });
-                    li.append(delButton); */
+                    allowdelete = true;
                 }
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
                 li = document.getElementById(`msg-${msg._id}`);
-                const instance = tippy(li, {
-                    content: 'Reply to this message',
-                    theme: 'light',
-                    placement: 'top',
-                    arrow: false,
-                    interactive: true,
-                    allowHTML: true,
-                });
-
+                messagesTooltip(li, allowreply, allowedit, allowdelete);
                 notificationSound.play();
             } else if (msgisresponse === false) {
                 let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                /* const originalButton = document.getElementById('replybtnoriginal');
-                const replyButton = originalButton.cloneNode(true);
-                replyButton.setAttribute('id', 'replybtn');
-                replyButton.addEventListener('click', () => {
-                    isaresponse = true;
-                    responsetomsg = `${msg._id}`;
-                    msgresponsetousername = msg.username;
-
-                    $('#replyingtotext').show();
-                    $('#replyingtotext').text(`Replying to ${msg.username}`);
-                    $('#cancelreplyoredit').show();
-                });
-                li.append(replyButton); */
+                let allowreply = false;
+                let allowedit = false;
+                let allowdelete = false;
+                allowreply = true;
 
                 if (msg.roomowner === username) {
-                    /* const originalButton = document.getElementById('deletebtnoriginal');
-                    const delButton = originalButton.cloneNode(true);
-                    delButton.setAttribute('id', 'deletebtn');
-                    delButton.addEventListener('click', () => {
-                        socket.emit('delete message', msg, username);
-                        li.remove();
-                    });
-                    li.append(delButton); */
+                    allowdelete = true;
                 }
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
                 li = document.getElementById(`msg-${msg._id}`);
-                const instance = tippy(li, {
-                    content: 'Reply to this message',
-                    theme: 'light',
-                    placement: 'top',
-                    arrow: false,
-                    interactive: true,
-                    allowHTML: true,
-                });
-
+                messagesTooltip(li, allowreply, allowedit, allowdelete);
                 notificationSound.play();
             }
         } else if (msg.username === username || roominfo === username) {
@@ -534,53 +518,18 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     finalmessagereplyingto = finalmessagereplyingto + '...';
                 }
                 let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                const originalDelButton = document.getElementById('deletebtnoriginal');
-                const delButton = originalDelButton.cloneNode(true);
-                delButton.setAttribute('id', 'deletebtn');
-                delButton.addEventListener('click', () => {
-                    socket.emit('delete message', msg, username);
-                    li.remove();
-                });
-                /* const originalButton = document.getElementById('replybtnoriginal');
-                const replyButton = originalButton.cloneNode(true);
-                replyButton.setAttribute('id', 'replybtn');
-                replyButton.addEventListener('click', () => {
-                    isaresponse = true;
-                    responsetomsg = `${msg._id}`;
-                    msgresponsetousername = msg.username;
-                    $('#replyingtotext').show();
-                    $('#replyingtotext').text(`Replying to ${msg.username}`);
-                    $('#cancelreplyoredit').show();
-                });
-                li.append(replyButton); */
-
+                let allowreply = false;
+                let allowedit = false;
+                let allowdelete = false;
+                allowreply = true;
                 if (msg.username === username) {
-                    /* const originalEditButton = document.getElementById('editbtnoriginal');
-                    const editButton = originalEditButton.cloneNode(true);
-                    editButton.setAttribute('id', 'editbtn');
-                    editButton.addEventListener('click', () => {
-                        editingmsg = true;
-                        editingmessageid = msg._id;
-                        $('#messageinput').val(msg.message);
-                        $('#sendbtn').text('Save');
-                        $('#editingmsgtext').show();
-                        $('#cancelreplyoredit').show();
-                        $('#message').val(msg.message);
-                    });
-                    li.append(editButton); */
+                    allowedit = true;
+                    allowdelete = true;
                 }
-                // li.append(delButton);
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
                 li = document.getElementById(`msg-${msg._id}`);
-                const instance = tippy(li, {
-                    content: 'Reply to this message',
-                    theme: 'light',
-                    placement: 'top',
-                    arrow: false,
-                    interactive: true,
-                    allowHTML: true,
-                });
+                messagesTooltip(li, allowreply, allowedit, allowdelete);
 
                 $('#ratelimitalert').hide();
                 /* $(`#msg-${msg._id}`).hover(function () {
@@ -602,55 +551,18 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                 ); */
             } else if (msgisresponse === false) {
                 let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                const originalDelButton = document.getElementById('deletebtnoriginal');
-                const delButton = originalDelButton.cloneNode(true);
-                delButton.setAttribute('id', 'deletebtn');
-                delButton.addEventListener('click', () => {
-                    socket.emit('delete message', msg, username);
-                    li.remove();
-                });
-                /* const originalButton = document.getElementById('replybtnoriginal');
-                const replyButton = originalButton.cloneNode(true);
-                replyButton.setAttribute('id', 'replybtn');
-                replyButton.addEventListener('click', () => {
-                    isaresponse = true;
-                    responsetomsg = `${msg._id}`;
-                    msgresponsetousername = msg.username;
-
-                    $('#replyingtotext').show();
-                    $('#replyingtotext').text(`Replying to ${msg.username}`);
-                    $('#cancelreplyoredit').show();
-                });
-                li.append(replyButton); */
-
+                let allowreply = false;
+                let allowedit = false;
+                let allowdelete = false;
+                allowreply = true;
                 if (msg.username === username) {
-                    /* const originalEditButton = document.getElementById('editbtnoriginal');
-                    const editButton = originalEditButton.cloneNode(true);
-                    editButton.setAttribute('id', 'editbtn');
-                    editButton.addEventListener('click', () => {
-                        editingmsg = true;
-                        editingmessageid = msg._id;
-                        $('#messageinput').val(msg.message);
-                        $('#sendbtn').text('Save');
-                        $('#editingmsgtext').show();
-                        $('#cancelreplyoredit').show();
-                        $('#message').val(msg.message);
-                    });
-                    li.append(editButton); */
+                    allowedit = true;
+                    allowdelete = true;
                 }
-                // li.append(delButton);
                 li.innerHTML = prepareMessage(htmlmdmsg, username);
                 $('#messages').append(li);
                 li = document.getElementById(`msg-${msg._id}`);
-                const instance = tippy(li, {
-                    content: 'Reply to this message',
-                    theme: 'light',
-                    placement: 'top',
-                    arrow: false,
-                    interactive: true,
-                    allowHTML: true,
-                });
-
+                messagesTooltip(li, allowreply, allowedit, allowdelete);
                 $('#ratelimitalert').hide();
             }
         }
@@ -689,82 +601,29 @@ socket.on('load messages', (messages) => {
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
                     li = document.getElementById(`msg-${msg._id}`);
-                    const instance = tippy(li, {
-                        content: 'Reply to this message',
-                        theme: 'light',
-                        placement: 'top',
-                        arrow: false,
-                        interactive: true,
-                        allowHTML: true,
-                    });
-
-                    let delButton = null;
+                    let allowreply = false;
+                    let allowedit = false;
+                    let allowdelete = false;
+                    allowreply = true;
                     if (msg.roomowner === username) {
-                        const originalDelButton = document.getElementById('deletebtnoriginal');
-                        delButton = originalDelButton.cloneNode(true);
-                        delButton.setAttribute('id', 'deletebtn');
-                        delButton.addEventListener('click', () => {
-                            socket.emit('delete message', msg, username);
-                            li.remove();
-                        });
+                        allowdelete = true;
+                        allowedit = true;
                     }
-                    /* const originalButton = document.getElementById('replybtnoriginal');
-                    const replyButton = originalButton.cloneNode(true);
-                    replyButton.setAttribute('id', 'replybtn');
-                    replyButton.addEventListener('click', () => {
-                        isaresponse = true;
-                        responsetomsg = `${msg._id}`;
-                        msgresponsetousername = msg.username;
-                        $('#replyingtotext').show();
-                        $('#replyingtotext').text(`Replying to ${msg.username}`);
-                        $('#cancelreplyoredit').show();
-                    });
-                    li.append(replyButton); */
-
-                    if (delButton !== null) {
-                        // li.append(delButton);
-                    }
+                    messagesTooltip(li, allowreply, allowedit, allowdelete);
                 } else if (msg.isresponse === false) {
                     let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
                     let delButton = null;
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
                     li = document.getElementById(`msg-${msg._id}`);
-                    const instance = tippy(li, {
-                        content: 'Reply to this message',
-                        theme: 'light',
-                        placement: 'top',
-                        arrow: false,
-                        interactive: true,
-                        allowHTML: true,
-                    });
-
+                    let allowdelete = false;
+                    let allowedit = false;
+                    let allowreply = false;
+                    allowreply = true;
                     if (msg.roomowner === username) {
-                        const originalDelButton = document.getElementById('deletebtnoriginal');
-                        delButton = originalDelButton.cloneNode(true);
-                        delButton.setAttribute('id', 'deletebtn');
-                        delButton.addEventListener('click', () => {
-                            socket.emit('delete message', msg, username);
-                            li.remove();
-                        });
-                    }
-                    /* const originalButton = document.getElementById('replybtnoriginal');
-                    const replyButton = originalButton.cloneNode(true);
-                    replyButton.setAttribute('id', 'replybtn');
-                    replyButton.addEventListener('click', () => {
-                        isaresponse = true;
-                        responsetomsg = `${msg._id}`;
-                        msgresponsetousername = msg.username;
-
-                        $('#replyingtotext').show();
-                        $('#replyingtotext').text(`Replying to ${msg.username}`);
-                        $('#cancelreplyoredit').show();
-                    });
-                    li.append(replyButton); */
-
-                    if (delButton !== null) {
-                        // li.append(delButton);
-                    }
+                        allowdelete = true;
+                    } 
+                    messagesTooltip(li, allowreply, allowedit, allowdelete);
                 }
             } else if (msg.username === username) {
                 if (msg.isresponse === true) {
@@ -774,101 +633,28 @@ socket.on('load messages', (messages) => {
                         finalmessagereplyingto = finalmessagereplyingto + '...';
                     }
                     let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><b class="usernametext">${msg.username}</b> <span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                    const originalDelButton = document.getElementById('deletebtnoriginal');
-                    const delButton = originalDelButton.cloneNode(true);
-                    delButton.setAttribute('id', 'deletebtn');
-                    delButton.addEventListener('click', () => {
-                        socket.emit('delete message', msg, username);
-                        li.remove();
-                    });
-                    /* const originalButton = document.getElementById('replybtnoriginal');
-                    const replyButton = originalButton.cloneNode(true);
-                    replyButton.setAttribute('id', 'replybtn');
-                    replyButton.addEventListener('click', () => {
-                        isaresponse = true;
-                        responsetomsg = `${msg._id}`;
-                        msgresponsetousername = msg.username;
-
-                        $('#replyingtotext').show();
-                        $('#replyingtotext').text(`Replying to ${msg.username}`);
-                        $('#cancelreplyoredit').show();
-                    });
-                    li.append(replyButton); */
-
-                    /* const originalEditButton = document.getElementById('editbtnoriginal');
-                    const editButton = originalEditButton.cloneNode(true);
-                    editButton.setAttribute('id', 'editbtn');
-                    editButton.addEventListener('click', () => {
-                        editingmsg = true;
-                        editingmessageid = msg._id;
-                        $('#messageinput').val(msg.message);
-                        $('#sendbtn').text('Save');
-                        $('#editingmsgtext').show();
-                        $('#cancelreplyoredit').show();
-                        $('#message').val(msg.message);
-                    });
-                    li.append(editButton);
-                    li.append(delButton); */
+                    let allowreply = false;
+                    let allowedit = false;
+                    let allowdelete = false;
+                    allowreply = true;
+                    allowedit = true;
+                    allowdelete = true;
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
                     li = document.getElementById(`msg-${msg._id}`);
-                    const instance = tippy(li, {
-                        content: 'Reply to this message',
-                        theme: 'light',
-                        placement: 'top',
-                        arrow: false,
-                        interactive: true,
-                        allowHTML: true,
-                    });
-
+                    messagesTooltip(li, allowreply, allowedit, allowdelete);
                 } else if (msg.isresponse === false) {
                     let li = $('<li>').attr('id', `msg-${msg._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${msg.username}</b></div><span class="messagecontent">${htmlmdmsg} ${editedtext}</span>`, username));
-                    const originalDelButton = document.getElementById('deletebtnoriginal');
-                    const delButton = originalDelButton.cloneNode(true);
-                    delButton.setAttribute('id', 'deletebtn');
-                    delButton.addEventListener('click', () => {
-                        socket.emit('delete message', msg, username);
-                        li.remove();
-                    });
-                    /* const originalButton = document.getElementById('replybtnoriginal');
-                    const replyButton = originalButton.cloneNode(true);
-                    replyButton.setAttribute('id', 'replybtn');
-                    replyButton.addEventListener('click', () => {
-                        isaresponse = true;
-                        responsetomsg = `${msg._id}`;
-                        msgresponsetousername = msg.username;
-
-                        $('#replyingtotext').show();
-                        $('#replyingtotext').text(`Replying to ${msg.username}`);
-                        $('#cancelreplyoredit').show();
-                    });
-                    li.append(replyButton); */
-
-                    /* const originalEditButton = document.getElementById('editbtnoriginal');
-                    const editButton = originalEditButton.cloneNode(true);
-                    editButton.setAttribute('id', 'editbtn');
-                    editButton.addEventListener('click', () => {
-                        editingmsg = true;
-                        editingmessageid = msg._id;
-                        $('#messageinput').val(msg.message);
-                        $('#sendbtn').text('Save');
-                        $('#editingmsgtext').show();
-                        $('#cancelreplyoredit').show();
-                        $('#message').val(msg.message);
-                    });
-                    li.append(editButton);
-                    li.append(delButton); */
+                    let allowreply = false;
+                    let allowedit = false;
+                    let allowdelete = false;
+                    allowreply = true;
+                    allowedit = true;
+                    allowdelete = true;
                     li.innerHTML = prepareMessage(htmlmdmsg, username);
                     $('#messages').append(li);
                     li = document.getElementById(`msg-${msg._id}`);
-                    const instance = tippy(li, {
-                        content: 'Reply to this message',
-                        theme: 'light',
-                        placement: 'top',
-                        arrow: false,
-                        interactive: true,
-                        allowHTML: true,
-                    });
+                    messagesTooltip(li, allowreply, allowedit, allowdelete);
 
                 }
             }
@@ -979,95 +765,35 @@ socket.on('message edited', (messageEditingID, newMessage) => {
             finalmessagereplyingto = finalmessagereplyingto + '...';
         }
         let li = $('<li>').attr('id', `msg-${newMessage._id}`).attr('class', 'msgelement').html(prepareMessage(`<span class="replyingtocontent">${finalmessagereplyingto}</span><div class="usernametextplacement"><b class="usernametext">${newMessage.username}</b></div> <span class="messagecontent>${newMessage.message} (edited) </span>`, username));
-        const originalDelButton = document.getElementById('deletebtnoriginal');
-        const delButton = originalDelButton.cloneNode(true);
-        delButton.setAttribute('id', 'deletebtn');
-        delButton.addEventListener('click', () => {
-            socket.emit('delete message', newMessage, newMessage.username);
-            li.remove();
-        });
-        /* const originalButton = document.getElementById('replybtnoriginal');
-        const replyButton = originalButton.cloneNode(true);
-        replyButton.setAttribute('id', 'replybtn');
-        replyButton.addEventListener('click', () => {
-            isaresponse = true;
-            responsetomsg = `${newMessage._id}`;
-            msgresponsetousername = newMessage.username;
-            $('#replyingtotext').show();
-            $('#replyingtotext').text(`Replying to ${newMessage.username}`);
-            $('#cancelreplyoredit').show();
-        });
-        li.append(replyButton); */
+        let repliesenabled = false;
+        let editsenabled = false;
+        let deletesenabled = false;
+        repliesenabled = true;
 
         if (newMessage.username === username) {
-            /* const originalEditButton = document.getElementById('editbtnoriginal');
-            const editButton = originalEditButton.cloneNode(true);
-            editButton.setAttribute('id', 'editbtn');
-            editButton.addEventListener('click', () => {
-                editingmsg = true;
-                editingmessageid = newMessage._id;
-                $('#messageinput').val(newMessage.message);
-                $('#sendbtn').text('Save');
-                $('#editingmsgtext').show();
-                $('#cancelreplyoredit').show();
-                $('#message').val(msg.message);
-            });
-            li.append(editButton); */
+            editsenabled = true;
+            deletesenabled = true;
         }
         $(`#msg-${messageEditingID}`).replaceWith(li);
         $('#ratelimitalert').hide();
-        // li.append(delButton);
+        messageoptions.append(delButton);
         li.innerHTML = prepareMessage(newMessage.message, username);
         $('#messages').append(li);
         li = document.getElementById(`msg-${newMessage._id}`);
-        const instance = tippy(li, {
-            content: 'Reply to this message',
-            theme: 'light',
-            placement: 'top',
-            arrow: false,
-            interactive: true,
-            allowHTML: true,
-        });
+        messagesTooltip(li, repliesenabled, editsenabled, deletesenabled);
 
     } else if (newMessage.isresponse === false) {
         let li = $('<li>').attr('id', `msg-${newMessage._id}`).attr('class', 'msgelement').html(prepareMessage(`<div class="usernametextplacement"><b class="usernametext">${newMessage.username}</b></div><span class="messagecontent"><span class="messagecontent">${newMessage.message} (edited) </span>`, username));
-        const originalDelButton = document.getElementById('deletebtnoriginal');
-        const delButton = originalDelButton.cloneNode(true);
-        delButton.setAttribute('id', 'deletebtn');
-        delButton.addEventListener('click', () => {
-            socket.emit('delete message', newMessage, newMessage.username);
-            li.remove();
-        });
-        /* const originalButton = document.getElementById('replybtnoriginal');
-        const replyButton = originalButton.cloneNode(true);
-        replyButton.setAttribute('id', 'replybtn');
-        replyButton.addEventListener('click', () => {
-            isaresponse = true;
-            responsetomsg = `${newMessage._id}`;
-            msgresponsetousername = newMessage.username;
-
-            $('#replyingtotext').show();
-            $('#replyingtotext').text(`Replying to ${newMessage.username}`);
-            $('#cancelreplyoredit').show();
-        });
-        li.append(replyButton); */
+        let repliesenabled = false;
+        let editsenabled = false;
+        let deletesenabled = false;
+        repliesenabled = true;
         if (newMessage.username === username) {
-            /* const originalEditButton = document.getElementById('editbtnoriginal');
-            const editButton = originalEditButton.cloneNode(true);
-            editButton.setAttribute('id', 'editbtn');
-            editButton.addEventListener('click', () => {
-                editingmsg = true;
-                editingmessageid = newMessage._id;
-                $('#messageinput').val(newMessage.message);
-                $('#sendbtn').text('Save');
-                $('#editingmsgtext').show();
-                $('#cancelreplyoredit').show();
-                $('#message').val(msg.message);
-            });
-            li.append(editButton); */
+            editsenabled = true;
+            deletesenabled = true;
         }
-        // li.append(delButton);
         $(`#msg-${messageEditingID}`).replaceWith(li);
+        messagesTooltip(li, repliesenabled, editsenabled, deletesenabled);
         $('#ratelimitalert').hide();
     }
 
