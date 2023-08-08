@@ -482,8 +482,6 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     placement: 'top',
                     arrow: false,
                     interactive: true,
-                    
-                    
                     allowHTML: true,
                 });
 
@@ -523,8 +521,6 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     placement: 'top',
                     arrow: false,
                     interactive: true,
-                    
-                    
                     allowHTML: true,
                 });
 
@@ -583,8 +579,6 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     placement: 'top',
                     arrow: false,
                     interactive: true,
-                    
-                    
                     allowHTML: true,
                 });
 
@@ -654,8 +648,6 @@ socket.on('chat message', (msg, room, roominfo, msgisresponse, msgresponseto) =>
                     placement: 'top',
                     arrow: false,
                     interactive: true,
-                    
-                    
                     allowHTML: true,
                 });
 
@@ -703,8 +695,6 @@ socket.on('load messages', (messages) => {
                         placement: 'top',
                         arrow: false,
                         interactive: true,
-                        
-                        
                         allowHTML: true,
                     });
 
@@ -746,8 +736,6 @@ socket.on('load messages', (messages) => {
                         placement: 'top',
                         arrow: false,
                         interactive: true,
-                        
-                        
                         allowHTML: true,
                     });
 
@@ -830,8 +818,6 @@ socket.on('load messages', (messages) => {
                         placement: 'top',
                         arrow: false,
                         interactive: true,
-                        
-                        
                         allowHTML: true,
                     });
 
@@ -881,8 +867,6 @@ socket.on('load messages', (messages) => {
                         placement: 'top',
                         arrow: false,
                         interactive: true,
-                        
-                        
                         allowHTML: true,
                     });
 
@@ -1037,10 +1021,6 @@ socket.on('message edited', (messageEditingID, newMessage) => {
         $('#messages').append(li);
         li = document.getElementById(`msg-${newMessage._id}`);
         const instance = tippy(li, {
-            content: 'Reply to this message',
-            theme: 'light',
-            placement: 'top',
-            arrow: false,
             content: 'Reply to this message',
             theme: 'light',
             placement: 'top',
