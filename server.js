@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         maxlength: 32
     },
-    circes: {
+    circles: {
         type: Array,
         required: false
     },
@@ -128,7 +128,11 @@ const roomSchema = new mongoose.Schema({
     },
     hub: {
         type: String,
-        required: true
+        required: false,
+    },
+    latestmessagetruncated: {
+        type: String,
+        required: false
     }
 }, { timestamps: false });
 
@@ -145,28 +149,29 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 async function moderatemsg(textToModerate) {
     try {
-      const response = await openai.createModeration({
-          input: textToModerate,
-      });
-      const moderationresults = response.data.results;
-      const flaggedmessage = moderationresults[0].flagged;
-      console.log(textToModerate);
-      console.log(flaggedmessage);
-      return flaggedmessage;
+        const response = await openai.createModeration({
+            input: textToModerate,
+        });
+        const moderationresults = response.data.results;
+        const flaggedmessage = moderationresults[0].flagged;
+        console.log(textToModerate);
+        console.log(flaggedmessage);
+        return flaggedmessage;
     } catch (error) {
-      console.error(error);
-      return false;
+        console.error(error);
+        return false;
     }
-  }
+}
 io.on('connection', (socket) => {
     roomsList = [];
+    let enhancedRoomsList = [];
     RoomData.find({})
         .then((rooms) => {
             rooms.forEach((room) => {
-                console.log(room)
                 roomsList.push(room.room);
+                enhancedRoomsList.push(room);
             });
-            socket.emit('rooms list', roomsList)
+            socket.emit('rooms list', roomsList, enhancedRoomsList);
         })
         .catch((err) => {
             console.log(err);
@@ -251,7 +256,8 @@ io.on('connection', (socket) => {
                     owner: usrname,
                     settings: { "wow": "easter egg!" },
                     members: [usrname],
-                    hub: "Hangout"
+                    hub: "Hangout",
+                    latestmessagetruncated: "No messages yet."
                 });
                 newRoom.save().then(() => {
                     console.log(`Created room ${sanitizedroom} with owner ${usrname}`);
@@ -404,19 +410,29 @@ io.on('connection', (socket) => {
             RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
                 const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
                 message.save().then(() => {
-                    RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
-                        io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
-                        moderatemsg(message.message).then((flaggedmessage) => {
-                            console.log("Message flagging test completed. The flagged status is: " + flaggedmessage)
-                            if (flaggedmessage === true) {
-                                console.log(`deleting message ${message._id}`);
-                                Message.findByIdAndDelete(message._id).then(() => {
-                                    socket.emit('message deleted', message._id);
-                                }).catch((err) => {
-                                    console.error(err);
-                                });
-                            }
-                        });
+                    io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
+                    moderatemsg(message.message).then((flaggedmessage) => {
+                        console.log("Message flagging test completed. The flagged status is: " + flaggedmessage)
+                        if (flaggedmessage === true) {
+                            console.log(`deleting message ${message._id}`);
+                            Message.findByIdAndDelete(message._id).then(() => {
+                                socket.emit('message deleted', message._id);
+                            }).catch((err) => {
+                                console.error(err);
+                            });
+                        }
+                    });
+                    function truncateLastMessage(text, maxLength) {
+                        if (text.length > maxLength) {
+                            return text.slice(0, maxLength) + '...';
+                        } else {
+                            return text;
+                        }
+                    }
+                    const lastmessage = '<b>' + sanitizedusername + '</b>: ' + truncateLastMessage(message.message, 35);
+                    existingRoom.latestmessagetruncated = lastmessage;
+                    existingRoom.save().then(() => {
+                        console.log(`Saved room ${sanitizedroom} with latest message ${existingRoom.latestmessagetruncated}`);
                     });
                 }).catch((err) => {
                     console.error(err);

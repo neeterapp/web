@@ -18,6 +18,8 @@ let currentCircle = '';
 const urlParams = new URLSearchParams(window.location.search);
 const urlcircle = urlParams.get('circle');
 let joined = false;
+let circleemojiset = false;
+let circleemoji = '';
 
 getAuth().onAuthStateChanged((user) => {
   if (user) {
@@ -38,6 +40,16 @@ colors.forEach(color => {
 
 toggleButton.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
+  if (circleemojiset === true) {
+  let backgroundcolor = "FFFFFF";
+  const circlePic = document.querySelector('.circle-image');
+  if (document.body.classList.contains('dark-mode')) {
+    backgroundcolor = "27292d";
+  } else {
+    backgroundcolor = "FFFFFF";
+  }
+  circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${circleemoji}&scale=80&backgroundType=gradientLinear&backgroundColor=${backgroundcolor}&fontWeight=400&radius=50`;
+  }
 });
 
 socket.on('user data', (userdata) => {
@@ -73,10 +85,32 @@ socket.on('user data', (userdata) => {
   chatAreaSecondTitle.innerText = currentCircle;
   const circlePic = document.querySelector('.circle-image');
   circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${currentCircle}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50`;
-
+  socket.emit('get room settings', currentCircle);
 });
 
-socket.on('rooms list', (circlelist) => {
+socket.on('room settings', (settings) => {
+  console.log(settings);
+  const circledescription = document.querySelector('.detail-subtitle');
+  if (settings.description) {
+    circledescription.innerText = settings.description;
+  } else {
+    circledescription.innerText = currentCircle + " Circle.";
+  }
+  if (settings.emoji) {
+    const circlePic = document.querySelector('.circle-image');
+    let backgroundcolor = "FFFFFF";
+    if (document.body.classList.contains('dark-mode')) {
+      backgroundcolor = "27292d";
+    } else {
+      backgroundcolor = "FFFFFF";
+    }
+    circleemojiset = true;
+    circleemoji = settings.emoji;
+    circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${settings.emoji}&scale=80&backgroundType=gradientLinear&backgroundColor=${backgroundcolor}&fontWeight=400&radius=50`;
+  }
+});
+
+socket.on('rooms list', (deprecatedcirclelist, circlelist) => {
   const conversationArea = document.querySelector('.conversation-area');
   conversationArea.innerHTML = '';
   function truncateText(text, maxLength) {
@@ -87,7 +121,11 @@ socket.on('rooms list', (circlelist) => {
     }
   }
   circlelist.forEach(circle => {
-    let truncatedcirclename = truncateText(circle, 40);
+    let truncatedcirclename = truncateText(circle.room, 40);
+    let circlelastmessage = circle.latestmessagetruncated;
+    if (circlelastmessage === undefined) {
+      circlelastmessage = "No messages yet.";
+    }
     const newCircle = document.createElement('div');
     if (circle === currentCircle) {
       newCircle.classList.add('msg', 'active');
@@ -95,16 +133,16 @@ socket.on('rooms list', (circlelist) => {
       newCircle.classList.add('msg');
     }
     newCircle.innerHTML = `
-        <img class="msg-profile" src="https://api.dicebear.com/6.x/initials/svg?seed=${truncatedcirclename}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <img class="msg-profile" src="https://api.dicebear.com/6.x/initials/svg?seed=${truncatedcirclename}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50" alt="" />
         <div class="msg-detail">
          <div class="msg-username">${truncatedcirclename}</div>
          <div class="msg-content">
-          <span class="msg-message">Not yet implemented...</span>
+          <span class="msg-message">${circlelastmessage}</span>
          </div>
         </div>
         `;
     newCircle.addEventListener('click', () => {
-      currentCircle = circle;
+      currentCircle = circle.room;
       socket.emit('join room', currentCircle, username);
       document.title = `Neeter - ${currentCircle}`
       const urlParams = new URLSearchParams(window.location.search);
@@ -124,6 +162,12 @@ socket.on('rooms list', (circlelist) => {
       chatAreaSecondTitle.innerText = currentCircle;
       const circlePic = document.querySelector('.circle-image');
       circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${currentCircle}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50`;
+      const circledescription = document.querySelector('.detail-subtitle');
+      if (circle.settings.description) {
+        circledescription.innerText = circle.settings.description;
+      } else {
+        circledescription.innerText = circle.room + " Circle.";
+      }
     });
     conversationArea.appendChild(newCircle);
   }
@@ -136,3 +180,34 @@ socket.on('rooms list', (circlelist) => {
   conversationArea.appendChild(addCircleOverlay);
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  const messageInputZone = document.querySelector('#chat-area-footer');
+  const messageInput = document.querySelector('#message-input');
+  messageInputZone.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const message = messageInput.value;
+    console.log(message)
+    if (message === '') {
+      return;
+    }
+    messageInput.value = '';
+    const chatAreaMain = document.querySelector('.chat-area-main');
+    const newMessage = document.createElement('div');
+    newMessage.classList.add('chat-msg', 'owner');
+    newMessage.innerHTML = `
+    <div class="chat-msg-profile">
+      <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+      <div class="chat-msg-date">Sending...</div>
+    </div>
+    <div class="chat-msg-content">
+      <div class="chat-msg-text">${message}</div>
+    </div>
+    `;
+    chatAreaMain.appendChild(newMessage);
+    chatAreaMain.scrollTop = chatAreaMain.scrollHeight;
+  });
+  const sendButton = document.querySelector('#sendbtn');
+  sendButton.addEventListener('click', () => {
+    messageInputZone.dispatchEvent(new Event('submit'));
+  });
+});
