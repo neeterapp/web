@@ -163,6 +163,7 @@ io.on('connection', (socket) => {
     RoomData.find({})
         .then((rooms) => {
             rooms.forEach((room) => {
+                console.log(room)
                 roomsList.push(room.room);
             });
             socket.emit('rooms list', roomsList)
