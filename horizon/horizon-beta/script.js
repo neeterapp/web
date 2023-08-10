@@ -14,6 +14,7 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 let username = '';
+let messagesTimestamps = [];
 let currentCircle = '';
 const urlParams = new URLSearchParams(window.location.search);
 const urlcircle = urlParams.get('circle');
@@ -199,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, responsetousername, timestamp) => {
   const convertedtimestamp = new Date(timestamp);
+  messagesTimestamps.push(msg._id + "-time-" + convertedtimestamp.getTime());
   const currenttime = new Date();
   const timeago = currenttime - convertedtimestamp;
   let timeagotext = '';
@@ -220,10 +222,13 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         const newMessage = document.createElement('div');
         newMessage.classList.add('chat-msg-text');
         newMessage.innerText = msg.message;
+        newMessage.id = msg._id;
         lastmessage.appendChild(newMessage);
+        chatAreaMain.lastElementChild.id = msg._id;
         lastmessagetimestamp.innerText = timeagotext;
       } else {
         const newMessage = document.createElement('div');
+        newMessage.id = msg._id;
         newMessage.classList.add('chat-msg', 'owner');
         newMessage.innerHTML = `
         <div class="chat-msg-profile">
@@ -231,7 +236,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
         </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -243,11 +248,14 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
         const newMessage = document.createElement('div');
         newMessage.classList.add('chat-msg-text');
+        newMessage.id = msg._id;
         newMessage.innerText = msg.message;
         lastmessage.appendChild(newMessage);
+        chatAreaMain.lastElementChild.id = msg._id;
         lastmessagetimestamp.innerText = timeagotext;
       } else {
         const newMessage = document.createElement('div');
+        newMessage.id = msg._id;
         newMessage.classList.add('chat-msg');
         newMessage.innerHTML = `
         <div class="chat-msg-profile">
@@ -255,7 +263,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
         </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -263,6 +271,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
   } else {
     if (msg.username === username) {
       const newMessage = document.createElement('div');
+      newMessage.id = msg._id;
       newMessage.classList.add('chat-msg', 'owner');
       newMessage.innerHTML = `
         <div class="chat-msg-profile">
@@ -270,11 +279,12 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
         </div>`;
       chatAreaMain.appendChild(newMessage);
     } else {
       const newMessage = document.createElement('div');
+      newMessage.id = msg._id;
       newMessage.classList.add('chat-msg');
       newMessage.innerHTML = `
         <div class="chat-msg-profile">
@@ -282,7 +292,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
         </div>`;
       chatAreaMain.appendChild(newMessage);
     }
@@ -296,7 +306,8 @@ socket.on('load messages', (messages) => {
   const chatAreaMain = document.querySelector('.chat-area-main');
   chatAreaMain.innerHTML = '';
   messages.forEach((msg) => {
-    const convertedtimestamp = new Date(msg.timestamp);
+    const convertedtimestamp = new Date(msg.createdAt);
+    messagesTimestamps.push(msg._id + "-time-" + convertedtimestamp.getTime());
     const currenttime = new Date();
     const timeago = currenttime - convertedtimestamp;
     let timeagotext = '';
@@ -315,13 +326,16 @@ socket.on('load messages', (messages) => {
           const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
           const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
           const newMessage = document.createElement('div');
+          newMessage.id = msg._id;
           newMessage.classList.add('chat-msg-text');
           newMessage.innerText = msg.message;
           lastmessage.appendChild(newMessage);
+          chatAreaMain.lastElementChild.id = msg._id;
           lastmessagetimestamp.innerText = timeagotext;
         } else {
-          
+
           const newMessage = document.createElement('div');
+          newMessage.id = msg._id;
           newMessage.classList.add('chat-msg', 'owner');
           newMessage.innerHTML = `
         <div class="chat-msg-profile">
@@ -329,24 +343,27 @@ socket.on('load messages', (messages) => {
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
         </div>`;
           chatAreaMain.appendChild(newMessage);
         }
       } else {
         const previousmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-img').src;
-          const previousmessageusername = previousmessage.split('seed=')[1].split('&')[0];
+        const previousmessageusername = previousmessage.split('seed=')[1].split('&')[0];
         if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && !chatAreaMain.lastElementChild.classList.contains('owner') && previousmessageusername === msg.username) {
           const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
           const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
           const newMessage = document.createElement('div');
+          newMessage.id = msg._id;
           newMessage.classList.add('chat-msg-text');
           newMessage.innerText = msg.message;
           lastmessage.appendChild(newMessage);
+          chatAreaMain.lastElementChild.id = msg._id;
           lastmessagetimestamp.innerText = timeagotext;
         } else {
-          
+
           const newMessage = document.createElement('div');
+          newMessage.id = msg._id;
           newMessage.classList.add('chat-msg');
           newMessage.innerHTML = `
           <div class="chat-msg-profile">
@@ -354,15 +371,16 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text">${msg.message}</div>
+          <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
           </div>`;
           chatAreaMain.appendChild(newMessage);
         }
       }
     } else {
-      
+
       if (msg.username === username) {
         const newMessage = document.createElement('div');
+        newMessage.id = msg._id;
         newMessage.classList.add('chat-msg', 'owner');
         newMessage.innerHTML = `
           <div class="chat-msg-profile">
@@ -370,11 +388,12 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text">${msg.message}</div>
+          <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
           </div>`;
         chatAreaMain.appendChild(newMessage);
       } else {
         const newMessage = document.createElement('div');
+        newMessage.id = msg._id;
         newMessage.classList.add('chat-msg');
         newMessage.innerHTML = `
           <div class="chat-msg-profile">
@@ -382,7 +401,7 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text">${msg.message}</div>
+          <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
           </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -392,3 +411,36 @@ socket.on('load messages', (messages) => {
     behavior: 'smooth'
   });
 });
+
+setInterval(() => {
+  messagesTimestamps.forEach((timestamp) => {
+    const message = document.getElementById(timestamp.split('-time-')[0]);
+    if (!message) {
+      return;
+    }
+    const timestampdata = timestamp.split('-time-')[1];
+    const currenttime = new Date();
+    const timeago = currenttime - timestampdata;
+    let timeagotext = '';
+    if (timeago < 60000) {
+      timeagotext = 'just now';
+    }
+    else if (timeago < 3600000) {
+      if (Math.floor(timeago / 60000) === 1) {
+        timeagotext = `${Math.floor(timeago / 60000)} minute ago`;
+      } else {
+        timeagotext = `${Math.floor(timeago / 60000)} minutes ago`;
+      }
+    } else if (timeago < 86400000) {
+      timeagotext = `${Math.floor(timeago / 3600000)} hours ago`;
+    } else {
+      timeagotext = `${new Date(timestampdata).toLocaleDateString()} ${new Date(timestampdata).toLocaleTimeString()}`;
+    }
+    const messagetimestamp = message.querySelector('.chat-msg-date');
+    if (!messagetimestamp) {
+      return;
+    }
+    messagetimestamp.innerText = timeagotext;
+  });
+}
+  , 60000);

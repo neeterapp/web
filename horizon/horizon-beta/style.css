@@ -169,10 +169,6 @@ html {
   overflow: auto;
 }
 
-.chat-area {
-  flex-grow: 1;
-}
-
 .search-bar {
   height: 80px;
   z-index: 3;
@@ -363,6 +359,7 @@ html {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  flex-grow: 1;
 }
 .chat-area-header {
   display: flex;
@@ -433,6 +430,9 @@ html {
   line-height: 1.5;
   font-size: 14px;
   font-weight: 500;
+  word-wrap: break-word;
+  white-space: normal;
+  word-break: break-word;
 }
 .chat-msg-text + .chat-msg-text {
   margin-top: 10px;
