@@ -139,7 +139,7 @@ html {
 }
 
 .header {
-  height: 80px;
+  height: 100px;
   width: 100%;
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -334,10 +334,10 @@ html {
   position: sticky;
   bottom: 25px;
   background-color: var(--theme-color);
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border: 0;
-  border-radius: 50%;
+  border-radius: 20%;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-plus'%3e%3cpath d='M12 5v14M5 12h14'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: 50%;
@@ -538,13 +538,11 @@ html {
   font-size: 14px;
   flex-grow: 1;
   font-weight: 500;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 .detail-button svg {
   width: 18px;
-  margin-right: 10px;
-}
-.detail-button:last-child {
-  margin-left: 8px;
 }
 
 .detail-buttons {
@@ -748,6 +746,16 @@ html {
   align-items: center;
   font-size: 14px;
   font-weight: 500;
+}
+
+.members-minimize {
+  border: none;
+  color: #999c9c;
+  background-color: transparent;
+  display: flex;
+  padding-left: 14em;
+  margin-top: -4px;
+  margin-bottom: -4px;
 }
 
 @media (max-width: 1120px) {

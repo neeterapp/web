@@ -41,14 +41,14 @@ colors.forEach(color => {
 toggleButton.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   if (circleemojiset === true) {
-  let backgroundcolor = "FFFFFF";
-  const circlePic = document.querySelector('.circle-image');
-  if (document.body.classList.contains('dark-mode')) {
-    backgroundcolor = "27292d";
-  } else {
-    backgroundcolor = "FFFFFF";
-  }
-  circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${circleemoji}&scale=80&backgroundType=gradientLinear&backgroundColor=${backgroundcolor}&fontWeight=400&radius=50`;
+    let backgroundcolor = "FFFFFF";
+    const circlePic = document.querySelector('.circle-image');
+    if (document.body.classList.contains('dark-mode')) {
+      backgroundcolor = "27292d";
+    } else {
+      backgroundcolor = "FFFFFF";
+    }
+    circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${circleemoji}&scale=80&backgroundType=gradientLinear&backgroundColor=${backgroundcolor}&fontWeight=400&radius=50`;
   }
 });
 
@@ -77,6 +77,7 @@ socket.on('user data', (userdata) => {
   circles.forEach(circle => {
     if (circle.querySelector('.msg-username').innerText === currentCircle) {
       circle.classList.add('active');
+      conversationArea.scrollTop = circle.offsetTop;
     }
   });
   const chatAreaTitle = document.querySelector('.chat-area-title');
@@ -133,7 +134,7 @@ socket.on('rooms list', (deprecatedcirclelist, circlelist) => {
       newCircle.classList.add('msg');
     }
     newCircle.innerHTML = `
-        <img class="msg-profile" src="https://api.dicebear.com/6.x/initials/svg?seed=${truncatedcirclename}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50" alt="" />
+        <img class="msg-profile" src="https://api.dicebear.com/6.x/initials/svg?seed=%23&scale=130&backgroundType=gradientLinear&backgroundColor=transparent&fontWeight=600&textColor=4a4a4a" alt="" />
         <div class="msg-detail">
          <div class="msg-username">${truncatedcirclename}</div>
          <div class="msg-content">
@@ -192,18 +193,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     messageInput.value = '';
     const chatAreaMain = document.querySelector('.chat-area-main');
-    const newMessage = document.createElement('div');
-    newMessage.classList.add('chat-msg', 'owner');
-    newMessage.innerHTML = `
-    <div class="chat-msg-profile">
-      <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-      <div class="chat-msg-date">Sending...</div>
-    </div>
-    <div class="chat-msg-content">
-      <div class="chat-msg-text">${message}</div>
-    </div>
-    `;
-    chatAreaMain.appendChild(newMessage);
+    console.log(chatAreaMain.lastElementChild)
+    if (chatAreaMain.lastElementChild) {
+    if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && chatAreaMain.lastElementChild.classList.contains('owner')) {
+      console.log('same user')
+      const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
+      const newMessage = document.createElement('div');
+      newMessage.classList.add('chat-msg-text');
+      newMessage.innerText = message;
+      lastmessage.appendChild(newMessage);
+    } else {
+      console.log('new message')
+      const newMessage = document.createElement('div');
+      newMessage.classList.add('chat-msg', 'owner');
+      newMessage.innerHTML = `
+        <div class="chat-msg-profile">
+        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <div class="chat-msg-date">Sending...</div>
+        </div>
+        <div class="chat-msg-content">
+        <div class="chat-msg-text">${message}</div>
+        </div>`;
+      chatAreaMain.appendChild(newMessage);
+    }
+    } else {
+      console.log('new message')
+      const newMessage = document.createElement('div');
+      newMessage.classList.add('chat-msg', 'owner');
+      newMessage.innerHTML = `
+        <div class="chat-msg-profile">
+        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <div class="chat-msg-date">Sending...</div>
+        </div>
+        <div class="chat-msg-content">
+        <div class="chat-msg-text">${message}</div>
+        </div>`;
+      chatAreaMain.appendChild(newMessage);
+    }
     chatAreaMain.scrollTop = chatAreaMain.scrollHeight;
   });
   const sendButton = document.querySelector('#sendbtn');
