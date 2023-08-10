@@ -380,6 +380,7 @@ io.on('connection', (socket) => {
         });
     });
     socket.on('chat message', (msg, username, room, isaresponse, msgresponseto, msgresponsetousername) => {
+        const msgtimestamp = new Date().getTime();
         if (room === "Earthy") {
             return;
         }
@@ -410,7 +411,7 @@ io.on('connection', (socket) => {
             RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
                 const message = new Message({ message: sanitizedmsg, username: sanitizedusername, room: sanitizedroom, roomowner: existingRoom.owner, isresponse: isaresponse, responsetomessage: sanitizedresponseto, responsetousername: sanitizedresponsetousername, edited: false });
                 message.save().then(() => {
-                    io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername);
+                    io.in(sanitizedroom).emit('chat message', message, sanitizedroom, existingRoom.owner, isaresponse, sanitizedresponseto, sanitizedresponsetousername, msgtimestamp);
                     moderatemsg(message.message).then((flaggedmessage) => {
                         console.log("Message flagging test completed. The flagged status is: " + flaggedmessage)
                         if (flaggedmessage === true) {

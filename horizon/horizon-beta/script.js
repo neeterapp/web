@@ -53,7 +53,6 @@ toggleButton.addEventListener('click', () => {
 });
 
 socket.on('user data', (userdata) => {
-  console.log("user data")
   if (urlcircle) {
     currentCircle = urlcircle;
   } else {
@@ -90,7 +89,6 @@ socket.on('user data', (userdata) => {
 });
 
 socket.on('room settings', (settings) => {
-  console.log(settings);
   const circledescription = document.querySelector('.detail-subtitle');
   if (settings.description) {
     circledescription.innerText = settings.description;
@@ -187,53 +185,210 @@ document.addEventListener('DOMContentLoaded', () => {
   messageInputZone.addEventListener('submit', (e) => {
     e.preventDefault();
     const message = messageInput.value;
-    console.log(message)
     if (message === '') {
       return;
     }
     messageInput.value = '';
-    const chatAreaMain = document.querySelector('.chat-area-main');
-    console.log(chatAreaMain.lastElementChild)
-    if (chatAreaMain.lastElementChild) {
-    if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && chatAreaMain.lastElementChild.classList.contains('owner')) {
-      console.log('same user')
-      const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
-      const newMessage = document.createElement('div');
-      newMessage.classList.add('chat-msg-text');
-      newMessage.innerText = message;
-      lastmessage.appendChild(newMessage);
-    } else {
-      console.log('new message')
-      const newMessage = document.createElement('div');
-      newMessage.classList.add('chat-msg', 'owner');
-      newMessage.innerHTML = `
-        <div class="chat-msg-profile">
-        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-        <div class="chat-msg-date">Sending...</div>
-        </div>
-        <div class="chat-msg-content">
-        <div class="chat-msg-text">${message}</div>
-        </div>`;
-      chatAreaMain.appendChild(newMessage);
-    }
-    } else {
-      console.log('new message')
-      const newMessage = document.createElement('div');
-      newMessage.classList.add('chat-msg', 'owner');
-      newMessage.innerHTML = `
-        <div class="chat-msg-profile">
-        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-        <div class="chat-msg-date">Sending...</div>
-        </div>
-        <div class="chat-msg-content">
-        <div class="chat-msg-text">${message}</div>
-        </div>`;
-      chatAreaMain.appendChild(newMessage);
-    }
-    chatAreaMain.scrollTop = chatAreaMain.scrollHeight;
+    socket.emit('chat message', message, username, currentCircle, false);
   });
   const sendButton = document.querySelector('#sendbtn');
   sendButton.addEventListener('click', () => {
     messageInputZone.dispatchEvent(new Event('submit'));
+  });
+});
+
+socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, responsetousername, timestamp) => {
+  const convertedtimestamp = new Date(timestamp);
+  const currenttime = new Date();
+  const timeago = currenttime - convertedtimestamp;
+  let timeagotext = '';
+  if (timeago < 60000) {
+    timeagotext = 'just now';
+  } else if (timeago < 3600000) {
+    timeagotext = `${Math.floor(timeago / 60000)} minutes ago`;
+  } else if (timeago < 86400000) {
+    timeagotext = `${Math.floor(timeago / 3600000)} hours ago`;
+  } else {
+    timeagotext = `${convertedtimestamp.toLocaleDateString()} ${convertedtimestamp.toLocaleTimeString()}`;
+  }
+  const chatAreaMain = document.querySelector('.chat-area-main');
+  if (chatAreaMain.lastElementChild) {
+    if (msg.username === username) {
+      if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && chatAreaMain.lastElementChild.classList.contains('owner')) {
+        const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
+        const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('chat-msg-text');
+        newMessage.innerText = msg.message;
+        lastmessage.appendChild(newMessage);
+        lastmessagetimestamp.innerText = timeagotext;
+      } else {
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('chat-msg', 'owner');
+        newMessage.innerHTML = `
+        <div class="chat-msg-profile">
+        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <div class="chat-msg-date">${timeagotext}</div>
+        </div>
+        <div class="chat-msg-content">
+        <div class="chat-msg-text">${msg.message}</div>
+        </div>`;
+        chatAreaMain.appendChild(newMessage);
+      }
+    } else {
+      const previousmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-img').src;
+      const previousmessageusername = previousmessage.split('seed=')[1].split('&')[0];
+      if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && !chatAreaMain.lastElementChild.classList.contains('owner') && previousmessageusername === msg.username) {
+        const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
+        const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('chat-msg-text');
+        newMessage.innerText = msg.message;
+        lastmessage.appendChild(newMessage);
+        lastmessagetimestamp.innerText = timeagotext;
+      } else {
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('chat-msg');
+        newMessage.innerHTML = `
+        <div class="chat-msg-profile">
+        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <div class="chat-msg-date">${timeagotext}</div>
+        </div>
+        <div class="chat-msg-content">
+        <div class="chat-msg-text">${msg.message}</div>
+        </div>`;
+        chatAreaMain.appendChild(newMessage);
+      }
+    }
+  } else {
+    if (msg.username === username) {
+      const newMessage = document.createElement('div');
+      newMessage.classList.add('chat-msg', 'owner');
+      newMessage.innerHTML = `
+        <div class="chat-msg-profile">
+        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <div class="chat-msg-date">${timeagotext}</div>
+        </div>
+        <div class="chat-msg-content">
+        <div class="chat-msg-text">${msg.message}</div>
+        </div>`;
+      chatAreaMain.appendChild(newMessage);
+    } else {
+      const newMessage = document.createElement('div');
+      newMessage.classList.add('chat-msg');
+      newMessage.innerHTML = `
+        <div class="chat-msg-profile">
+        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <div class="chat-msg-date">${timeagotext}</div>
+        </div>
+        <div class="chat-msg-content">
+        <div class="chat-msg-text">${msg.message}</div>
+        </div>`;
+      chatAreaMain.appendChild(newMessage);
+    }
+  }
+  chatAreaMain.lastElementChild.scrollIntoView({
+    behavior: 'smooth'
+  });
+});
+
+socket.on('load messages', (messages) => {
+  const chatAreaMain = document.querySelector('.chat-area-main');
+  chatAreaMain.innerHTML = '';
+  messages.forEach((msg) => {
+    const convertedtimestamp = new Date(msg.timestamp);
+    const currenttime = new Date();
+    const timeago = currenttime - convertedtimestamp;
+    let timeagotext = '';
+    if (timeago < 60000) {
+      timeagotext = 'just now';
+    } else if (timeago < 3600000) {
+      timeagotext = `${Math.floor(timeago / 60000)} minutes ago`;
+    } else if (timeago < 86400000) {
+      timeagotext = `${Math.floor(timeago / 3600000)} hours ago`;
+    } else {
+      timeagotext = `${convertedtimestamp.toLocaleDateString()} ${convertedtimestamp.toLocaleTimeString()}`;
+    }
+    if (chatAreaMain.lastElementChild) {
+      if (msg.username === username) {
+        if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && chatAreaMain.lastElementChild.classList.contains('owner')) {
+          const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
+          const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
+          const newMessage = document.createElement('div');
+          newMessage.classList.add('chat-msg-text');
+          newMessage.innerText = msg.message;
+          lastmessage.appendChild(newMessage);
+          lastmessagetimestamp.innerText = timeagotext;
+        } else {
+          
+          const newMessage = document.createElement('div');
+          newMessage.classList.add('chat-msg', 'owner');
+          newMessage.innerHTML = `
+        <div class="chat-msg-profile">
+        <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+        <div class="chat-msg-date">${timeagotext}</div>
+        </div>
+        <div class="chat-msg-content">
+        <div class="chat-msg-text">${msg.message}</div>
+        </div>`;
+          chatAreaMain.appendChild(newMessage);
+        }
+      } else {
+        const previousmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-img').src;
+          const previousmessageusername = previousmessage.split('seed=')[1].split('&')[0];
+        if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && !chatAreaMain.lastElementChild.classList.contains('owner') && previousmessageusername === msg.username) {
+          const lastmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-content');
+          const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
+          const newMessage = document.createElement('div');
+          newMessage.classList.add('chat-msg-text');
+          newMessage.innerText = msg.message;
+          lastmessage.appendChild(newMessage);
+          lastmessagetimestamp.innerText = timeagotext;
+        } else {
+          
+          const newMessage = document.createElement('div');
+          newMessage.classList.add('chat-msg');
+          newMessage.innerHTML = `
+          <div class="chat-msg-profile">
+          <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+          <div class="chat-msg-date">${timeagotext}</div>
+          </div>
+          <div class="chat-msg-content">
+          <div class="chat-msg-text">${msg.message}</div>
+          </div>`;
+          chatAreaMain.appendChild(newMessage);
+        }
+      }
+    } else {
+      
+      if (msg.username === username) {
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('chat-msg', 'owner');
+        newMessage.innerHTML = `
+          <div class="chat-msg-profile">
+          <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+          <div class="chat-msg-date">${timeagotext}</div>
+          </div>
+          <div class="chat-msg-content">
+          <div class="chat-msg-text">${msg.message}</div>
+          </div>`;
+        chatAreaMain.appendChild(newMessage);
+      } else {
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('chat-msg');
+        newMessage.innerHTML = `
+          <div class="chat-msg-profile">
+          <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
+          <div class="chat-msg-date">${timeagotext}</div>
+          </div>
+          <div class="chat-msg-content">
+          <div class="chat-msg-text">${msg.message}</div>
+          </div>`;
+        chatAreaMain.appendChild(newMessage);
+      }
+    }
+  });
+  chatAreaMain.lastElementChild.scrollIntoView({
+    behavior: 'smooth'
   });
 });

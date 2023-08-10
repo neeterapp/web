@@ -416,6 +416,8 @@ html {
 .chat-msg {
   display: flex;
   padding: 0 20px 45px;
+  white-space: nowrap;
+  word-wrap: break-word;
 }
 .chat-msg-content {
   margin-left: 12px;
