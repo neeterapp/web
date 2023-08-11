@@ -467,7 +467,9 @@ searchbar.addEventListener('keydown', (e) => {
       searchbar.classList.add('search-withresults');
     }
   }
+  $('#searchresults').show();
   if (searchbar.value.length < 2) {
+    $('#searchresults').hide();
     return;
   }
   const searchresults = [];
@@ -489,4 +491,14 @@ searchbar.addEventListener('keydown', (e) => {
     `;
     searchresultscontainer.appendChild(searchresult);
   });
+  if (searchresults.length === 0) {
+    $('#searchresults').hide();
+  }
 });
+
+const searchbgblur = document.getElementsByClassName('search-popup');
+window.onclick = function (event) {
+  if (event.target === searchbgblur[0]) {
+    searchbgblur[0].style.display = 'none';
+  }
+}

@@ -195,6 +195,7 @@ html {
 }
 
 .search-popup {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -242,6 +243,7 @@ html {
 }
 
 #searchresults {
+  display: none;
   max-height: 300px;
   position: absolute;
   top: 13.5em;
@@ -254,6 +256,16 @@ html {
   padding-left: 8px;
   padding-top: 5px;
   padding-bottom: 5px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#searchresults::-webkit-scrollbar {
+  display: none;
+}
+
+.chat-area::-webkit-scrollbar {
+  display: none;
 }
 
 .logo {
@@ -310,6 +322,12 @@ html {
   display: flex;
   flex-direction: column;
   position: relative;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.conversation-area::-webkit-scrollbar {
+  display: none;
 }
 
 .msg-profile {
@@ -402,6 +420,8 @@ html {
   flex-direction: column;
   overflow: auto;
   flex-grow: 1;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .chat-area-header {
   display: flex;
