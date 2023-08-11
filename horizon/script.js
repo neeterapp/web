@@ -21,6 +21,7 @@ let joined = false;
 let circleemojiset = false;
 let circleemoji = '';
 let messageslist = [];
+let theme;
 
 getAuth().onAuthStateChanged((user) => {
   if (user) {
@@ -188,7 +189,7 @@ socket.on('rooms list', (deprecatedcirclelist, circlelist) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  const theme = localStorage.getItem('theme');
+  theme = localStorage.getItem('theme');
   if (theme === 'dark') {
     document.body.classList.add('dark-mode');
   } else {
@@ -530,4 +531,26 @@ opensearchbutton.addEventListener('click', () => {
   }
   searchbgblur[0].style.display = 'flex';
   searchbar.focus();
+});
+
+const showemojiselector = document.getElementById('show-emoji-selector');
+const emojiSelector = document.getElementById('emoji-selector');
+showemojiselector.addEventListener('click', () => {
+  const language = navigator.language.split('-')[0];
+  console.log('clicked')
+  const messageinputbar = document.getElementById('message-input');
+  const pickerOptions = {
+    onEmojiSelect:
+      (emoji) => {
+        messageinputbar.value += emoji.native
+      },
+    onClickOutside:
+      () => {
+        emojiSelector.removeChild(picker)
+      },
+      theme: theme,
+      locale: language,
+  }
+  const picker = new EmojiMart.Picker(pickerOptions)
+  emojiSelector.appendChild(picker)
 });

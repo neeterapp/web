@@ -10,7 +10,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://unpkg.com/tippy.js@6"></script>
   <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 </head>
 
 <body>
@@ -55,7 +55,7 @@
               d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
           </svg>
           <input type="text" id="message-input" placeholder="Type something here..." />
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <svg id="show-emoji-selector" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile">
             <circle cx="12" cy="12" r="10" />
             <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
@@ -132,6 +132,8 @@
         <input class="search-noresults" id="searchbar" type="text" placeholder="Search">
         <div id="searchresults">
         </div>
+      </div>
+      <div id="emoji-selector">
       </div>
       <script type="module" src="./script.js"></script>
 
