@@ -488,6 +488,7 @@ searchbar.addEventListener('keydown', (e) => {
     searchresult.innerHTML = `
     <div class="searchresult-username"><b>${msg.username}</b></div>
     <div class="searchresult-message">${msg.message}</div>
+    <div class="searchresult-separator"></div>
     `;
     searchresultscontainer.appendChild(searchresult);
   });
@@ -502,3 +503,16 @@ window.onclick = function (event) {
     searchbgblur[0].style.display = 'none';
   }
 }
+
+const opensearchbutton = document.getElementById('circle-search');
+opensearchbutton.addEventListener('click', () => {
+  searchbar.value = '';
+  $('#searchresults').hide();
+  if (searchbar.classList.contains('search-withresults')) {
+    searchbar.classList.remove('search-withresults');
+    searchbar.classList.add('search-noresults');
+    searchresultscontainer.innerHTML = '';
+  }
+  searchbgblur[0].style.display = 'flex';
+  searchbar.focus();
+});

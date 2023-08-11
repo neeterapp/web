@@ -204,7 +204,7 @@ html {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 2;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   justify-content: center;
   padding: 0 20px;
@@ -242,6 +242,30 @@ html {
   transition: all 0.3s ease;
 }
 
+#circle-search:hover {
+  cursor: pointer;
+  filter: brightness(1.2);
+  transition: all 0.3s ease;
+}
+
+#invite-users:hover {
+  cursor: pointer;
+  filter: brightness(1.2);
+  transition: all 0.3s ease;
+}
+
+#circle-notifications:hover {
+  cursor: pointer;
+  filter: brightness(1.2);
+  transition: all 0.3s ease;
+}
+
+#circle-settings:hover {
+  cursor: pointer;
+  filter: brightness(1.2);
+  transition: all 0.3s ease;
+}
+
 #searchresults {
   display: none;
   max-height: 300px;
@@ -258,6 +282,19 @@ html {
   padding-bottom: 5px;
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.searchresult-username {
+  font-size: 16px;
+}
+
+.searchresult-separator {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-bottom: 2px solid #202020;
+  width: calc(100% + 15px);
+  height: 2px;
+  margin-left: -10px;
 }
 
 #searchresults::-webkit-scrollbar {
