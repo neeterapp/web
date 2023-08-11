@@ -30,6 +30,15 @@ getAuth().onAuthStateChanged((user) => {
   }
 }, { once: true });
 
+function convertMarkdownToHTML(markdown) {
+  const converter = new showdown.Converter({ breaks: true, simpleLineBreaks: true });
+  const html = converter.makeHtml(markdown);
+  const parser = new DOMParser();
+  const parsedHtml = parser.parseFromString(html, 'text/html');
+  const innerHtml = parsedHtml.body.firstChild.innerHTML;
+  return innerHtml;
+}
+
 toggleButton.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   if (document.body.classList.contains('dark-mode')) {
@@ -80,8 +89,6 @@ socket.on('user data', (userdata) => {
   chatAreaTitle.innerText = currentCircle;
   const chatAreaSecondTitle = document.querySelector('.detail-title');
   chatAreaSecondTitle.innerText = currentCircle;
-  const circlePic = document.querySelector('.circle-image');
-  circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${currentCircle}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50`;
   socket.emit('get room settings', currentCircle);
 });
 
@@ -103,6 +110,9 @@ socket.on('room settings', (settings) => {
     circleemojiset = true;
     circleemoji = settings.emoji;
     circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${settings.emoji}&scale=80&backgroundType=gradientLinear&backgroundColor=${backgroundcolor}&fontWeight=400&radius=50`;
+  } else {
+    const circlePic = document.querySelector('.circle-image');
+    circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${currentCircle}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50`;
   }
 });
 
@@ -157,7 +167,8 @@ socket.on('rooms list', (deprecatedcirclelist, circlelist) => {
       const chatAreaSecondTitle = document.querySelector('.detail-title');
       chatAreaSecondTitle.innerText = currentCircle;
       const circlePic = document.querySelector('.circle-image');
-      circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=${currentCircle}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50`;
+      circlePic.src = `https://api.dicebear.com/6.x/initials/svg?seed=...&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400&radius=50`;
+      socket.emit('get room settings', currentCircle);
       const circledescription = document.querySelector('.detail-subtitle');
       if (circle.settings.description) {
         circledescription.innerText = circle.settings.description;
@@ -224,7 +235,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
         const newMessage = document.createElement('div');
         newMessage.classList.add('chat-msg-text');
-        newMessage.innerText = msg.message;
+        newMessage.innerHTML = convertMarkdownToHTML(msg.message);
         newMessage.id = msg._id;
         lastmessage.appendChild(newMessage);
         chatAreaMain.lastElementChild.id = msg._id;
@@ -239,7 +250,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
         </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -254,7 +265,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         const newMessage = document.createElement('div');
         newMessage.classList.add('chat-msg-text');
         newMessage.id = msg._id;
-        newMessage.innerText = msg.message;
+        newMessage.innerHTML = convertMarkdownToHTML(msg.message);
         lastmessage.appendChild(newMessage);
         chatAreaMain.lastElementChild.id = msg._id;
         lastmessagetimestamp.innerText = timeagotext;
@@ -268,7 +279,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
         </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -284,7 +295,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
         </div>`;
       chatAreaMain.appendChild(newMessage);
     } else {
@@ -299,7 +310,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
         </div>`;
       chatAreaMain.appendChild(newMessage);
     }
@@ -336,7 +347,7 @@ socket.on('load messages', (messages) => {
           const newMessage = document.createElement('div');
           newMessage.id = msg._id;
           newMessage.classList.add('chat-msg-text');
-          newMessage.innerText = msg.message;
+          newMessage.innerHTML = convertMarkdownToHTML(msg.message);
           lastmessage.appendChild(newMessage);
           chatAreaMain.lastElementChild.id = msg._id;
           lastmessagetimestamp.innerText = timeagotext;
@@ -351,7 +362,7 @@ socket.on('load messages', (messages) => {
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
         </div>`;
           chatAreaMain.appendChild(newMessage);
         }
@@ -364,7 +375,7 @@ socket.on('load messages', (messages) => {
           const newMessage = document.createElement('div');
           newMessage.id = msg._id;
           newMessage.classList.add('chat-msg-text');
-          newMessage.innerText = msg.message;
+          newMessage.innerHTML = convertMarkdownToHTML(msg.message);
           lastmessage.appendChild(newMessage);
           chatAreaMain.lastElementChild.id = msg._id;
           lastmessagetimestamp.innerText = timeagotext;
@@ -379,7 +390,7 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+          <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
           </div>`;
           chatAreaMain.appendChild(newMessage);
         }
@@ -396,7 +407,7 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+          <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
           </div>`;
         chatAreaMain.appendChild(newMessage);
       } else {
@@ -409,7 +420,7 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text" id="${msg._id}">${msg.message}</div>
+          <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
           </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -491,7 +502,7 @@ searchbar.addEventListener('keydown', (e) => {
     searchresult.classList.add('searchresult');
     searchresult.innerHTML = `
     <div class="searchresult-username"><b>${msg.username}</b></div>
-    <div class="searchresult-message">${msg.message}</div>
+    <div class="searchresult-message">${convertMarkdownToHTML(msg.message)}</div>
     <div class="searchresult-separator"></div>
     `;
     searchresultscontainer.appendChild(searchresult);
