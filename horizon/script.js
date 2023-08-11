@@ -26,7 +26,7 @@ getAuth().onAuthStateChanged((user) => {
   if (user) {
     socket.emit('user data', user.uid);
   } else {
-    window.location.href = '/horizon-beta/login/';
+    window.location.href = '/login/';
   }
 }, { once: true });
 
