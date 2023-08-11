@@ -244,6 +244,8 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         chatAreaMain.appendChild(newMessage);
       }
     } else {
+      const notificationSound = new Audio('/notification.mp3');
+      notificationSound.play();
       const previousmessage = chatAreaMain.lastElementChild.querySelector('.chat-msg-img').src;
       const previousmessageusername = previousmessage.split('seed=')[1].split('&')[0];
       if (chatAreaMain.lastElementChild.classList.contains('chat-msg') && !chatAreaMain.lastElementChild.classList.contains('owner') && previousmessageusername === msg.username) {
@@ -286,6 +288,8 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         </div>`;
       chatAreaMain.appendChild(newMessage);
     } else {
+      const notificationSound = new Audio('/notification.mp3');
+      notificationSound.play();
       const newMessage = document.createElement('div');
       newMessage.id = msg._id;
       newMessage.classList.add('chat-msg');
