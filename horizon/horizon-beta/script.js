@@ -1,5 +1,4 @@
 const toggleButton = document.querySelector('.dark-light');
-const colors = document.querySelectorAll('.color');
 const socket = io();
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js'
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js'
@@ -21,6 +20,7 @@ const urlcircle = urlParams.get('circle');
 let joined = false;
 let circleemojiset = false;
 let circleemoji = '';
+let messageslist = [];
 
 getAuth().onAuthStateChanged((user) => {
   if (user) {
@@ -30,17 +30,13 @@ getAuth().onAuthStateChanged((user) => {
   }
 }, { once: true });
 
-colors.forEach(color => {
-  color.addEventListener('click', e => {
-    colors.forEach(c => c.classList.remove('selected'));
-    const theme = color.getAttribute('data-color');
-    document.body.setAttribute('data-theme', theme);
-    color.classList.add('selected');
-  });
-});
-
 toggleButton.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
+  if (document.body.classList.contains('dark-mode')) {
+    localStorage.setItem('theme', 'dark');
+  } else {
+    localStorage.setItem('theme', 'light');
+  }
   if (circleemojiset === true) {
     let backgroundcolor = "FFFFFF";
     const circlePic = document.querySelector('.circle-image');
@@ -181,6 +177,12 @@ socket.on('rooms list', (deprecatedcirclelist, circlelist) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  const theme = localStorage.getItem('theme');
+  if (theme === 'dark') {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
   const messageInputZone = document.querySelector('#chat-area-footer');
   const messageInput = document.querySelector('#message-input');
   messageInputZone.addEventListener('submit', (e) => {
@@ -199,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, responsetousername, timestamp) => {
+  messageslist.push(msg);
   const convertedtimestamp = new Date(timestamp);
   messagesTimestamps.push(msg._id + "-time-" + convertedtimestamp.getTime());
   const currenttime = new Date();
@@ -306,6 +309,7 @@ socket.on('load messages', (messages) => {
   const chatAreaMain = document.querySelector('.chat-area-main');
   chatAreaMain.innerHTML = '';
   messages.forEach((msg) => {
+    messageslist.push(msg);
     const convertedtimestamp = new Date(msg.createdAt);
     messagesTimestamps.push(msg._id + "-time-" + convertedtimestamp.getTime());
     const currenttime = new Date();
@@ -444,3 +448,45 @@ setInterval(() => {
   });
 }
   , 60000);
+
+const searchbar = document.getElementById('searchbar');
+const searchresultscontainer = document.getElementById('searchresults');
+
+searchbar.addEventListener('keydown', (e) => {
+  if (e.key === 'Backspace' && searchbar.value.length <= 1) {
+    if (searchbar.classList.contains('search-withresults')) {
+      searchbar.classList.remove('search-withresults');
+      searchbar.classList.add('search-noresults');
+      searchresultscontainer.innerHTML = '';
+      $('#searchresults').hide();
+    }
+  } else if (e.key !== 'Backspace') {
+    if (searchbar.classList.contains('search-noresults')) {
+      $('#searchresults').show();
+      searchbar.classList.remove('search-noresults');
+      searchbar.classList.add('search-withresults');
+    }
+  }
+  if (searchbar.value.length < 2) {
+    return;
+  }
+  const searchresults = [];
+  messageslist.forEach((msg) => {
+    if (searchresults.length > 10) {
+      return;
+    }
+    if (msg.message.toLowerCase().includes(searchbar.value.toLowerCase())) {
+      searchresults.push(msg);
+    }
+  });
+  searchresultscontainer.innerHTML = '';
+  searchresults.forEach((msg) => {
+    const searchresult = document.createElement('div');
+    searchresult.classList.add('searchresult');
+    searchresult.innerHTML = `
+    <div class="searchresult-username"><b>${msg.username}</b></div>
+    <div class="searchresult-message">${msg.message}</div>
+    `;
+    searchresultscontainer.appendChild(searchresult);
+  });
+});

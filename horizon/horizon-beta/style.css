@@ -139,7 +139,6 @@ html {
 }
 
 .header {
-  height: 100px;
   width: 100%;
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -195,6 +194,68 @@ html {
   color: var(--input-chat-color);
 }
 
+.search-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  z-index: 999999;
+  transition: all 0.3s ease;
+}
+
+.search-noresults {
+  width: 40%;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  padding: 0 20px;
+  font-family: var(--body-font);
+  font-weight: 600;
+  font-size: 15px;
+  background-color: var(--input-bg);
+  color: var(--input-chat-color);
+  padding-left: 15px;
+  transition: all 0.3s ease;
+}
+
+.search-withresults {
+  width: 40%;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  margin-bottom: 300px;
+  padding-left: 15px;
+  font-family: var(--body-font);
+  font-weight: 600;
+  font-size: 15px;
+  background-color: var(--input-bg);
+  color: var(--input-chat-color);
+  transition: all 0.3s ease;
+}
+
+#searchresults {
+  max-height: 300px;
+  position: absolute;
+  top: 13.5em;
+  left: 31%;
+  width: 38%;
+  background-color: var(--input-bg);
+  border-radius: 12px;
+  overflow: auto;
+  z-index: 999999;
+  padding-left: 8px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 .logo {
   color: var(--theme-color);
   width: 38px;
@@ -205,6 +266,8 @@ html {
 }
 
 .user-settings {
+  padding-top: 10px;
+  padding-bottom: 10px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -281,17 +344,6 @@ html {
   background: var(--active-conversation-bg);
   border-left: 4px solid var(--theme-color);
 }
-.msg.online:before {
-  content: "";
-  position: absolute;
-  background-color: #23be7e;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 2px solid var(--theme-bg-color);
-  left: 50px;
-  bottom: 19px;
-}
 
 .msg-username {
   margin-bottom: 4px;
@@ -314,16 +366,6 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--msg-message);
-}
-
-.msg-date {
-  font-size: 14px;
-  color: var(--msg-date);
-  margin-left: 3px;
-}
-.msg-date:before {
-  content: "•";
-  margin-right: 2px;
 }
 
 .add {

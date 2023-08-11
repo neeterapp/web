@@ -76,18 +76,14 @@
           <div class="detail-title">Loading Circle...</div>
           <div class="detail-subtitle">Loading Circle description...</div>
           <div class="detail-buttons">
-            <button class="detail-button" id="lock-circle">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </button>
-            <button class="detail-button" id="circle-notifications">
+            <button class="detail-button" id="invite-users">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                class="feather feather-bell">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                class="feather feather-user-plus">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="8.5" cy="7" r="4" />
+                <line x1="20" y1="8" x2="20" y2="14" />
+                <line x1="23" y1="11" x2="17" y2="11" />
               </svg>
             </button>
             <button class="detail-button" id="circle-search">
@@ -96,6 +92,14 @@
                 class="feather feather-search">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+            <button class="detail-button" id="circle-notifications">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                class="feather feather-bell">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
             </button>
             <button class="detail-button" id="circle-settings">
@@ -113,16 +117,21 @@
           <div class="detail-change">
             Members
             <button class="members-minimize">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-up">
-                <polyline points="18 15 12 9 6 15"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="feather feather-chevron-up">
+                <polyline points="18 15 12 9 6 15" />
               </svg>
             </button>
           </div>
         </div>
       </div>
-    </div>
-    <!-- partial -->
-    <script type="module" src="./script.js"></script>
+      <div class="search-popup">
+        <input class="search-noresults" id="searchbar" type="text" placeholder="Search">
+        <div id="searchresults">
+        </div>
+      </div>
+      <script type="module" src="./script.js"></script>
 
 </body>
 
