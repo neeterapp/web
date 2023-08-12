@@ -32,20 +32,25 @@ getAuth().onAuthStateChanged((user) => {
 }, { once: true });
 
 function prepareMessage(message) {
+  const regex = /:[a-zA-Z0-9_-]+:/g;
+  const matches = message.match(regex);
+  if (matches) {
+    matches.forEach(match => {
+      let emoji = match.replace(/:/g, '');
+      emoji = emoji.replace(/_/g, '-emunderscore-');
+      const emojiHtml = `<em-emoji id="${emoji}" size="15.5px"></em-emoji>`;
+      message = message.replace(match, emojiHtml);
+    });
+    if (message.match(/<em-emoji/g).length === matches.length) {
+      message = message.replace(/size="15.5px"/g, 'size="25px"');
+    }
+  }
   const converter = new showdown.Converter({ breaks: true, simpleLineBreaks: true });
   const html = converter.makeHtml(message);
   const parser = new DOMParser();
   const parsedHtml = parser.parseFromString(html, 'text/html');
   let innerHtml = parsedHtml.body.firstChild.innerHTML;
-  const regex = /:[a-zA-Z0-9_-]+:/g;
-  const matches = innerHtml.match(regex);
-  if (matches) {
-    matches.forEach(match => {
-      let emoji = match.replace(/:/g, '');
-      const emojiHtml = `<em-emoji id="${emoji}" size="14px"></em-emoji>`;
-      innerHtml = innerHtml.replace(match, emojiHtml);
-    });
-  }
+  innerHtml = innerHtml.replace(/-emunderscore-/g, '_');
   return innerHtml;
 }
 
@@ -199,6 +204,33 @@ socket.on('rooms list', (deprecatedcirclelist, circlelist) => {
   conversationArea.appendChild(addCircleOverlay);
 });
 
+const custom = [
+  {
+    id: 'neeter',
+    name: 'Neeter',
+    emojis: [
+      {
+        id: 'lizzy',
+        name: 'Lizzy',
+        keywords: ['neeter', 'cat', 'lizzy'],
+        skins: [{ src: 'https://i.ibb.co/ZSRPn8F/lizzy.png' }],
+      }
+    ],
+  },
+  {
+    id: 'koru',
+    name: 'Koru emojis',
+    emojis: [
+      {
+        id: 'rick',
+        name: 'Never Gonna Give You Up',
+        keywords: ['rick', 'roll', 'rickroll'],
+        skins: [{ src: 'https://media.tenor.com/x8v1oNUOmg4AAAAS/rickroll-roll.gif' }],
+      },
+    ],
+  },
+]
+
 document.addEventListener('DOMContentLoaded', () => {
   theme = localStorage.getItem('theme');
   if (theme === 'dark') {
@@ -223,7 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   emojiSelector.innerHTML = '';
   emojiSelector.style.display = 'none';
-  const pickerOptions = {};
+  const pickerOptions = {
+    custom: custom
+  };
   const picker = new EmojiMart.Picker(pickerOptions)
   emojiSelector.appendChild(picker)
   emojiSelector.innerHTML = '';
@@ -561,7 +595,6 @@ opensearchbutton.addEventListener('click', () => {
 showemojiselector.addEventListener('click', () => {
   emojiSelector.innerHTML = '';
   emojiSelector.removeAttribute('style');
-  const language = navigator.language.split('-')[0];
   const messageinputbar = document.getElementById('message-input');
   const pickerOptions = {
     onEmojiSelect:
@@ -569,7 +602,7 @@ showemojiselector.addEventListener('click', () => {
         messageinputbar.value += ":" + emoji.id + ":";
       },
     theme: theme,
-    locale: language,
+    custom: custom
   }
   const picker = new EmojiMart.Picker(pickerOptions)
   emojiSelector.appendChild(picker)
