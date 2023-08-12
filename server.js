@@ -167,7 +167,11 @@ app.get('/invite/:code', (req, res) => {
     Invite.findOne({ code: sanitizedcode })
         .then((invite) => {
             if (invite) {
+                if (invite.expires < Date.now()) {
+                    res.redirect('/invite-expired');
+                } else {
                 res.redirect(`/join?code=${invite.code}`);
+                }
             } else {
                 res.redirect('/invite-404');
             }
@@ -240,6 +244,39 @@ io.on('connection', (socket) => {
         }).catch((err) => {
             console.error(err);
         });
+    });
+    socket.on('use invite', (inviteCode, username) => {
+        const sanitizedinvitecode = DOMPurify.sanitize(inviteCode);
+        const sanitizedusername = DOMPurify.sanitize(username);
+        Invite.findOne({ code: sanitizedinvitecode })
+            .then((invite) => {
+                if (invite) {
+                    if (invite.expires < Date.now()) {
+                        socket.emit('invite expired');
+                        return;
+                    }
+                    RoomData.findOne({ room: invite.circle })
+                        .then((room) => {
+                            if (room) {
+                                if (room.members.includes(sanitizedusername)) {
+                                    socket.emit('joined circle', room);
+                                } else {
+                                    room.members.push(sanitizedusername);
+                                    room.save();
+                                    socket.emit('joined circle', room);
+                                }
+                            }
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                        });
+                } else {
+                    socket.emit('invite not found');
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     });
     socket.on('disconnect', () => {
         if (socket.username) {
