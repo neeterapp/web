@@ -546,7 +546,6 @@ showemojiselector.addEventListener('click', () => {
   emojiSelector.innerHTML = '';
   emojiSelector.removeAttribute('style');
   const language = navigator.language.split('-')[0];
-  console.log('clicked')
   const messageinputbar = document.getElementById('message-input');
   const pickerOptions = {
     onEmojiSelect:
