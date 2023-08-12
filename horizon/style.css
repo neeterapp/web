@@ -212,6 +212,10 @@ html {
   transition: all 0.3s ease;
 }
 
+#emoji-selector {
+  display: block;
+}
+
 .search-noresults {
   width: 40%;
   height: 50px;

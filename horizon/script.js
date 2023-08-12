@@ -44,8 +44,10 @@ toggleButton.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   if (document.body.classList.contains('dark-mode')) {
     localStorage.setItem('theme', 'dark');
+    theme = 'dark';
   } else {
     localStorage.setItem('theme', 'light');
+    theme = 'light';
   }
   if (circleemojiset === true) {
     let backgroundcolor = "FFFFFF";
@@ -514,9 +516,16 @@ searchbar.addEventListener('keydown', (e) => {
 });
 
 const searchbgblur = document.getElementsByClassName('search-popup');
+const emojiSelector = document.getElementById('emoji-selector');
+const showemojiselector = document.getElementById('show-emoji-selector');
+
 window.onclick = function (event) {
   if (event.target === searchbgblur[0]) {
     searchbgblur[0].style.display = 'none';
+  }
+  if (event.target !== emojiSelector && !emojiSelector.contains(event.target) && event.target !== showemojiselector) {
+    emojiSelector.style.display = 'none';
+    emojiSelector.innerHTML = '';
   }
 }
 
@@ -533,9 +542,9 @@ opensearchbutton.addEventListener('click', () => {
   searchbar.focus();
 });
 
-const showemojiselector = document.getElementById('show-emoji-selector');
-const emojiSelector = document.getElementById('emoji-selector');
 showemojiselector.addEventListener('click', () => {
+  emojiSelector.innerHTML = '';
+  emojiSelector.removeAttribute('style');
   const language = navigator.language.split('-')[0];
   console.log('clicked')
   const messageinputbar = document.getElementById('message-input');
@@ -543,10 +552,6 @@ showemojiselector.addEventListener('click', () => {
     onEmojiSelect:
       (emoji) => {
         messageinputbar.value += emoji.native
-      },
-    onClickOutside:
-      () => {
-        emojiSelector.removeChild(picker)
       },
       theme: theme,
       locale: language,
