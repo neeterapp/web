@@ -214,6 +214,10 @@ html {
 
 #emoji-selector {
   display: block;
+  position: absolute;
+  bottom: 70px;
+  right: 10px;
+  z-index: 999;
 }
 
 .search-noresults {

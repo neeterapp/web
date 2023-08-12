@@ -31,12 +31,21 @@ getAuth().onAuthStateChanged((user) => {
   }
 }, { once: true });
 
-function convertMarkdownToHTML(markdown) {
+function prepareMessage(message) {
   const converter = new showdown.Converter({ breaks: true, simpleLineBreaks: true });
-  const html = converter.makeHtml(markdown);
+  const html = converter.makeHtml(message);
   const parser = new DOMParser();
   const parsedHtml = parser.parseFromString(html, 'text/html');
-  const innerHtml = parsedHtml.body.firstChild.innerHTML;
+  let innerHtml = parsedHtml.body.firstChild.innerHTML;
+  const regex = /:[a-zA-Z0-9_-]+:/g;
+  const matches = innerHtml.match(regex);
+  if (matches) {
+    matches.forEach(match => {
+      let emoji = match.replace(/:/g, '');
+      const emojiHtml = `<em-emoji id="${emoji}" size="14px"></em-emoji>`;
+      innerHtml = innerHtml.replace(match, emojiHtml);
+    });
+  }
   return innerHtml;
 }
 
@@ -212,6 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
   sendButton.addEventListener('click', () => {
     messageInputZone.dispatchEvent(new Event('submit'));
   });
+  emojiSelector.innerHTML = '';
+  emojiSelector.style.display = 'none';
+  const pickerOptions = {};
+  const picker = new EmojiMart.Picker(pickerOptions)
+  emojiSelector.appendChild(picker)
+  emojiSelector.innerHTML = '';
+  emojiSelector.removeAttribute('style');
 });
 
 socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, responsetousername, timestamp) => {
@@ -238,7 +254,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         const lastmessagetimestamp = chatAreaMain.lastElementChild.querySelector('.chat-msg-date');
         const newMessage = document.createElement('div');
         newMessage.classList.add('chat-msg-text');
-        newMessage.innerHTML = convertMarkdownToHTML(msg.message);
+        newMessage.innerHTML = prepareMessage(msg.message);
         newMessage.id = msg._id;
         lastmessage.appendChild(newMessage);
         chatAreaMain.lastElementChild.id = msg._id;
@@ -253,7 +269,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+        <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
         </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -268,7 +284,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         const newMessage = document.createElement('div');
         newMessage.classList.add('chat-msg-text');
         newMessage.id = msg._id;
-        newMessage.innerHTML = convertMarkdownToHTML(msg.message);
+        newMessage.innerHTML = prepareMessage(msg.message);
         lastmessage.appendChild(newMessage);
         chatAreaMain.lastElementChild.id = msg._id;
         lastmessagetimestamp.innerText = timeagotext;
@@ -282,7 +298,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+        <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
         </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -298,7 +314,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+        <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
         </div>`;
       chatAreaMain.appendChild(newMessage);
     } else {
@@ -313,7 +329,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+        <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
         </div>`;
       chatAreaMain.appendChild(newMessage);
     }
@@ -350,7 +366,7 @@ socket.on('load messages', (messages) => {
           const newMessage = document.createElement('div');
           newMessage.id = msg._id;
           newMessage.classList.add('chat-msg-text');
-          newMessage.innerHTML = convertMarkdownToHTML(msg.message);
+          newMessage.innerHTML = prepareMessage(msg.message);
           lastmessage.appendChild(newMessage);
           chatAreaMain.lastElementChild.id = msg._id;
           lastmessagetimestamp.innerText = timeagotext;
@@ -365,7 +381,7 @@ socket.on('load messages', (messages) => {
         <div class="chat-msg-date">${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
-        <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+        <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
         </div>`;
           chatAreaMain.appendChild(newMessage);
         }
@@ -378,7 +394,7 @@ socket.on('load messages', (messages) => {
           const newMessage = document.createElement('div');
           newMessage.id = msg._id;
           newMessage.classList.add('chat-msg-text');
-          newMessage.innerHTML = convertMarkdownToHTML(msg.message);
+          newMessage.innerHTML = prepareMessage(msg.message);
           lastmessage.appendChild(newMessage);
           chatAreaMain.lastElementChild.id = msg._id;
           lastmessagetimestamp.innerText = timeagotext;
@@ -393,7 +409,7 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+          <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
           </div>`;
           chatAreaMain.appendChild(newMessage);
         }
@@ -410,7 +426,7 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+          <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
           </div>`;
         chatAreaMain.appendChild(newMessage);
       } else {
@@ -423,7 +439,7 @@ socket.on('load messages', (messages) => {
           <div class="chat-msg-date">${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
-          <div class="chat-msg-text" id="${msg._id}">${convertMarkdownToHTML(msg.message)}</div>
+          <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
           </div>`;
         chatAreaMain.appendChild(newMessage);
       }
@@ -505,7 +521,7 @@ searchbar.addEventListener('keydown', (e) => {
     searchresult.classList.add('searchresult');
     searchresult.innerHTML = `
     <div class="searchresult-username"><b>${msg.username}</b></div>
-    <div class="searchresult-message">${convertMarkdownToHTML(msg.message)}</div>
+    <div class="searchresult-message">${prepareMessage(msg.message)}</div>
     <div class="searchresult-separator"></div>
     `;
     searchresultscontainer.appendChild(searchresult);
@@ -550,10 +566,10 @@ showemojiselector.addEventListener('click', () => {
   const pickerOptions = {
     onEmojiSelect:
       (emoji) => {
-        messageinputbar.value += emoji.native
+        messageinputbar.value += ":" + emoji.id + ":";
       },
-      theme: theme,
-      locale: language,
+    theme: theme,
+    locale: language,
   }
   const picker = new EmojiMart.Picker(pickerOptions)
   emojiSelector.appendChild(picker)
