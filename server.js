@@ -40,7 +40,6 @@ const hubSchema = new mongoose.Schema({
         required: false
     }
 }, { timestamps: false });
-
 const userSchema = new mongoose.Schema({
     userid: {
         type: String,
@@ -71,7 +70,11 @@ const userSchema = new mongoose.Schema({
     translatemessages: {
         type: Boolean,
         required: false
-    }
+    },
+    status: {
+        type: String,
+        required: false
+    },
 }, { timestamps: false });
 const messageSchema = new mongoose.Schema({
     message: {
@@ -135,13 +138,45 @@ const roomSchema = new mongoose.Schema({
         required: false
     }
 }, { timestamps: false });
+const inviteSchema = new mongoose.Schema({
+    code: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    circle: {
+        type: String,
+        required: true
+    },
+    expires: {
+        type: Date,
+        required: true
+    }
+}, { timestamps: false });
 
 const Hub = mongoose.model('Hub', hubSchema);
 const Message = mongoose.model('Message', messageSchema);
 const RoomData = mongoose.model('Room', roomSchema);
 const UserData = mongoose.model('User', userSchema);
+const Invite = mongoose.model('Invite', inviteSchema);
 
 app.use(express.static('horizon'));
+
+app.get('/invite/:code', (req, res) => {
+    const sanitizedcode = DOMPurify.sanitize(req.params.code);
+    Invite.findOne({ code: sanitizedcode })
+        .then((invite) => {
+            if (invite) {
+                res.redirect(`/join?code=${invite.code}`);
+            } else {
+                res.redirect('/invite-404');
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Internal server error');
+        });
+});
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -162,6 +197,20 @@ async function moderatemsg(textToModerate) {
         return false;
     }
 }
+
+function setUserStatus(username, status) {
+    UserData.findOne({ username: username })
+        .then((user) => {
+            if (user) {
+                user.status = status;
+                user.save();
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+}
+
 io.on('connection', (socket) => {
     roomsList = [];
     let enhancedRoomsList = [];
@@ -176,7 +225,28 @@ io.on('connection', (socket) => {
         .catch((err) => {
             console.log(err);
         });
-    console.log('a user connected');
+    socket.on('create invite', (circle, expires) => {
+        const sanitizedcircle = DOMPurify.sanitize(circle);
+        const sanitizedexpires = DOMPurify.sanitize(expires);
+        const inviteCode = randomstring.generate(10);
+        const newInvite = new Invite({
+            code: inviteCode,
+            circle: sanitizedcircle,
+            expires: sanitizedexpires
+        });
+        newInvite.save().then((savedInvite) => {
+            console.log(`Invite created: ${savedInvite}`);
+            socket.emit('invite created', savedInvite);
+        }).catch((err) => {
+            console.error(err);
+        });
+    });
+    socket.on('disconnect', () => {
+        if (socket.username) {
+            setUserStatus(socket.username, 'offline');
+            socket.username = null;
+        }
+    });
     socket.on('register user', (userid, username) => {
         const sanitizeduserid = DOMPurify.sanitize(userid);
         const sanitizedusername = DOMPurify.sanitize(username);
@@ -195,7 +265,6 @@ io.on('connection', (socket) => {
             console.error(err);
         });
     });
-
     socket.on('user data', (usrid) => {
         const sanitizedusrid = DOMPurify.sanitize(usrid);
         console.log(`User id: ${sanitizedusrid}`);
@@ -227,12 +296,10 @@ io.on('connection', (socket) => {
             console.error(err);
         });
     });
-
     socket.on('change room name from socket', (newroomname) => {
         socket.leave(socket.room);
         socket.join(newroomname);
     });
-
     socket.on('get room members', (room) => {
         const sanitizedroom = DOMPurify.sanitize(room);
         RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
@@ -243,8 +310,9 @@ io.on('connection', (socket) => {
             console.error(err);
         });
     });
-
     socket.on('join room', (room, usrname) => {
+        socket.username = usrname;
+        setUserStatus(usrname, 'online');
         const sanitizedroom = DOMPurify.sanitize(room);
         console.log(`${usrname} joined room ${sanitizedroom}`);
         socket.join(sanitizedroom);
@@ -296,7 +364,6 @@ io.on('connection', (socket) => {
             console.error(err);
         });
     });
-
     socket.on('get room settings', (room) => {
         const sanitizedroom = DOMPurify.sanitize(room);
         RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
@@ -313,7 +380,6 @@ io.on('connection', (socket) => {
             console.error(err);
         });
     });
-
     socket.on('update room settings', (room, newRoomDescription, newRoomEmoji, newRoomName) => {
         const sanitizednewdescription = DOMPurify.sanitize(newRoomDescription);
         const sanitizednewemoji = DOMPurify.sanitize(newRoomEmoji);
@@ -337,43 +403,6 @@ io.on('connection', (socket) => {
             if (existingRoom) {
                 console.log('Room settings updated.');
                 console.log(existingRoom.settings);
-            }
-        }).catch((err) => {
-            console.error(err);
-        });
-    });
-
-    socket.on('message to ai', (msg, username, room, date, airesponseid) => {
-        UserData.findOne({ username: username }).then((existingUser) => {
-            if (existingUser) {
-                const earthyenabled = existingUser.earthyenabled;
-                if (earthyenabled) {
-                    const sanitizedmsg = DOMPurify.sanitize(msg);
-                    const sanitizedusername = DOMPurify.sanitize(username);
-                    const sanitizedroom = DOMPurify.sanitize(room);
-                    const sanitizeddate = DOMPurify.sanitize(date);
-                    console.log(`message: ${sanitizedmsg}, username: ${sanitizedusername}, room: ${sanitizedroom}, date: ${sanitizeddate}`);
-                    fetch('https://nixapi.hop.sh/api/chat-model', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer ' + process.env.NIX_API_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: msg,
-                            username: username,
-                            messagesleft: 'None (Unlimited due to private early access)',
-                            currentcircle: room,
-                            extrauserinfo: 'nothing',
-                            currentdate: date
-                        })
-                    }).then(response => response.json())
-                        .then(data => {
-                            socket.emit('ai response', data.response, airesponseid);
-                        });
-                } else {
-                    console.log('Earthy is not enabled for this user.');
-                }
             }
         }).catch((err) => {
             console.error(err);
@@ -441,7 +470,6 @@ io.on('connection', (socket) => {
             });
         }
     });
-
     socket.on('edit message', (editingmessageid, editingmsg, sanitizedroom) => {
         const sanitizededitingmsg = DOMPurify.sanitize(editingmsg);
         console.log(`editing message ${editingmessageid} to ${sanitizededitingmsg}`);
@@ -473,9 +501,6 @@ io.on('connection', (socket) => {
         } else {
             console.log("you cant delete that message");
         }
-    });
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
     });
 });
 
