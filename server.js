@@ -573,6 +573,40 @@ io.on('connection', (socket) => {
             console.log("you cant delete that message");
         }
     });
+    socket.on('create emoji', (emoji, room) => {
+        const sanitizedemoji = DOMPurify.sanitize(emoji);
+        const sanitizedroom = DOMPurify.sanitize(room);
+        console.log(`creating emoji ${sanitizedemoji} in room ${sanitizedroom}`);
+        RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+            if (existingRoom.emojis.includes(sanitizedemoji)) {
+                console.log("emoji already exists");
+                io.to(sanitizedroom).emit('emoji created', sanitizedemoji);
+            } else {
+                existingRoom.emojis.push(sanitizedemoji);
+                existingRoom.save().then(() => {
+                    console.log("emoji created");
+                    io.to(sanitizedroom).emit('emoji created', sanitizedemoji);
+                });
+            }
+        });
+    });
+    socket.on('delete emoji', (emoji, room) => {
+        const sanitizedemoji = DOMPurify.sanitize(emoji);
+        const sanitizedroom = DOMPurify.sanitize(room);
+        console.log(`deleting emoji ${sanitizedemoji} in room ${sanitizedroom}`);
+        RoomData.findOne({ room: sanitizedroom }).then((existingRoom) => {
+            if (existingRoom.emojis.includes(sanitizedemoji)) {
+                existingRoom.emojis.splice(existingRoom.emojis.indexOf(sanitizedemoji), 1);
+                existingRoom.save().then(() => {
+                    console.log("emoji deleted");
+                    io.to(sanitizedroom).emit('emoji deleted', sanitizedemoji);
+                });
+            } else {
+                console.log("emoji doesnt exist");
+                io.to(sanitizedroom).emit('emoji created', sanitizedemoji);
+            }
+        });
+    });
 });
 
 http.listen(2345, () => {
