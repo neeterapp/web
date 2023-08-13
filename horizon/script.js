@@ -522,7 +522,7 @@ setInterval(() => {
     messagetimestamp.innerHTML = "<b>" + msgusername + "</b>" + ", " + timeagotext;
   });
 }
-  , 15000);
+  , 60000);
 
 const searchbar = document.getElementById('searchbar');
 const searchresultscontainer = document.getElementById('searchresults');
