@@ -144,7 +144,11 @@ const roomSchema = new mongoose.Schema({
     latestmessagetruncated: {
         type: String,
         required: false
-    }
+    },
+    emojis: {
+        type: Array,
+        required: false
+    },
 }, { timestamps: false });
 const inviteSchema = new mongoose.Schema({
     code: {
@@ -397,7 +401,7 @@ io.on('connection', (socket) => {
                 newRoom.save().then(() => {
                     console.log(`Created room ${sanitizedroom} with owner ${usrname}`);
                     isowner = true;
-                    socket.emit('user connected', usrname, isowner, newRoom.settings);
+                    socket.emit('user connected', usrname, isowner, newRoom.settings, newRoom);
                 }).catch((err) => {
                     console.error(err);
                 });
@@ -437,7 +441,7 @@ io.on('connection', (socket) => {
             if (existingRoom) {
                 roomSettings = existingRoom.settings;
                 roomname = existingRoom.room;
-                socket.emit('room settings', roomSettings, roomname);
+                socket.emit('room settings', roomSettings, roomname, existingRoom);
                 console.log('Room settings sent.');
                 console.log(roomSettings);
             } else {
