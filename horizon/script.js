@@ -292,7 +292,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         newMessage.id = msg._id;
         lastmessage.appendChild(newMessage);
         chatAreaMain.lastElementChild.id = msg._id;
-        lastmessagetimestamp.innerText = timeagotext;
+        lastmessagetimestamp.innerHTML = "<b>@" + msg.username + "</b>" + ", " + timeagotext;
       } else {
         const newMessage = document.createElement('div');
         newMessage.id = msg._id;
@@ -300,7 +300,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         newMessage.innerHTML = `
         <div class="chat-msg-profile">
         <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-        <div class="chat-msg-date">${timeagotext}</div>
+        <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
         <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -321,7 +321,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         newMessage.innerHTML = prepareMessage(msg.message);
         lastmessage.appendChild(newMessage);
         chatAreaMain.lastElementChild.id = msg._id;
-        lastmessagetimestamp.innerText = timeagotext;
+        lastmessagetimestamp.innerHTML = "<b>@" + msg.username + "</b>" + ", " + timeagotext;
       } else {
         const newMessage = document.createElement('div');
         newMessage.id = msg._id;
@@ -329,7 +329,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
         newMessage.innerHTML = `
         <div class="chat-msg-profile">
         <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-        <div class="chat-msg-date">${timeagotext}</div>
+        <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
         <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -345,7 +345,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
       newMessage.innerHTML = `
         <div class="chat-msg-profile">
         <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-        <div class="chat-msg-date">${timeagotext}</div>
+        <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
         <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -360,7 +360,7 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
       newMessage.innerHTML = `
         <div class="chat-msg-profile">
         <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-        <div class="chat-msg-date">${timeagotext}</div>
+        <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
         <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -368,7 +368,8 @@ socket.on('chat message', (msg, circle, circleowner, isaresponse, responseto, re
       chatAreaMain.appendChild(newMessage);
     }
   }
-  chatAreaMain.lastElementChild.scrollIntoView({
+  const chatMsgText = document.querySelectorAll('.chat-msg-text');
+  chatMsgText[chatMsgText.length - 1].scrollIntoView({
     behavior: 'smooth'
   });
 });
@@ -403,7 +404,7 @@ socket.on('load messages', (messages) => {
           newMessage.innerHTML = prepareMessage(msg.message);
           lastmessage.appendChild(newMessage);
           chatAreaMain.lastElementChild.id = msg._id;
-          lastmessagetimestamp.innerText = timeagotext;
+          lastmessagetimestamp.innerHTML = "<b>@" + msg.username + "</b>" + ", " + timeagotext;
         } else {
 
           const newMessage = document.createElement('div');
@@ -412,7 +413,7 @@ socket.on('load messages', (messages) => {
           newMessage.innerHTML = `
         <div class="chat-msg-profile">
         <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-        <div class="chat-msg-date">${timeagotext}</div>
+        <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
         </div>
         <div class="chat-msg-content">
         <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -431,7 +432,7 @@ socket.on('load messages', (messages) => {
           newMessage.innerHTML = prepareMessage(msg.message);
           lastmessage.appendChild(newMessage);
           chatAreaMain.lastElementChild.id = msg._id;
-          lastmessagetimestamp.innerText = timeagotext;
+          lastmessagetimestamp.innerHTML = "<b>@" + msg.username + "</b>" + ", " + timeagotext;
         } else {
 
           const newMessage = document.createElement('div');
@@ -440,7 +441,7 @@ socket.on('load messages', (messages) => {
           newMessage.innerHTML = `
           <div class="chat-msg-profile">
           <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-          <div class="chat-msg-date">${timeagotext}</div>
+          <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
           <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -457,7 +458,7 @@ socket.on('load messages', (messages) => {
         newMessage.innerHTML = `
           <div class="chat-msg-profile">
           <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-          <div class="chat-msg-date">${timeagotext}</div>
+          <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
           <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -470,7 +471,7 @@ socket.on('load messages', (messages) => {
         newMessage.innerHTML = `
           <div class="chat-msg-profile">
           <img class="chat-msg-img" src="https://api.dicebear.com/6.x/initials/svg?seed=${msg.username}&scale=80&backgroundType=gradientLinear&backgroundColor=808080&fontWeight=400" alt="" />
-          <div class="chat-msg-date">${timeagotext}</div>
+          <div class="chat-msg-date"><b>@${msg.username}</b>, ${timeagotext}</div>
           </div>
           <div class="chat-msg-content">
           <div class="chat-msg-text" id="${msg._id}">${prepareMessage(msg.message)}</div>
@@ -479,17 +480,22 @@ socket.on('load messages', (messages) => {
       }
     }
   });
-  chatAreaMain.lastElementChild.scrollIntoView({
+  const chatMsgText = document.querySelectorAll('.chat-msg-text');
+  chatMsgText[chatMsgText.length - 1].scrollIntoView({
     behavior: 'smooth'
   });
 });
 
 setInterval(() => {
   messagesTimestamps.forEach((timestamp) => {
-    const message = document.getElementById(timestamp.split('-time-')[0]);
+    let message = document.getElementById(timestamp.split('-time-')[0]);
+    if (message.classList.contains('chat-msg-text')) {
+      message = message.parentElement.parentElement;
+    }
     if (!message) {
       return;
     }
+    const msgusername = message.querySelector('.chat-msg-date').innerHTML.split(',')[0];
     const timestampdata = timestamp.split('-time-')[1];
     const currenttime = new Date();
     const timeago = currenttime - timestampdata;
@@ -512,10 +518,11 @@ setInterval(() => {
     if (!messagetimestamp) {
       return;
     }
-    messagetimestamp.innerText = timeagotext;
+    messagetimestamp.innerHTML = "";
+    messagetimestamp.innerHTML = "<b>" + msgusername + "</b>" + ", " + timeagotext;
   });
 }
-  , 60000);
+  , 15000);
 
 const searchbar = document.getElementById('searchbar');
 const searchresultscontainer = document.getElementById('searchresults');

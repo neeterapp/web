@@ -75,6 +75,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    settings: {
+        type: Array,
+        required: false
+    },
+    profile: {
+        type: Array,
+        required: false
+    },
 }, { timestamps: false });
 const messageSchema = new mongoose.Schema({
     message: {
@@ -229,6 +237,28 @@ io.on('connection', (socket) => {
         .catch((err) => {
             console.log(err);
         });
+    socket.on('get user info', (username) => {
+        const sanitizedusername = DOMPurify.sanitize(username);
+        UserData.findOne({ username: sanitizedusername })
+            .then((user) => {
+                if (user) {
+                    let userstatus = user.status;
+                    if (userstatus === undefined) {
+                        userstatus = 'offline';
+                    }
+                    let userprofile = user.profile;
+                    if (userprofile === undefined) {
+                        userprofile = [];
+                    }
+                    socket.emit('user info', userstatus, userprofile);
+                } else {
+                    socket.emit('user info', 'offline', []);
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    });
     socket.on('create invite', (circle, expires) => {
         const sanitizedcircle = DOMPurify.sanitize(circle);
         const sanitizedexpires = DOMPurify.sanitize(expires);
