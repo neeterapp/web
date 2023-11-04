@@ -32,5 +32,8 @@
     "tippy.js": "^6.3.7",
     "uuid": "^9.0.0"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "tailwindcss": "^3.3.5"
+  }
 }
